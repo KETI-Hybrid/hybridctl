@@ -28,10 +28,10 @@ var aksCmd = &cobra.Command{
 }
 
 func init() {
-	// RootCmd.AddCommand(aksCmd)
-	// aksCmd.AddCommand(StartCmd)
-	// aksCmd.AddCommand(StopCmd)
-	// aksCmd.AddCommand(RotateCertsCmd)
-	// aksCmd.AddCommand(GetOSoptionsCmd)
+	RootCmd.AddCommand(aksCmd)
+	aksCmd.AddCommand(StartCmd)
+	aksCmd.AddCommand(StopCmd)
+	aksCmd.AddCommand(RotateCertsCmd)
+	aksCmd.AddCommand(GetOSoptionsCmd)
 	aksFlags()
 }
