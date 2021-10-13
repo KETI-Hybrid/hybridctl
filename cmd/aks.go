@@ -35,6 +35,6 @@ func init() {
 	aksCmd.AddCommand(StopCmd)
 	aksCmd.AddCommand(RotateCertsCmd)
 	aksCmd.AddCommand(GetOSoptionsCmd)
-	fmt.Printf("22")
+	fmt.Printf("23")
 	aksFlags()
 }
