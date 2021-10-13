@@ -1,0 +1,55 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "creationTimestamp": "2021-07-27T09:08:32Z",
+    "deletionTimestamp": "2021-07-28T07:56:51Z",
+    "name": "kube-federation-system",
+    "resourceVersion": "1380221",
+    "selfLink": "/api/v1/namespaces/kube-federation-system",
+    "uid": "2fdd3491-8e27-4e16-aaed-99e72dd31272"
+  },
+  "spec": {
+    "finalizers": []
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2021-07-28T07:56:56Z",
+        "message": "Discovery failed for some groups, 3 failing: unable to retrieve the complete list of server APIs: custom.metrics.k8s.io/v1beta1: the server is currently unable to handle the request, custom.metrics.k8s.io/v1beta2: the server is currently unable to handle the request, metrics.k8s.io/v1beta1: the server is currently unable to handle the request",
+        "reason": "DiscoveryFailed",
+        "status": "True",
+        "type": "NamespaceDeletionDiscoveryFailure"
+      },
+      {
+        "lastTransitionTime": "2021-07-28T07:56:57Z",
+        "message": "All legacy kube types successfully parsed",
+        "reason": "ParsedGroupVersions",
+        "status": "False",
+        "type": "NamespaceDeletionGroupVersionParsingFailure"
+      },
+      {
+        "lastTransitionTime": "2021-07-28T07:56:57Z",
+        "message": "All content successfully deleted, may be waiting on finalization",
+        "reason": "ContentDeleted",
+        "status": "False",
+        "type": "NamespaceDeletionContentFailure"
+      },
+      {
+        "lastTransitionTime": "2021-07-28T07:56:57Z",
+        "message": "All content successfully removed",
+        "reason": "ContentRemoved",
+        "status": "False",
+        "type": "NamespaceContentRemaining"
+      },
+      {
+        "lastTransitionTime": "2021-07-28T07:56:57Z",
+        "message": "All content-preserving finalizers finished",
+        "reason": "ContentHasNoFinalizers",
+        "status": "False",
+        "type": "NamespaceFinalizersRemaining"
+      }
+    ],
+    "phase": "Terminating"
+  }
+}
