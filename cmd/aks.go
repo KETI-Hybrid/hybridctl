@@ -33,5 +33,11 @@ func init() {
 	aksCmd.AddCommand(StopCmd)
 	aksCmd.AddCommand(RotateCertsCmd)
 	aksCmd.AddCommand(GetOSoptionsCmd)
+	aksCmd.AddCommand(MaintenanceconfigurationCmd)
+	MaintenanceconfigurationCmd.AddCommand(MCAddCmd)
+	MaintenanceconfigurationCmd.AddCommand(MCDeleteCmd)
+	MaintenanceconfigurationCmd.AddCommand(MCUpdateCmd)
+	MaintenanceconfigurationCmd.AddCommand(MCListCmd)
+	MaintenanceconfigurationCmd.AddCommand(MCShowCmd)
 	aksFlags()
 }

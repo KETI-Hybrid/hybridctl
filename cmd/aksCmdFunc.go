@@ -57,3 +57,63 @@ func aksGetOSoptions(p util.EksAPIParameter) {
 	}
 
 }
+
+func maintenanceconfigurationCreateOrUpdate(p util.EksAPIParameter) {
+	httpPostUrl := "http://localhost:8080/maintenanceconfigurationCreateOrUpdate"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	CloudErr := util.CloudError{}
+	errJson := json.Unmarshal(bytes, &CloudErr)
+	fmt.Println(errJson)
+	if errJson == nil {
+		fmt.Println("Success")
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func maintenanceconfigurationList(p util.EksAPIParameter) {
+	httpPostUrl := "http://localhost:8080/maintenanceconfigurationList"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	CloudErr := util.CloudError{}
+	errJson := json.Unmarshal(bytes, &CloudErr)
+	fmt.Println(errJson)
+	if errJson == nil {
+		fmt.Println("Success")
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func maintenanceconfigurationDelete(p util.EksAPIParameter) {
+	httpPostUrl := "http://localhost:8080/maintenanceconfigurationDelete"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	CloudErr := util.CloudError{}
+	errJson := json.Unmarshal(bytes, &CloudErr)
+	fmt.Println(errJson)
+	if errJson == nil {
+		fmt.Println("Success")
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func maintenanceconfigurationShow(p util.EksAPIParameter) {
+	httpPostUrl := "http://localhost:8080/maintenanceconfigurationShow"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	CloudErr := util.CloudError{}
+	errJson := json.Unmarshal(bytes, &CloudErr)
+	fmt.Println(errJson)
+	if errJson == nil {
+		fmt.Println("Success")
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(err)
+	}
+}

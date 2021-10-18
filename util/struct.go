@@ -1,5 +1,18 @@
 package util
 
+type Config struct {
+	Properties struct {
+		TimeInWeek []struct {
+			Day       string `json:"day"`
+			HourSlots []int  `json:"hourSlots"`
+		} `json:"timeInWeek"`
+		NotAllowedTime []struct {
+			Start string `json:"start"`
+			End   string `json:"end"`
+		} `json:"notAllowedTime"`
+	} `json:"properties"`
+}
+
 type EksAPIParameter struct {
 	SubscriptionId    string
 	ResourceGroupName string
@@ -7,6 +20,7 @@ type EksAPIParameter struct {
 	ApiVersion        string
 	Location          string
 	ConfigName        string
+	ConfigFile        Config
 }
 
 type Addon struct {

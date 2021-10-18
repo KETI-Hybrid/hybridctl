@@ -12,4 +12,23 @@ func aksFlags() {
 
 	GetOSoptionsCmd.PersistentFlags().StringP("location", "l", "", "location")
 	GetOSoptionsCmd.MarkPersistentFlagRequired("location")
+
+	MaintenanceconfigurationCmd.MarkPersistentFlagRequired("resource-group")
+	MaintenanceconfigurationCmd.MarkPersistentFlagRequired("name")
+
+	MCAddCmd.Flags().StringP("config-name", "c", "", "configname")
+	MCAddCmd.MarkFlagRequired("config-name")
+	MCAddCmd.Flags().StringP("config-file", "", "", "configfile")
+	MCAddCmd.MarkFlagRequired("config-file")
+
+	MCDeleteCmd.Flags().StringP("config-name", "c", "", "configname")
+	MCDeleteCmd.MarkFlagRequired("config-name")
+
+	MCUpdateCmd.Flags().StringP("config-name", "c", "", "configname")
+	MCUpdateCmd.MarkFlagRequired("config-name")
+	MCUpdateCmd.Flags().StringP("config-file", "", "", "configfile")
+	MCUpdateCmd.MarkFlagRequired("config-file")
+
+	MCShowCmd.Flags().StringP("config-name", "c", "", "configname")
+	MCShowCmd.MarkFlagRequired("config-name")
 }
