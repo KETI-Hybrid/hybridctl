@@ -13,7 +13,7 @@ type Config struct {
 	} `json:"properties"`
 }
 
-type EksAPIParameter struct {
+type EKSAPIParameter struct {
 	SubscriptionId    string
 	ResourceGroupName string
 	ResourceName      string
@@ -23,12 +23,81 @@ type EksAPIParameter struct {
 	ConfigFile        Config
 }
 
-type Addon struct {
-	AddonName     string
-	ClusterName   string
-	Message_      string
-	NodegroupName string
+type AKSAPIParameter struct {
+	Acr             string
+	AksCluster      string
+	BranchName      string
+	DoNotWait       string
+	Port            string
+	BindingSelector string
+	Repository      string
+	Name            string
+	ResourceGroup   string
+	DisableBrowser  bool
+	ListenAddress   string
+	ListenPort      string
+	Subscription    string
+	Location        string
 }
+
+type AKSAddon struct {
+	ResourceGroupName          string
+	ClusterName                string
+	Addon                      string
+	AppgwID                    string
+	AppgwName                  string
+	AppgwSubnetCidr            string
+	AppgwSubnetID              string
+	AppgwSubnetPrefix          string
+	AppgwWatchNamespace        string
+	EnableMsiAuthForMonitoring bool
+	EnableSecretRotation       bool
+	EnableSgxquotehelper       bool
+	SubnetName                 string
+	WorkspaceResourceID        string
+}
+
+type AKSPodIdentity struct {
+	ResourceGroupName  string
+	ClusterName        string
+	Namespace          string
+	IdentityResourceID string
+	Name               string
+	BindingSelector    string
+	PodLabels          string
+}
+
+// type AKSAppUp struct {
+// 	Acr             string
+// 	AksCluster      string
+// 	BranchName      string
+// 	DoNotWait       string
+// 	Port            string
+// 	BindingSelector string
+// 	Repository      string
+// }
+// type AKSBrowse struct {
+// 	Name           string
+// 	ResourceGroup  string
+// 	DisableBrowser bool
+// 	ListenAddress  string
+// 	ListenPort     string
+// 	Subscription   string
+// }
+
+// type AKSAcr struct {
+// 	Name          string
+// 	ResourceGroup string
+// 	Acr           string
+// 	Subscription  string
+// }
+
+// type AKSCheckAcr struct {
+// 	Acr           string
+// 	Name          string
+// 	ResourceGroup string
+// 	Subscription  string
+// }
 
 type CloudError struct {
 	// Error - Details about the error.
@@ -37,14 +106,3 @@ type CloudError struct {
 		Message string `json:"message"`
 	} `json:"error"`
 }
-
-// type CloudErrorBody struct {
-// 	// Code - An identifier for the error. Codes are invariant and are intended to be consumed programmatically.
-// 	Code *string `json:"code,omitempty" protobuf:"bytes,1,opt,name=code"`
-// 	// Message - A message describing the error, intended to be suitable for display in a user interface.
-// 	Message *string `json:"message,omitempty" protobuf:"bytes,2,opt,name=message"`
-// 	// // Target - The target of the particular error. For example, the name of the property in error.
-// 	// Target string `json:"target,omitempty" protobuf:"bytes,3,opt,name=target"`
-// 	// // Details - A list of additional details about the error.
-// 	// Details []CloudErrorBody `json:"details,omitempty" protobuf:"bytes,4,opt,name=details"`
-// }

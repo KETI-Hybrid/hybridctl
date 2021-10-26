@@ -29,6 +29,24 @@ var aksCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(aksCmd)
+	aksCmd.AddCommand(AddonCmd)
+	AddonCmd.AddCommand(AKSDisableAddonsCmd)
+	AddonCmd.AddCommand(AKSEnableAddonsCmd)
+	AddonCmd.AddCommand(AKSListAddonsCmd)
+	AddonCmd.AddCommand(AKSListAddonsAvailableCmd)
+	AddonCmd.AddCommand(AKSShowAddonsCmd)
+	AddonCmd.AddCommand(AKSUpdateAddonsCmd)
+
+	aksCmd.AddCommand(AKSPodIdentityCmd)
+	AKSPodIdentityCmd.AddCommand(AKSPIAddCmd)
+	AKSPodIdentityCmd.AddCommand(AKSPIDeleteCmd)
+	AKSPodIdentityCmd.AddCommand(AKSPIListCmd)
+	AKSPodIdentityCmd.AddCommand(AKSPIExceptionCmd)
+	AKSPIExceptionCmd.AddCommand(AKSPIExceptionAddCmd)
+	AKSPIExceptionCmd.AddCommand(AKSPIExceptionDeleteCmd)
+	AKSPIExceptionCmd.AddCommand(AKSPIExceptionListCmd)
+	AKSPIExceptionCmd.AddCommand(AKSPIExceptionUpdateCmd)
+
 	aksCmd.AddCommand(StartCmd)
 	aksCmd.AddCommand(StopCmd)
 	aksCmd.AddCommand(RotateCertsCmd)
@@ -39,5 +57,12 @@ func init() {
 	MaintenanceconfigurationCmd.AddCommand(MCUpdateCmd)
 	MaintenanceconfigurationCmd.AddCommand(MCListCmd)
 	MaintenanceconfigurationCmd.AddCommand(MCShowCmd)
+
+	aksCmd.AddCommand(AKSAppUp)
+	aksCmd.AddCommand(AKSBrowse)
+	aksCmd.AddCommand(AKSCheckAcr)
+	aksCmd.AddCommand(AKSGetUpgrades)
+	aksCmd.AddCommand(AKSGetVersions)
+	aksCmd.AddCommand(AKSKanalyze)
 	aksFlags()
 }
