@@ -211,3 +211,17 @@ func HTTPPostRequest(p util.AKSAPIParameter, cmd string) {
 	checkErr(err)
 	fmt.Println(string(bytes))
 }
+
+func HTTPPostRequestCLI(p util.AKSInstallCLI, cmd string) {
+	httpPostUrl := "http://localhost:8080/" + cmd
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	fmt.Println(string(bytes))
+}
+
+func HTTPPostRequestConfig(p util.AKSk8sConfiguration, cmd string) {
+	httpPostUrl := "http://localhost:8080/" + cmd
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+	checkErr(err)
+	fmt.Println(string(bytes))
+}

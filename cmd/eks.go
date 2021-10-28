@@ -31,4 +31,5 @@ func init() {
 	EksCmd.AddCommand(updateAddonCmd)
 	EksCmd.AddCommand(updateClusterConfigCmd)
 	EksCmd.AddCommand(updateNodegroupConfigCmd)
+	eksFlags()
 }

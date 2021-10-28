@@ -93,23 +93,48 @@ func aksFlags() {
 	MCShowCmd.Flags().StringP("config-name", "c", "", "configname")
 	MCShowCmd.MarkFlagRequired("config-name")
 
-	AKSAppUp.Flags().String("acr", "", "The Azure Container Registry name used to push the image.")
-	AKSAppUp.Flags().String("aks-cluster", "", "The name of the cluster to select for deployment.")
-	AKSAppUp.Flags().String("branch-name", "", "The new branch name to create to check in the file and raise the PR.")
-	AKSAppUp.Flags().String("do-not-wait", "", "It does not wait for the workflow to complete.")
-	AKSAppUp.Flags().String("port", "", "The port on which the application runs. The default is 8080.")
-	AKSAppUp.Flags().StringP("repository", "r", "", "The URL of your GitHub repository")
+	AKSAppUpCmd.Flags().String("acr", "", "The Azure Container Registry name used to push the image.")
+	AKSAppUpCmd.Flags().String("aks-cluster", "", "The name of the cluster to select for deployment.")
+	AKSAppUpCmd.Flags().String("branch-name", "", "The new branch name to create to check in the file and raise the PR.")
+	AKSAppUpCmd.Flags().String("do-not-wait", "", "It does not wait for the workflow to complete.")
+	AKSAppUpCmd.Flags().String("port", "", "The port on which the application runs. The default is 8080.")
+	AKSAppUpCmd.Flags().StringP("repository", "r", "", "The URL of your GitHub repository")
 
-	AKSBrowse.Flags().Bool("disable-browser", false, "Do not start the web browser after setting up port forwarding.")
-	AKSBrowse.Flags().String("listen-address", "", "The listening address of the dashboard. Default: 127.0.0.1")
-	AKSBrowse.Flags().String("listen-port", "", "The listening port for the dashboard. Default: 8001")
-	AKSBrowse.Flags().String("subscription", "", "The name or ID of the subscription. ")
+	AKSBrowseCmd.Flags().Bool("disable-browser", false, "Do not start the web browser after setting up port forwarding.")
+	AKSBrowseCmd.Flags().String("listen-address", "", "The listening address of the dashboard. Default: 127.0.0.1")
+	AKSBrowseCmd.Flags().String("listen-port", "", "The listening port for the dashboard. Default: 8001")
+	AKSBrowseCmd.Flags().String("subscription", "", "The name or ID of the subscription. ")
 
-	AKSCheckAcr.Flags().String("subscription", "", "The name or ID of the subscription. ")
-	AKSCheckAcr.Flags().String("acr", "", "The Azure Container Registry name used to push the image.")
+	AKSCheckAcrCmd.Flags().String("subscription", "", "The name or ID of the subscription. ")
+	AKSCheckAcrCmd.Flags().String("acr", "", "The Azure Container Registry name used to push the image.")
 
-	AKSGetUpgrades.Flags().String("subscription", "", "The name or ID of the subscription. ")
+	AKSGetUpgradesCmd.Flags().String("subscription", "", "The name or ID of the subscription. ")
 
-	AKSGetVersions.Flags().String("location", "l", "Location")
-	AKSGetVersions.Flags().String("subscription", "", "The name or ID of the subscription. ")
+	AKSGetVersionsCmd.Flags().String("location", "l", "Location")
+	AKSGetVersionsCmd.Flags().String("subscription", "", "The name or ID of the subscription. ")
+
+	AKSNodepoolGetUpgradesCmd.Flags().String("nodepool-name", "", "The name of the node pool.")
+	AKSNodepoolGetUpgradesCmd.Flags().String("subscription", "", "The name or ID of the subscription. ")
+	AKSNodepoolGetUpgradesCmd.Flags().String("cluster-name", "", "The cluster name.")
+
+	AKSInstallCLICmd.Flags().String("base-src-url", "", "Default download source URL for Kubectl releases.")
+	AKSInstallCLICmd.Flags().String("client-version", "", "The version of kubectl to install. Default: latest")
+	AKSInstallCLICmd.Flags().String("install-location", "", "The path where you want to install Kubectl. Default: ~/.azure-kubectl/kubectl.exe")
+	AKSInstallCLICmd.Flags().StringP("kubelogin-base-src-url", "l", "", "Default download source URL for Kubelgin releases.")
+	AKSInstallCLICmd.Flags().String("kubelogin-install-location", "", "The path to install Kubelogin. Default: ~/.azure-kubelogin/kubelogin.exe")
+	AKSInstallCLICmd.Flags().String("kubelogin-version", "", "The version of kubelogin to install. Default: latest")
+	AKSInstallCLICmd.Flags().String("subscription", "", "The name or ID of the subscription.")
+
+	AKSConnectedK8sCmd.PersistentFlags().StringP("resource-group", "g", "", "Name of resource group.")
+	AKSConnectedK8sCmd.PersistentFlags().StringP("name", "n", "", "Name of the managed cluster.")
+	AKSConnectedDisableFeaturesCmd.Flags().StringSliceVarP(&slice, "features", "s", []string{}, "")
+	AKSConnectedDisableFeaturesCmd.Flags().StringP("resource-group", "g", "", "Name of resource group.")
+
+	AKSk8sConfiguration.PersistentFlags().StringP("resource-group", "g", "", "Name of resource group.")
+	AKSk8sConfiguration.PersistentFlags().StringP("name", "n", "", "The name of the Kubernetes configuration.")
+	AKSk8sConfiguration.PersistentFlags().StringP("cluster-name", "c", "", "Name of the managed cluster.")
+	AKSk8sConfiguration.PersistentFlags().StringP("cluster-type", "", "", "Specifies an Arc cluster or AKS-managed cluster.")
+	AKSConfigurationCreate.Flags().StringP("repository-url", "u", "", "The URL of the source control repository.")
+	AKSConfigurationCreate.Flags().String("scope", "", "Scope the operator to either 'namespace' or 'cluster'. Allowed values: cluster, namespace")
+
 }

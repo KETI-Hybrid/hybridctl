@@ -38,6 +38,8 @@ type AKSAPIParameter struct {
 	ListenPort      string
 	Subscription    string
 	Location        string
+	NodepoolName    string
+	Features        []string
 }
 
 type AKSAddon struct {
@@ -67,37 +69,53 @@ type AKSPodIdentity struct {
 	PodLabels          string
 }
 
-// type AKSAppUp struct {
-// 	Acr             string
-// 	AksCluster      string
-// 	BranchName      string
-// 	DoNotWait       string
-// 	Port            string
-// 	BindingSelector string
-// 	Repository      string
-// }
-// type AKSBrowse struct {
-// 	Name           string
-// 	ResourceGroup  string
-// 	DisableBrowser bool
-// 	ListenAddress  string
-// 	ListenPort     string
-// 	Subscription   string
+type AKSInstallCLI struct {
+	BaseSrcURL               string
+	ClientVersion            string
+	InstallLocation          string
+	KubeloginBaseSrcURL      string
+	KubeloginInstallLocation string
+	KubeloginVersion         string
+	Subscription             string
+}
+
+type AKSk8sConfiguration struct {
+	ClusterName   string
+	ClusterType   string
+	Name          string
+	RepositoryURL string
+	ResourceGroup string
+	Scope         string
+}
+
+// error struct
+
+type EKSAddonError struct {
+	AddonName          string
+	ClusterName        string
+	FargateProfileName string
+	Message_           string
+	NodegroupName      string
+}
+
+type EKSDeleteAddonError struct {
+	AddonName          string
+	ClusterName        string
+	FargateProfileName string
+	Message_           string
+	NodegroupName      string
+}
+
+// type EKSCreateAddonError struct {
+// 	RespMetadata         subStruct
+// 	AddonVersion       string
+// 	ClientRequestToken string
+// 	ClusterName        string
+// 	Message_           string
+// 	NodegroupName      string
 // }
 
-// type AKSAcr struct {
-// 	Name          string
-// 	ResourceGroup string
-// 	Acr           string
-// 	Subscription  string
-// }
-
-// type AKSCheckAcr struct {
-// 	Acr           string
-// 	Name          string
-// 	ResourceGroup string
-// 	Subscription  string
-// }
+// type
 
 type CloudError struct {
 	// Error - Details about the error.

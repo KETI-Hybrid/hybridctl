@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func GetJson(httpPostUrl string, input interface{}, target interface{}) error {
+func GetJson(httpPostUrl string, input interface{}, output interface{}) error {
 
 	jsonData, _ := json.Marshal(&input)
 	buff := bytes.NewBuffer(jsonData)
@@ -26,8 +26,8 @@ func GetJson(httpPostUrl string, input interface{}, target interface{}) error {
 	jsonDataFromHttp, _ := ioutil.ReadAll(response.Body)
 	fmt.Println("response Headers:", response.Header)
 
-	return json.Unmarshal(jsonDataFromHttp, target)
-	// return response, err
+	err = json.Unmarshal(jsonDataFromHttp, &output)
+	return err
 }
 
 func GetResponseBody(method string, httpPostUrl string, input interface{}) ([]byte, error) {

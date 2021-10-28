@@ -58,11 +58,22 @@ func init() {
 	MaintenanceconfigurationCmd.AddCommand(MCListCmd)
 	MaintenanceconfigurationCmd.AddCommand(MCShowCmd)
 
-	aksCmd.AddCommand(AKSAppUp)
-	aksCmd.AddCommand(AKSBrowse)
-	aksCmd.AddCommand(AKSCheckAcr)
-	aksCmd.AddCommand(AKSGetUpgrades)
-	aksCmd.AddCommand(AKSGetVersions)
-	aksCmd.AddCommand(AKSKanalyze)
+	aksCmd.AddCommand(AKSAppUpCmd)
+	aksCmd.AddCommand(AKSBrowseCmd)
+	aksCmd.AddCommand(AKSCheckAcrCmd)
+	aksCmd.AddCommand(AKSGetUpgradesCmd)
+	aksCmd.AddCommand(AKSGetVersionsCmd)
+	aksCmd.AddCommand(AKSKanalyzeCmd)
+	aksCmd.AddCommand(Nodepool)
+	Nodepool.AddCommand(AKSNodepoolGetUpgradesCmd)
+	aksCmd.AddCommand(AKSInstallCLICmd)
+	RootCmd.AddCommand(AKSConnectedK8sCmd)
+	AKSConnectedK8sCmd.AddCommand(AKSConnectedDisableFeaturesCmd)
+	AKSConnectedK8sCmd.AddCommand(AKSConnectedListCmd)
+
+	RootCmd.AddCommand(AKSk8sConfiguration)
+	AKSk8sConfiguration.AddCommand(AKSConfigurationCreate)
+	AKSk8sConfiguration.AddCommand(AKSConfigurationDelete)
 	aksFlags()
+
 }

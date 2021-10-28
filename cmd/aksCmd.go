@@ -468,7 +468,7 @@ var MCShowCmd = &cobra.Command{
 
 // TODO: Github Path 입력 필수
 //       사전에 Deploy-to-azure 다운받아야함.
-var AKSAppUp = &cobra.Command{
+var AKSAppUpCmd = &cobra.Command{
 	Use:   "app",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks app up`,
@@ -510,7 +510,7 @@ var AKSAppUp = &cobra.Command{
 }
 
 // TODO: disable-browser Boolean 처리
-var AKSBrowse = &cobra.Command{
+var AKSBrowseCmd = &cobra.Command{
 	Use:   "browse",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks browse`,
@@ -547,7 +547,7 @@ var AKSBrowse = &cobra.Command{
 	},
 }
 
-var AKSCheckAcr = &cobra.Command{
+var AKSCheckAcrCmd = &cobra.Command{
 	Use:   "check-acr",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks check-acr`,
@@ -571,7 +571,7 @@ var AKSCheckAcr = &cobra.Command{
 }
 
 // TODO: get-upgrades 명령어 처리 이전에 az login되어 있어야함
-var AKSGetUpgrades = &cobra.Command{
+var AKSGetUpgradesCmd = &cobra.Command{
 	Use:   "get-upgrades",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks get-upgrades`,
@@ -592,7 +592,7 @@ var AKSGetUpgrades = &cobra.Command{
 	},
 }
 
-var AKSGetVersions = &cobra.Command{
+var AKSGetVersionsCmd = &cobra.Command{
 	Use:   "get-versions",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks get-versions`,
@@ -611,7 +611,7 @@ var AKSGetVersions = &cobra.Command{
 	},
 }
 
-var AKSKanalyze = &cobra.Command{
+var AKSKanalyzeCmd = &cobra.Command{
 	Use:   "kanalyze",
 	Short: "A brief description of your command",
 	Long:  `hybridctl aks kanalyze`,
@@ -625,5 +625,299 @@ var AKSKanalyze = &cobra.Command{
 		}
 		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "kanalyze")
+	},
+}
+
+var Nodepool = &cobra.Command{
+	Use:   "nodepool",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks nodepool`,
+}
+
+var AKSNodepoolGetUpgradesCmd = &cobra.Command{
+	Use:   "get-upgrades",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks nodepool get-upgrades`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		nodepoolName, _ := cmd.Flags().GetString("nodepool-name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+			NodepoolName:  nodepoolName,
+		}
+		p, _ := cmd.Flags().GetString("subscription")
+		if p != "" {
+			AKSAPIParameter.Subscription = p
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "nodepoolGetUpgrades")
+	},
+}
+
+var AKSInstallCLICmd = &cobra.Command{
+	Use:   "install-cli",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks install-cli`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		AKSAPIParameter := util.AKSInstallCLI{}
+		p, _ := cmd.Flags().GetString("base-src-url")
+		if p != "" {
+			AKSAPIParameter.BaseSrcURL = p
+		}
+		p, _ = cmd.Flags().GetString("client-version")
+		if p != "" {
+			AKSAPIParameter.ClientVersion = p
+		}
+		p, _ = cmd.Flags().GetString("install-location")
+		if p != "" {
+			AKSAPIParameter.InstallLocation = p
+		}
+		p, _ = cmd.Flags().GetString("kubelogin-base-src-url")
+		if p != "" {
+			AKSAPIParameter.KubeloginBaseSrcURL = p
+		}
+		p, _ = cmd.Flags().GetString("kubelogin-install-location")
+		if p != "" {
+			AKSAPIParameter.KubeloginInstallLocation = p
+		}
+		p, _ = cmd.Flags().GetString("kubelogin-version")
+		if p != "" {
+			AKSAPIParameter.KubeloginVersion = p
+		}
+		p, _ = cmd.Flags().GetString("subscription")
+		if p != "" {
+			AKSAPIParameter.Subscription = p
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequestCLI(AKSAPIParameter, "installCLI")
+	},
+}
+
+var AKSConnectedK8sCmd = &cobra.Command{
+	Use:   "connectedk8s",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s`,
+}
+
+var AKSConnectedConnectCmd = &cobra.Command{
+	Use:   "connect",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s connect`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedConnect")
+	},
+}
+
+var AKSConnectedDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s delete`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedk8sDelete")
+	},
+}
+
+var slice []string
+var AKSConnectedDisableFeaturesCmd = &cobra.Command{
+	Use:   "disable-features",
+	Short: "A brief description of your command",
+	Long:  `hybridctl connetedk8s disable-features`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		features, _ := cmd.Flags().GetStringSlice("features")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+			Features:      features,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedDisableFeatures")
+	},
+}
+
+var AKSConnectedEnableFeaturesCmd = &cobra.Command{
+	Use:   "enable-features",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s enable-features`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedEnableFeatures")
+	},
+}
+
+var AKSConnectedListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s list`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		AKSAPIParameter := util.AKSAPIParameter{
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedList")
+	},
+}
+
+var AKSConnectedProxyCmd = &cobra.Command{
+	Use:   "proxy",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s proxy`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedProxy")
+	},
+}
+
+var AKSConnectedShowCmd = &cobra.Command{
+	Use:   "show",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s show`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedShow")
+	},
+}
+
+var AKSConnectedUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s update`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedUpdate")
+	},
+}
+
+var AKSConnectedUpgradeCmd = &cobra.Command{
+	Use:   "upgrade",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks connectedk8s upgrade`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSAPIParameter{
+			Name:          clusterName,
+			ResourceGroup: resourceGroupName,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "connectedUpgrade")
+	},
+}
+
+var AKSk8sConfiguration = &cobra.Command{
+	Use:   "k8sconfiguration",
+	Short: "A brief description of your command",
+	Long:  "hybridctl aks k8sconfiguration",
+}
+
+var AKSConfigurationCreate = &cobra.Command{
+	Use:   "create",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks k8sconfiguration create`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		clusterType, _ := cmd.Flags().GetString("cluster-type")
+		if clusterType != "connectedClusters" && clusterType != "managedClusters" {
+			fmt.Println("Allowed values: connectedClusters, managedClusters")
+			return
+		}
+		name, _ := cmd.Flags().GetString("name")
+		repositoryURL, _ := cmd.Flags().GetString("repository-url")
+		scope, _ := cmd.Flags().GetString("scope")
+		if scope != "cluster" && scope != "namespace" {
+			fmt.Println("Scope the operator to either 'namespace' or 'cluster'.")
+			return
+		}
+		AKSAPIParameter := util.AKSk8sConfiguration{
+			Name:          name,
+			ResourceGroup: resourceGroupName,
+			ClusterName:   clusterName,
+			ClusterType:   clusterType,
+			RepositoryURL: repositoryURL,
+			Scope:         scope,
+		}
+
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequestConfig(AKSAPIParameter, "configurationCreate")
+	},
+}
+
+var AKSConfigurationDelete = &cobra.Command{
+	Use:   "delete",
+	Short: "A brief description of your command",
+	Long:  `hybridctl aks k8sconfiguration delete`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		clusterType, _ := cmd.Flags().GetString("cluster-type")
+		if clusterType != "connectedClusters" && clusterType != "managedClusters" {
+			fmt.Println("Allowed values: connectedClusters, managedClusters")
+			return
+		}
+		name, _ := cmd.Flags().GetString("name")
+		AKSAPIParameter := util.AKSk8sConfiguration{
+			Name:          name,
+			ResourceGroup: resourceGroupName,
+			ClusterName:   clusterName,
+			ClusterType:   clusterType,
+		}
+		fmt.Println(AKSAPIParameter)
+		HTTPPostRequestConfig(AKSAPIParameter, "configurationDelete")
 	},
 }

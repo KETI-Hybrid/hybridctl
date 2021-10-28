@@ -40,7 +40,7 @@ var associateEncryptionConfigCmd = &cobra.Command{
 			if clientRequestToken != "" {
 				associateEncryptionConfigInput.ClientRequestToken = &clientRequestToken
 			}
-			AssociateEncryptionConfig(associateEncryptionConfigInput)
+			// AssociateEncryptionConfig(associateEncryptionConfigInput)
 		}
 	},
 }
@@ -81,7 +81,7 @@ var associateIdentityProviderConfigCmd = &cobra.Command{
 				cobrautil.UnmarshalJsonFile(tags, &tagsMap)
 				associateIdentityProviderConfigInput.Tags = tagsMap
 			}
-			AssociateIdentityProviderConfig(associateIdentityProviderConfigInput)
+			// AssociateIdentityProviderConfig(associateIdentityProviderConfigInput)
 		}
 	},
 }
@@ -91,7 +91,7 @@ var createAddonCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `	
 	- create-addon
-		hybridctl create-addon <clusterName> <addonName> 
+		hybridctl create-addon 
 
 	- flags
 		[--addon-version <value>]
@@ -104,40 +104,36 @@ var createAddonCmd = &cobra.Command{
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 
-		if len(args) == 0 || len(args) == 1 {
-			fmt.Println("Run 'hybridctl create-addon --help' to view all commands")
-		} else if args[1] == "" {
-			fmt.Println("Run 'hybridctl create-addon --help' to view all commands")
-		} else {
-			addonVersion, _ := cmd.Flags().GetString("addon-version")
-			serviceAccountRoleArn, _ := cmd.Flags().GetString("service-account-role-arn")
-			resolveConflicts, _ := cmd.Flags().GetString("resolve-conflicts")
-			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")
-			createAddonInput.ClusterName = &args[0]
-			createAddonInput.AddonName = &args[1]
-			if addonVersion != "" {
-				createAddonInput.AddonVersion = &addonVersion
-			}
-			if serviceAccountRoleArn != "" {
-				createAddonInput.ServiceAccountRoleArn = &serviceAccountRoleArn
-			}
-			if resolveConflicts != "" {
-				createAddonInput.ResolveConflicts = &resolveConflicts
-			}
-			if clientRequestToken != "" {
-				createAddonInput.ClientRequestToken = &clientRequestToken
-			}
-			tags, _ := cmd.Flags().GetString("tags")
-			var tagsMap map[string]*string
-			if tags != "" {
-				util.UnmarshalJsonFile(tags, &tagsMap)
-				createAddonInput.Tags = tagsMap
-			}
-			// createAddonInput.Tags = tags
-			createAddon(createAddonInput)
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		addonName, _ := cmd.Flags().GetString("addon-name")
+		addonVersion, _ := cmd.Flags().GetString("addon-version")
+		serviceAccountRoleArn, _ := cmd.Flags().GetString("service-account-role-arn")
+		resolveConflicts, _ := cmd.Flags().GetString("resolve-conflicts")
+		clientRequestToken, _ := cmd.Flags().GetString("client-request-token")
+		createAddonInput.ClusterName = &clusterName
+		createAddonInput.AddonName = &addonName
+		if addonVersion != "" {
+			createAddonInput.AddonVersion = &addonVersion
 		}
+		if serviceAccountRoleArn != "" {
+			createAddonInput.ServiceAccountRoleArn = &serviceAccountRoleArn
+		}
+		if resolveConflicts != "" {
+			createAddonInput.ResolveConflicts = &resolveConflicts
+		}
+		if clientRequestToken != "" {
+			createAddonInput.ClientRequestToken = &clientRequestToken
+		}
+		tags, _ := cmd.Flags().GetString("tags")
+		var tagsMap map[string]*string
+		if tags != "" {
+			util.UnmarshalJsonFile(tags, &tagsMap)
+			createAddonInput.Tags = tagsMap
+		}
+
+		createAddon(createAddonInput)
+
 	},
 }
 
@@ -146,23 +142,19 @@ var deleteAddonCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `	
 	- delete-addon
-		hybridctl delete-addon <clusterName> <addonName> 
+		hybridctl delete-addon 
 
 	- platform
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 
-		if len(args) == 0 || len(args) == 1 {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else if args[1] == "" {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else {
-			deleteAddonInput.ClusterName = &args[0]
-			deleteAddonInput.AddonName = &args[1]
-			deleteAddon(deleteAddonInput)
-		}
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		addonName, _ := cmd.Flags().GetString("addon-name")
+		deleteAddonInput.ClusterName = &clusterName
+		deleteAddonInput.AddonName = &addonName
+		deleteAddon(deleteAddonInput)
+
 	},
 }
 
@@ -177,17 +169,13 @@ var describeAddonCmd = &cobra.Command{
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 
-		if len(args) == 0 || len(args) == 1 {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else if args[1] == "" {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else {
-			describeAddonInput.ClusterName = &args[0]
-			describeAddonInput.AddonName = &args[1]
-			describeAddon(describeAddonInput)
-		}
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		addonName, _ := cmd.Flags().GetString("addon-name")
+		describeAddonInput.ClusterName = &clusterName
+		describeAddonInput.AddonName = &addonName
+		describeAddon(describeAddonInput)
+
 	},
 }
 
@@ -202,7 +190,7 @@ var describeAddonVersionsCmd = &cobra.Command{
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
+
 		addonName, _ := cmd.Flags().GetString("addon-name")
 		kubernetesVersion, _ := cmd.Flags().GetString("kubernetes-version")
 		maxResults, _ := cmd.Flags().GetInt64("max-result")
@@ -250,7 +238,7 @@ var describeIdentityProviderConfigCmd = &cobra.Command{
 			util.UnmarshalJsonFile(jsonFileName, IdentityProviderConfig)
 			describeIdentityProviderConfigInput.IdentityProviderConfig = &IdentityProviderConfig
 
-			describeIdentityProvicerConfig(describeIdentityProviderConfigInput)
+			// describeIdentityProvicerConfig(describeIdentityProviderConfigInput)
 		}
 	},
 }
@@ -283,7 +271,7 @@ var describeUpdateCmd = &cobra.Command{
 			if addonName != "" {
 				describeUpdateInput.AddonName = &addonName
 			}
-			describeUpdate(describeUpdateInput)
+			// describeUpdate(describeUpdateInput)
 		}
 	},
 }
@@ -319,7 +307,7 @@ var disassociateIdentityProviderConfigCmd = &cobra.Command{
 				disassociateIdentityProviderConfigInput.ClientRequestToken = &clientRequestToken
 			}
 
-			disassociateIdentityProvicerConfig(disassociateIdentityProviderConfigInput)
+			// disassociateIdentityProvicerConfig(disassociateIdentityProviderConfigInput)
 		}
 	},
 }
@@ -329,31 +317,30 @@ var listAddonCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `	
 	- list-addon
-		hybridctl list-addon <clusterName> 
+		hybridctl eks list-addon 
 
 	- platform
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 
-		if len(args) == 0 {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else if args[0] == "" {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else {
-			listAddonInput.ClusterName = &args[0]
-			fmt.Println(args[0])
-			maxResults, _ := cmd.Flags().GetInt64("max-result")
-			nextToken, _ := cmd.Flags().GetString("next-token")
-			if maxResults != 0 {
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		maxResults, _ := cmd.Flags().GetInt64("max-result")
+		nextToken, _ := cmd.Flags().GetString("next-token")
+		listAddonInput.ClusterName = &clusterName
+		if maxResults != 0 {
+			if maxResults < 1 || maxResults > 100 {
+				fmt.Println("MaxResults can be between 1 and 100.")
+				return
+			} else {
 				listAddonInput.MaxResults = &maxResults
 			}
-			if nextToken != "" {
-				listAddonInput.NextToken = &nextToken
-			}
-			listAddon(listAddonInput)
 		}
+		if nextToken != "" {
+			listAddonInput.NextToken = &nextToken
+		}
+		listAddon(listAddonInput)
+
 	},
 }
 
@@ -384,7 +371,7 @@ var listIdentityProviderConfigsCmd = &cobra.Command{
 			if nextToken != "" {
 				listIdentityProviderConfigsInput.NextToken = &nextToken
 			}
-			listIdentityProviderConfigs(listIdentityProviderConfigsInput)
+			// listIdentityProviderConfigs(listIdentityProviderConfigsInput)
 		}
 	},
 }
@@ -404,7 +391,7 @@ var listTagsForResourceCmd = &cobra.Command{
 
 		resourceArn, _ := cmd.Flags().GetString("resource-arn")
 		listTagsForResourceInput.ResourceArn = &resourceArn
-		listTagsForResource(listTagsForResourceInput)
+		// listTagsForResource(listTagsForResourceInput)
 	},
 }
 
@@ -443,7 +430,7 @@ var listUpdateCmd = &cobra.Command{
 			if nextToken != "" {
 				listAddonInput.NextToken = &nextToken
 			}
-			listUpdate(listUpdateInput)
+			// listUpdate(listUpdateInput)
 		}
 	},
 }
@@ -471,7 +458,7 @@ var tagResourceCmd = &cobra.Command{
 			cobrautil.UnmarshalJsonFile(tags, &tagsMap)
 			tagResourceInput.Tags = tagsMap
 		}
-		TagResource(tagResourceInput)
+		// TagResource(tagResourceInput)
 	},
 }
 
@@ -502,7 +489,7 @@ var untagResourceCmd = &cobra.Command{
 
 		untagResourceInput.TagKeys = keyList
 
-		unTagResource(untagResourceInput)
+		// unTagResource(untagResourceInput)
 	},
 }
 
@@ -511,40 +498,35 @@ var updateAddonCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `	
 	- update-addon
-		hybridctl update-addon <clusterName> <addonName> 
+		hybridctl update-addon  
 
 	- platform
 		- eks (elastic kubernetes service)`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 
-		if len(args) == 0 || len(args) == 1 {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else if args[1] == "" {
-			fmt.Println("Run 'hybridctl join --help' to view all commands")
-		} else {
-			addonVersion, _ := cmd.Flags().GetString("addon-version")
-			serviceAccountRoleArn, _ := cmd.Flags().GetString("service-account-role-arn")
-			resolveConflicts, _ := cmd.Flags().GetString("resolve-conflicts")
-			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")
-			updateAddonInput.ClusterName = &args[0]
-			updateAddonInput.AddonName = &args[1]
-			if addonVersion != "" {
-				updateAddonInput.AddonVersion = &addonVersion
-				fmt.Printf(addonVersion)
-			}
-			if serviceAccountRoleArn != "" {
-				updateAddonInput.ServiceAccountRoleArn = &serviceAccountRoleArn
-			}
-			if resolveConflicts != "" {
-				updateAddonInput.ResolveConflicts = &resolveConflicts
-			}
-			if clientRequestToken != "" {
-				updateAddonInput.ClientRequestToken = &clientRequestToken
-			}
-			updateAddon(updateAddonInput)
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		addonName, _ := cmd.Flags().GetString("addon-name")
+		addonVersion, _ := cmd.Flags().GetString("addon-version")
+		serviceAccountRoleArn, _ := cmd.Flags().GetString("service-account-role-arn")
+		resolveConflicts, _ := cmd.Flags().GetString("resolve-conflicts")
+		clientRequestToken, _ := cmd.Flags().GetString("client-request-token")
+		updateAddonInput.ClusterName = &clusterName
+		updateAddonInput.AddonName = &addonName
+		if addonVersion != "" {
+			updateAddonInput.AddonVersion = &addonVersion
 		}
+		if serviceAccountRoleArn != "" {
+			updateAddonInput.ServiceAccountRoleArn = &serviceAccountRoleArn
+		}
+		if resolveConflicts != "" {
+			updateAddonInput.ResolveConflicts = &resolveConflicts
+		}
+		if clientRequestToken != "" {
+			updateAddonInput.ClientRequestToken = &clientRequestToken
+		}
+		updateAddon(updateAddonInput)
+
 	},
 }
 
@@ -585,7 +567,7 @@ var updateClusterConfigCmd = &cobra.Command{
 				updateClusterConfigInput.ClientRequestToken = &clientRequestToken
 			}
 
-			updateClusterConfig(updateClusterConfigInput)
+			// updateClusterConfig(updateClusterConfigInput)
 		}
 	},
 }
@@ -640,7 +622,7 @@ var updateNodegroupConfigCmd = &cobra.Command{
 				updateNodegroupConfigInput.ClientRequestToken = &clientRequestToken
 			}
 
-			updateNodegroupConfig(updateNodegroupConfigInput)
+			// updateNodegroupConfig(updateNodegroupConfigInput)
 		}
 	},
 }
