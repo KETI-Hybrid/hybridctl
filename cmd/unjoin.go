@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"net/http"
 
-	mappingTable "Hybrid_Cluster/hcp-apiserver/converter"
+	mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
 
 	"github.com/spf13/cobra"
 )

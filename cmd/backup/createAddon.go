@@ -71,7 +71,7 @@ var createAddonCmd = &cobra.Command{
 			tags, _ := cmd.Flags().GetString("tags")
 			var tagsMap map[string]*string
 			if tags != "" {
-				util.UnmarshalJsonFile(tags, &tagsMap)
+				util.OpenAndReadJsonFile(tags, &tagsMap)
 				createAddonInput.Tags = tagsMap
 			}
 			// createAddonInput.Tags = tags

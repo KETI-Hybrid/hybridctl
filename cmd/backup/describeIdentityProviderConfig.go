@@ -27,7 +27,7 @@ var describeIdentityProviderConfigCmd = &cobra.Command{
 			// json parsing
 			var IdentityProviderConfig eks.IdentityProviderConfig
 			jsonFileName, _ := cmd.Flags().GetString("identity-provider-config")
-			util.UnmarshalJsonFile(jsonFileName, IdentityProviderConfig)
+			util.OpenAndReadJsonFile(jsonFileName, IdentityProviderConfig)
 			describeIdentityProviderConfigInput.IdentityProviderConfig = &IdentityProviderConfig
 
 			describeIdentityProvicerConfig(describeIdentityProviderConfigInput)

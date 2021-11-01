@@ -34,13 +34,13 @@ var updateClusterConfigCmd = &cobra.Command{
 			jsonFileName, _ := cmd.Flags().GetString("resource-vpc-config")
 			if jsonFileName != "" {
 				var resourcesVpcConfig eks.VpcConfigRequest
-				util.UnmarshalJsonFile(jsonFileName, resourcesVpcConfig)
+				util.OpenAndReadJsonFile(jsonFileName, resourcesVpcConfig)
 			}
 
 			jsonFileName, _ = cmd.Flags().GetString("logging")
 			if jsonFileName != "" {
 				var logging eks.Logging
-				util.UnmarshalJsonFile(jsonFileName, logging)
+				util.OpenAndReadJsonFile(jsonFileName, logging)
 			}
 
 			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")

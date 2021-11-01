@@ -3,6 +3,7 @@ package cmd
 import (
 	"Hybrid_Cluster/hybridctl/util"
 	cobrautil "Hybrid_Cluster/hybridctl/util"
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -368,7 +369,8 @@ var MCAddCmd = &cobra.Command{
 		// data, _ := ioutil.ReadFile(configFile)
 		// fmt.Println(string(data))
 
-		cobrautil.UnmarshalJsonFile(configFile, &config)
+		byteValue := cobrautil.OpenAndReadJsonFile(configFile)
+		json.Unmarshal(byteValue, &config)
 
 		fmt.Println(config)
 		EKSAPIParameter := util.EKSAPIParameter{

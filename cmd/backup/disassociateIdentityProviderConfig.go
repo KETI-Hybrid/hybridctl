@@ -37,7 +37,7 @@ var disassociateIdentityProviderConfigCmd = &cobra.Command{
 			// json parsing
 			var IdentityProviderConfig eks.IdentityProviderConfig
 			jsonFileName, _ := cmd.Flags().GetString("identity-provider-config")
-			util.UnmarshalJsonFile(jsonFileName, IdentityProviderConfig)
+			util.OpenAndReadJsonFile(jsonFileName, IdentityProviderConfig)
 			disassociateIdentityProviderConfigInput.IdentityProviderConfig = &IdentityProviderConfig
 
 			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")

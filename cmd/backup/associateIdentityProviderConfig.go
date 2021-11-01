@@ -35,7 +35,7 @@ package cmd
 
 // 			// json parsing
 // 			oidc, _ := cmd.Flags().GetString("oidc")
-// 			cobrautil.UnmarshalJsonFile(oidc, oidcRequest)
+// 			cobrautil.OpenAndReadJsonFile(oidc, oidcRequest)
 // 			associateIdentityProviderConfigInput.Oidc = &oidcRequest
 
 // 			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")
@@ -46,7 +46,7 @@ package cmd
 // 			tags, _ := cmd.Flags().GetString("tags")
 // 			var tagsMap map[string]*string
 // 			if tags != "" {
-// 				cobrautil.UnmarshalJsonFile(tags, &tagsMap)
+// 				cobrautil.OpenAndReadJsonFile(tags, &tagsMap)
 // 				associateIdentityProviderConfigInput.Tags = tagsMap
 // 			}
 // 			AssociateIdentityProvicerConfig(associateIdentityProviderConfigInput)

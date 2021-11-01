@@ -30,7 +30,7 @@ var tagResourceCmd = &cobra.Command{
 		tags, _ := cmd.Flags().GetString("tags")
 		var tagsMap map[string]*string
 		if tags != "" {
-			cobrautil.UnmarshalJsonFile(tags, &tagsMap)
+			cobrautil.OpenAndReadJsonFile(tags, &tagsMap)
 			tagResourceInput.Tags = tagsMap
 		}
 		TagResource(tagResourceInput)

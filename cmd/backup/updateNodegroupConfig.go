@@ -35,25 +35,25 @@ var updateNodegroupConfigCmd = &cobra.Command{
 			jsonFileName, _ := cmd.Flags().GetString("labels")
 			if jsonFileName != "" {
 				var labels eks.UpdateLabelsPayload
-				util.UnmarshalJsonFile(jsonFileName, labels)
+				util.OpenAndReadJsonFile(jsonFileName, labels)
 			}
 
 			jsonFileName, _ = cmd.Flags().GetString("taints")
 			if jsonFileName != "" {
 				var taints eks.UpdateLabelsPayload
-				util.UnmarshalJsonFile(jsonFileName, taints)
+				util.OpenAndReadJsonFile(jsonFileName, taints)
 			}
 
 			jsonFileName, _ = cmd.Flags().GetString("scaling-config")
 			if jsonFileName != "" {
 				var scalingConfig eks.NodegroupScalingConfig
-				util.UnmarshalJsonFile(jsonFileName, scalingConfig)
+				util.OpenAndReadJsonFile(jsonFileName, scalingConfig)
 			}
 
 			jsonFileName, _ = cmd.Flags().GetString("update-config")
 			if jsonFileName != "" {
 				var updateConfig eks.NodegroupUpdateConfig
-				util.UnmarshalJsonFile(jsonFileName, updateConfig)
+				util.OpenAndReadJsonFile(jsonFileName, updateConfig)
 			}
 
 			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")

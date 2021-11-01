@@ -4,7 +4,10 @@ func eksFlags() {
 	associateEncryptionConfigCmd.Flags().StringP("encryption-config", "", "", "enter your encryption-config Jsonfile name")
 	associateEncryptionConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
-	associateIdentityProviderConfigCmd.Flags().StringP("oidc", "", "", "enter your oidc Jsonfile name")
+	associateIdentityProviderConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster to associate the configuration to.")
+	associateIdentityProviderConfigCmd.MarkFlagRequired("cluster-name")
+	associateIdentityProviderConfigCmd.Flags().StringP("oidc", "", "", "An object that represents an OpenID Connect (OIDC) identity provider configuration.")
+	associateIdentityProviderConfigCmd.MarkFlagRequired("oidc")
 	associateIdentityProviderConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 	associateIdentityProviderConfigCmd.Flags().StringP("tags", "", "", "enter your tags Jsonfile name")
 
@@ -39,6 +42,8 @@ func eksFlags() {
 	describeUpdateCmd.Flags().StringP("nodegroup-name", "", "", "enter nodegroupName")
 	describeUpdateCmd.Flags().StringP("addon-name", "", "", "enter addonName")
 
+	disassociateIdentityProviderConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster to disassociate an identity provider from.")
+	disassociateIdentityProviderConfigCmd.MarkFlagRequired("cluster-name")
 	disassociateIdentityProviderConfigCmd.Flags().StringP("identity-provider-config", "", "", "enter your Jsonfile name")
 	disassociateIdentityProviderConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
@@ -47,6 +52,8 @@ func eksFlags() {
 	listAddonCmd.Flags().Int64P("max-result", "", 0, "The maximum number of add-on results returned by ListAddonsRequest in paginated")
 	listAddonCmd.Flags().StringP("next-token", "", "", "The nextToken value returned from a previous paginated ListAddonsRequest")
 
+	listIdentityProviderConfigsCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster.")
+	listIdentityProviderConfigsCmd.MarkFlagRequired("cluster-name")
 	listIdentityProviderConfigsCmd.Flags().Int64P("max-result", "", 0, "enter maxresult")
 	listIdentityProviderConfigsCmd.Flags().StringP("next-token", "", "", "enter next token")
 

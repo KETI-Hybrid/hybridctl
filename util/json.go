@@ -1,14 +1,14 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
 
-func UnmarshalJsonFile(jsonFileName string, target interface{}) {
+func OpenAndReadJsonFile(jsonFileName string) []byte {
 	jsonFile, err := os.Open(jsonFileName)
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -16,6 +16,5 @@ func UnmarshalJsonFile(jsonFileName string, target interface{}) {
 
 	//unmarshalling Json
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &target)
-	fmt.Println(target)
+	return byteValue
 }

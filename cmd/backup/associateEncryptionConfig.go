@@ -35,7 +35,7 @@ package cmd
 // 			// json parsing
 // 			jsonFileName, _ := cmd.Flags().GetString("encryption-config")
 // 			var encryptionConfig []*eks.EncryptionConfig
-// 			util.UnmarshalJsonFile(jsonFileName, encryptionConfig)
+// 			util.OpenAndReadJsonFile(jsonFileName, encryptionConfig)
 // 			associateEncryptionConfigInput.EncryptionConfig = encryptionConfig
 
 // 			clientRequestToken, _ := cmd.Flags().GetString("client-request-token")

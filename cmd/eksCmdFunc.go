@@ -9,19 +9,38 @@ import (
 	"github.com/aws/aws-sdk-go/service/eks"
 )
 
-// func AssociateEncryptionConfig(AssociateEncryptionConfigInput eks.AssociateEncryptionConfigInput) {
-// 	httpPostUrl := "http://localhost:8080/associateEncryptionConfig"
-// 	var output eks.AssociateEncryptionConfigOutput
-// 	cobrautil.GetJson(httpPostUrl, AssociateEncryptionConfigInput, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func AssociateEncryptionConfig(input eks.AssociateEncryptionConfigInput) {
+	httpPostUrl := "http://localhost:8080/associateEncryptionConfig"
+	var output eks.AssociateEncryptionConfigOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if output.Update == nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
-// func AssociateIdentityProviderConfig(AssociateIdentityProviderConfigInput eks.AssociateIdentityProviderConfigInput) {
-// 	httpPostUrl := "http://localhost:8080/associateIdentityProviderConfig"
-// 	var output eks.AssociateIdentityProviderConfigOutput
-// 	cobrautil.GetJson(httpPostUrl, AssociateIdentityProviderConfigInput, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func AssociateIdentityProviderConfig(input eks.AssociateIdentityProviderConfigInput) {
+	httpPostUrl := "http://localhost:8080/associateIdentityProviderConfig"
+	var output eks.AssociateIdentityProviderConfigOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(bytes))
+	if output.Update == nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
 func createAddon(input eks.CreateAddonInput) {
 	httpPostUrl := "http://localhost:8080/createAddon"
@@ -87,12 +106,21 @@ func describeAddonVersions(input eks.DescribeAddonVersionsInput) {
 	}
 }
 
-// func describeIdentityProvicerConfig(input eks.DescribeIdentityProviderConfigInput) {
-// 	httpPostUrl := "http://localhost:8080/describeIdentityProviderConfig"
-// 	var output eks.DescribeIdentityProviderConfigOutput
-// 	cobrautil.GetJson(httpPostUrl, input, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func describeIdentityProvicerConfig(input eks.DescribeIdentityProviderConfigInput) {
+	httpPostUrl := "http://localhost:8080/describeIdentityProviderConfig"
+	var output eks.DescribeIdentityProviderConfigOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if output.IdentityProviderConfig == nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
 // func describeUpdate(describeUpdateInput eks.DescribeUpdateInput) {
 // 	httpPostUrl := "http://localhost:8080/describeUpdate"
@@ -101,12 +129,21 @@ func describeAddonVersions(input eks.DescribeAddonVersionsInput) {
 // 	fmt.Printf("%+v\n", output)
 // }
 
-// func disassociateIdentityProvicerConfig(input eks.DisassociateIdentityProviderConfigInput) {
-// 	httpPostUrl := "http://localhost:8080/disassociateIdentityProviderConfig"
-// 	var output eks.DisassociateIdentityProviderConfigOutput
-// 	cobrautil.GetJson(httpPostUrl, input, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func disassociateIdentityProvicerConfig(input eks.DisassociateIdentityProviderConfigInput) {
+	httpPostUrl := "http://localhost:8080/disassociateIdentityProviderConfig"
+	var output eks.DisassociateIdentityProviderConfigOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if output.Update == nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
 func listAddon(input eks.ListAddonsInput) {
 	httpPostUrl := "http://localhost:8080/listAddon"
@@ -124,19 +161,38 @@ func listAddon(input eks.ListAddonsInput) {
 	}
 }
 
-// func listIdentityProviderConfigs(input eks.ListIdentityProviderConfigsInput) {
-// 	httpPostUrl := "http://localhost:8080/listIdentityProviderConfigs"
-// 	var output eks.ListIdentityProviderConfigsOutput
-// 	util.GetJson(httpPostUrl, input, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func listIdentityProviderConfigs(input eks.ListIdentityProviderConfigsInput) {
+	httpPostUrl := "http://localhost:8080/listIdentityProviderConfigs"
+	var output eks.ListIdentityProviderConfigsOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(bytes))
+	if output.IdentityProviderConfigs == nil {
+		fmt.Println(jsonParsed.Path("Message").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
-// func listTagsForResource(listTagsForResourceInput eks.ListTagsForResourceInput) {
-// 	httpPostUrl := "http://localhost:8080/listTagsForResource"
-// 	var output eks.ListTagsForResourceOutput
-// 	util.GetJson(httpPostUrl, listTagsForResourceInput, &output)
-// 	fmt.Printf("%+v\n", output)
-// }
+func listTagsForResource(input eks.ListTagsForResourceInput) {
+	httpPostUrl := "http://localhost:8080/listTagsForResource"
+	var output eks.ListTagsForResourceOutput
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	json.Unmarshal(bytes, &output)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if output.Tags == nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	} else {
+		fmt.Println(output)
+	}
+}
 
 // func listUpdate(listUpdateInput eks.ListUpdatesInput) {
 // 	httpPostUrl := "http://localhost:8080/listUpdate"
@@ -145,18 +201,29 @@ func listAddon(input eks.ListAddonsInput) {
 // 	fmt.Printf("%+v\n", output)
 // }
 
-// func TagResource(input eks.TagResourceInput) {
-// 	httpPostUrl := "http://localhost:8080/tagResource"
-// 	var output eks.TagResourceOutput
-// 	util.GetJson(httpPostUrl, input, &output)
-// }
+func TagResource(input eks.TagResourceInput) {
+	httpPostUrl := "http://localhost:8080/tagResource"
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if jsonParsed != nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	}
+}
 
-// func unTagResource(input eks.UntagResourceInput) {
-// 	httpPostUrl := "http://localhost:8080/untagResource"
-// 	var output eks.UntagResourceOutput
-// 	util.GetJson(httpPostUrl, input, &output)
-// 	// fmt.Printf("%+v\n", output)
-// }
+func unTagResource(input eks.UntagResourceInput) {
+	httpPostUrl := "http://localhost:8080/untagResource"
+	bytes, _ := util.GetResponseBody("POST", httpPostUrl, input)
+	jsonParsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		panic(err)
+	}
+	if jsonParsed != nil {
+		fmt.Println(jsonParsed.Path("Message_").Data())
+	}
+}
 
 func updateAddon(input eks.UpdateAddonInput) {
 	httpPostUrl := "http://localhost:8080/updateAddon"
