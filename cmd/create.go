@@ -26,6 +26,11 @@ import (
 
 // GKE terraform structure
 
+type Cli struct {
+	PlatformName string
+	ClusterName  string
+}
+
 type Cluster_info struct {
 	Project_id    string `json:"project_id"`
 	Cluster_name  string `json:"cluster_name"`
