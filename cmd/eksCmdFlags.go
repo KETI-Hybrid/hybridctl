@@ -1,7 +1,10 @@
 package cmd
 
 func eksFlags() {
+	associateEncryptionConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster to associate the configuration to.")
+	associateEncryptionConfigCmd.MarkFlagRequired("cluster-name")
 	associateEncryptionConfigCmd.Flags().StringP("encryption-config", "", "", "enter your encryption-config Jsonfile name")
+	associateEncryptionConfigCmd.MarkFlagRequired("encryption-config")
 	associateEncryptionConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
 	associateIdentityProviderConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster to associate the configuration to.")
@@ -37,14 +40,17 @@ func eksFlags() {
 	describeAddonVersionsCmd.Flags().Int64P("max-result", "", 0, "The maximum number of results to return.")
 	describeAddonVersionsCmd.Flags().StringP("next-token", "", "", "This token should be treated as an opaque identifier that is used only to retrieve the next items in a list and not for other programmatic purposes.")
 
-	describeIdentityProviderConfigCmd.Flags().StringP("identity-provider-config", "", "", "enter your Jsonfile name")
-
+	describeUpdateCmd.Flags().StringP("name", "c", "", "The name of the Amazon EKS cluster associated with the update.")
+	describeUpdateCmd.MarkFlagRequired("name")
+	describeUpdateCmd.Flags().StringP("update-id", "", "", "")
+	describeUpdateCmd.MarkFlagRequired("update-id")
 	describeUpdateCmd.Flags().StringP("nodegroup-name", "", "", "enter nodegroupName")
 	describeUpdateCmd.Flags().StringP("addon-name", "", "", "enter addonName")
 
 	disassociateIdentityProviderConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster to disassociate an identity provider from.")
 	disassociateIdentityProviderConfigCmd.MarkFlagRequired("cluster-name")
 	disassociateIdentityProviderConfigCmd.Flags().StringP("identity-provider-config", "", "", "enter your Jsonfile name")
+	disassociateIdentityProviderConfigCmd.MarkFlagRequired("identity-provider-config")
 	disassociateIdentityProviderConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
 	listAddonCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster.")
@@ -57,16 +63,23 @@ func eksFlags() {
 	listIdentityProviderConfigsCmd.Flags().Int64P("max-result", "", 0, "enter maxresult")
 	listIdentityProviderConfigsCmd.Flags().StringP("next-token", "", "", "enter next token")
 
+	describeIdentityProviderConfigCmd.Flags().StringP("cluster-name", "c", "", "The cluster name that the identity provider configuration is associated to.")
+	describeIdentityProviderConfigCmd.MarkFlagRequired("cluster-name")
+	describeIdentityProviderConfigCmd.Flags().StringP("identity-provider-config", "", "", "An object that represents an identity provider configuration.")
+	describeIdentityProviderConfigCmd.MarkFlagRequired("identity-provider-config")
+
 	listTagsForResourceCmd.Flags().StringP("resource-arn", "", "", "Enter resource-arn")
 
+	listUpdateCmd.Flags().StringP("name", "c", "", "The name of the Amazon EKS cluster associated with the update.")
+	listUpdateCmd.MarkFlagRequired("name")
 	listUpdateCmd.Flags().StringP("nodegroup-name", "", "", "enter nodegroupName")
 	listUpdateCmd.Flags().StringP("addon-name", "", "", "enter addonName")
 	listUpdateCmd.Flags().Int64P("max-result", "", 0, "enter maxresult")
 	listUpdateCmd.Flags().StringP("next-token", "", "", "enter next token")
 
 	tagResourceCmd.Flags().StringP("tags", "t", "", "enter your tags Jsonfile name")
-	tagResourceCmd.Flags().StringP("resource-arn", "", "", "Enter resource-arn")
 	tagResourceCmd.MarkPersistentFlagRequired("tags")
+	tagResourceCmd.Flags().StringP("resource-arn", "", "", "Enter resource-arn")
 	tagResourceCmd.MarkPersistentFlagRequired("resource-arn")
 
 	untagResourceCmd.Flags().StringP("resource-arn", "", "", "Enter resource-arn")
@@ -83,6 +96,8 @@ func eksFlags() {
 	updateAddonCmd.Flags().StringP("resolve-conflicts", "", "", "enter addon version")
 	updateAddonCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
+	updateClusterConfigCmd.Flags().StringP("name", "c", "", "The name of the Amazon EKS cluster associated with the update.")
+	updateClusterConfigCmd.MarkFlagRequired("name")
 	updateClusterConfigCmd.Flags().StringP("resource-vpc-config", "", "", "enter resource-vpc-config jsonfile name")
 	updateClusterConfigCmd.Flags().StringP("logging", "", "", "enter logging jsonfile name")
 	updateClusterConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")

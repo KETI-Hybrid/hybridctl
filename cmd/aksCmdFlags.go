@@ -15,7 +15,7 @@ func aksFlags() {
 	AKSEnableAddonsCmd.MarkFlagRequired("name")
 	AKSEnableAddonsCmd.MarkFlagRequired("addon")
 
-	AKSListAddonsCmd.MarkFlagRequired("resource-group")
+	// AKSListAddonsCmd.MarkFlagRequired("resource-group")
 	AKSListAddonsCmd.MarkFlagRequired("name")
 
 	AKSShowAddonsCmd.MarkFlagRequired("resource-group")

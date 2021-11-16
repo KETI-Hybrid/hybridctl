@@ -1,0 +1,10 @@
+{
+  "identityProviderConfigName": "string",
+  "issuerUrl": "https://example.com",
+  "clientId": "string",
+  "usernameClaim": "string",
+  "usernamePrefix": "string",
+  "groupsClaim": "string",
+  "groupsPrefix": "string",
+  "requiredClaims": {"string": "string"}
+}

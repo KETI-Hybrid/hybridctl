@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"Hybrid_Cluster/hybridctl/util"
-	cobrautil "Hybrid_Cluster/hybridctl/util"
 	"encoding/json"
 	"fmt"
+
+	cmdpb "Hybrid_Cluster/protos/v1/cmd"
 
 	"github.com/spf13/cobra"
 )
@@ -60,11 +61,11 @@ var AKSListAddonsCmd = &cobra.Command{
 	Long:  `hybridctl aks addon list`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		// resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		clusterName, _ := cmd.Flags().GetString("name")
-		AKSAddon := util.AKSAddon{
-			ResourceGroupName: resourceGroupName,
-			ClusterName:       clusterName,
+		AKSAddon := cmdpb.AKSAddon{
+			// ResourceGroupName: resourceGroupName,
+			ClusterName: clusterName,
 		}
 		addonList(AKSAddon)
 	},
@@ -369,7 +370,7 @@ var MCAddCmd = &cobra.Command{
 		// data, _ := ioutil.ReadFile(configFile)
 		// fmt.Println(string(data))
 
-		byteValue := cobrautil.OpenAndReadJsonFile(configFile)
+		byteValue := util.OpenAndReadJsonFile(configFile)
 		json.Unmarshal(byteValue, &config)
 
 		fmt.Println(config)

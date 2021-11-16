@@ -26,9 +26,9 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 
-	resourcev1alpha1 "Hybrid_Cluster/apis/clusterRegister/v1alpha1"
-	clusterRegisterv1alpha1 "Hybrid_Cluster/clientset/v1alpha1"
 	mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
+	resourcev1alpha1 "Hybrid_Cluster/pkg/apis/clusterregister/v1alpha1"
+	clusterRegisterv1alpha1 "Hybrid_Cluster/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
 
 	cobrautil "Hybrid_Cluster/hybridctl/util"
 
@@ -137,14 +137,14 @@ DESCRIPTION
 							Namespace: "aks",
 						},
 						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Clustername:   clustername,
+							Name:          clustername,
 							Region:        region,
 							Platform:      "aks",
 							Resourcegroup: resourcegroup,
 						},
 					}
 
-					_, err = clusterRegisterClientSet.ClusterRegister("aks").Create(newclusterRegister)
+					_, err = clusterRegisterClientSet.ClusterRegisters("aks").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
 
 					if err != nil {
 						log.Println(err)
@@ -164,12 +164,12 @@ DESCRIPTION
 							Namespace: "eks",
 						},
 						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Clustername: clustername,
-							Region:      region,
-							Platform:    "eks",
+							Name:     clustername,
+							Region:   region,
+							Platform: "eks",
 						},
 					}
-					_, err = clusterRegisterClientSet.ClusterRegister("eks").Create(newclusterRegister)
+					_, err = clusterRegisterClientSet.ClusterRegisters("eks").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
 
 					if err != nil {
 						log.Println(err)
@@ -191,6 +191,9 @@ DESCRIPTION
 						}
 					}
 					num, err := strconv.Atoi(region)
+					if err != nil {
+						log.Println(err)
+					}
 					if region != "list" && reflect.TypeOf(region).Kind() == reflect.Int {
 						if 1 > num || num > 85 {
 							fmt.Printf("Please enter numeric choice \n")
@@ -210,14 +213,14 @@ DESCRIPTION
 							Namespace: "gke",
 						},
 						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Clustername: clustername,
-							Region:      cobrautil.GKEregion[num],
-							Platform:    "gke",
-							Projectid:   projectid,
+							Name:      clustername,
+							Region:    cobrautil.GKEregion[num],
+							Platform:  "gke",
+							ProjectId: projectid,
 						},
 					}
 
-					_, err = clusterRegisterClientSet.ClusterRegister("gke").Create(newclusterRegister)
+					_, err = clusterRegisterClientSet.ClusterRegisters("gke").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
 
 					if err != nil {
 						log.Println(err)
