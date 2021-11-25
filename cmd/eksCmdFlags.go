@@ -102,6 +102,10 @@ func eksFlags() {
 	updateClusterConfigCmd.Flags().StringP("logging", "", "", "enter logging jsonfile name")
 	updateClusterConfigCmd.Flags().StringP("client-request-token", "", "", "enter client request token")
 
+	updateNodegroupConfigCmd.Flags().StringP("cluster-name", "c", "", "The name of the cluster.")
+	updateNodegroupConfigCmd.MarkFlagRequired("cluster-name")
+	updateNodegroupConfigCmd.Flags().StringP("nodegroup-name", "", "", "enter nodegroupName")
+	updateNodegroupConfigCmd.MarkFlagRequired("nodegroup-name")
 	updateNodegroupConfigCmd.Flags().StringP("labels", "", "", "enter labels jsonfile name")
 	updateNodegroupConfigCmd.Flags().StringP("taints", "", "", "enter taints jsonfile name")
 	updateNodegroupConfigCmd.Flags().StringP("scaling-config", "", "", "enter resource-vpc-config jsonfile name")

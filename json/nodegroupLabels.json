@@ -1,0 +1,4 @@
+{
+    "addOrUpdateLabels": {"string": "string"},
+    "removeLabels": {"string": "string"}
+  }

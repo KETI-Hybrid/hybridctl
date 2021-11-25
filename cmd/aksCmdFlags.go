@@ -1,12 +1,15 @@
 package cmd
 
 func aksFlags() {
-	aksCmd.PersistentFlags().StringP("resource-group", "g", "", "Name of resource group.")
-	aksCmd.PersistentFlags().StringP("name", "n", "", "Name of the managed cluster.")
+	// aksCmd.PersistentFlags().StringP("resource-group", "g", "", "Name of resource group.")
+	// aksCmd.PersistentFlags().StringP("name", "n", "", "Name of the managed cluster.")
 
 	//addon
-	AddonCmd.PersistentFlags().StringP("addon", "a", "", "Specify the Kubernetes addon")
+	// AddonCmd.PersistentFlags().StringP("addon", "a", "", "Specify the Kubernetes addon")
 
+	AKSDisableAddonsCmd.Flags().StringP("resource-group", "g", "", "Name of resource group.")
+	AKSDisableAddonsCmd.Flags().StringP("name", "n", "", "Name of the managed cluster.")
+	AKSDisableAddonsCmd.Flags().StringP("addon", "a", "", "")
 	AKSDisableAddonsCmd.MarkFlagRequired("resource-group")
 	AKSDisableAddonsCmd.MarkFlagRequired("name")
 	AKSDisableAddonsCmd.MarkFlagRequired("addon")
@@ -15,7 +18,9 @@ func aksFlags() {
 	AKSEnableAddonsCmd.MarkFlagRequired("name")
 	AKSEnableAddonsCmd.MarkFlagRequired("addon")
 
-	// AKSListAddonsCmd.MarkFlagRequired("resource-group")
+	AKSListAddonsCmd.Flags().StringP("resource-group", "g", "", "Name of resource group.")
+	AKSListAddonsCmd.Flags().StringP("name", "n", "", "Name of the managed cluster.")
+	AKSListAddonsCmd.MarkFlagRequired("resource-group")
 	AKSListAddonsCmd.MarkFlagRequired("name")
 
 	AKSShowAddonsCmd.MarkFlagRequired("resource-group")

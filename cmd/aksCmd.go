@@ -61,11 +61,11 @@ var AKSListAddonsCmd = &cobra.Command{
 	Long:  `hybridctl aks addon list`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// resourceGroupName, _ := cmd.Flags().GetString("resource-group")
+		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		clusterName, _ := cmd.Flags().GetString("name")
 		AKSAddon := cmdpb.AKSAddon{
-			// ResourceGroupName: resourceGroupName,
-			ClusterName: clusterName,
+			ResourceGroupName: resourceGroupName,
+			ClusterName:       clusterName,
 		}
 		addonList(AKSAddon)
 	},

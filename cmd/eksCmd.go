@@ -614,11 +614,11 @@ var updateClusterConfigCmd = &cobra.Command{
 }
 
 var updateNodegroupConfigCmd = &cobra.Command{
-	Use:   "update-Nodegroup-config",
+	Use:   "update-nodegroup-config",
 	Short: "A brief description of your command",
 	Long: `	
 	- update-Nodegroup-config
-		hybridctl update-Nodegroup-config --cluster-name <value> --nodegroup-name <value>
+		hybridctl update-nodegroup-config --cluster-name <value> --nodegroup-name <value>
 
 	- platform
 		- eks (elastic kubernetes service)`,
@@ -626,51 +626,53 @@ var updateNodegroupConfigCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 
-		if len(args) == 0 {
-			fmt.Println("Run 'hybridctl update-Nodegroup-config --help' to view all commands")
-		} else {
+		clusterName, err := cmd.Flags().GetString("cluster-name")
+		checkErr(err)
+		updateNodegroupConfigInput.ClusterName = &clusterName
 
-			updateNodegroupConfigInput.ClusterName = &args[0]
-			updateNodegroupConfigInput.NodegroupName = &args[1]
-
-			jsonFileName, err := cmd.Flags().GetString("labels")
-			checkErr(err)
-			if jsonFileName != "" {
-				var labels eks.UpdateLabelsPayload
-				byteValue := util.OpenAndReadJsonFile(jsonFileName)
-				json.Unmarshal(byteValue, &labels)
-			}
-
-			jsonFileName, err = cmd.Flags().GetString("taints")
-			checkErr(err)
-			if jsonFileName != "" {
-				var taints eks.UpdateLabelsPayload
-				byteValue := util.OpenAndReadJsonFile(jsonFileName)
-				json.Unmarshal(byteValue, &taints)
-			}
-			jsonFileName, err = cmd.Flags().GetString("scaling-config")
-			checkErr(err)
-			if jsonFileName != "" {
-				var scalingConfig eks.NodegroupScalingConfig
-				byteValue := util.OpenAndReadJsonFile(jsonFileName)
-				json.Unmarshal(byteValue, &scalingConfig)
-			}
-
-			jsonFileName, err = cmd.Flags().GetString("update-config")
-			checkErr(err)
-			if jsonFileName != "" {
-				var updateConfig eks.NodegroupUpdateConfig
-				byteValue := util.OpenAndReadJsonFile(jsonFileName)
-				json.Unmarshal(byteValue, &updateConfig)
-			}
-
-			clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-			checkErr(err)
-			if clientRequestToken != "" {
-				updateNodegroupConfigInput.ClientRequestToken = &clientRequestToken
-			}
-
-			updateNodegroupConfig(updateNodegroupConfigInput)
+		nodegroupName, err := cmd.Flags().GetString("nodegroup-name")
+		checkErr(err)
+		updateNodegroupConfigInput.NodegroupName = &nodegroupName
+		jsonFileName, err := cmd.Flags().GetString("labels")
+		checkErr(err)
+		if jsonFileName != "" {
+			var labels eks.UpdateLabelsPayload
+			byteValue := util.OpenAndReadJsonFile(jsonFileName)
+			json.Unmarshal(byteValue, &labels)
+			updateNodegroupConfigInput.Labels = &labels
 		}
+
+		jsonFileName, err = cmd.Flags().GetString("taints")
+		checkErr(err)
+		if jsonFileName != "" {
+			var taints eks.UpdateLabelsPayload
+			byteValue := util.OpenAndReadJsonFile(jsonFileName)
+			json.Unmarshal(byteValue, &taints)
+			// updateNodegroupConfigInput.Taints = taints
+		}
+		jsonFileName, err = cmd.Flags().GetString("scaling-config")
+		checkErr(err)
+		if jsonFileName != "" {
+			var scalingConfig eks.NodegroupScalingConfig
+			byteValue := util.OpenAndReadJsonFile(jsonFileName)
+			json.Unmarshal(byteValue, &scalingConfig)
+		}
+
+		jsonFileName, err = cmd.Flags().GetString("update-config")
+		checkErr(err)
+		if jsonFileName != "" {
+			var updateConfig eks.NodegroupUpdateConfig
+			byteValue := util.OpenAndReadJsonFile(jsonFileName)
+			json.Unmarshal(byteValue, &updateConfig)
+		}
+
+		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
+		checkErr(err)
+		if clientRequestToken != "" {
+			updateNodegroupConfigInput.ClientRequestToken = &clientRequestToken
+		}
+
+		updateNodegroupConfig(updateNodegroupConfigInput)
+
 	},
 }

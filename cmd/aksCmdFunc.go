@@ -53,6 +53,7 @@ func addonList(p cmdpb.AKSAddon) {
 	httpPostUrl := "http://localhost:8080/addonList"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
 	checkErr(err)
+	fmt.Printf("%s\n", bytes)
 	fmt.Println(string(bytes))
 }
 
