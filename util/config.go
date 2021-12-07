@@ -1,10 +1,6 @@
 package util
 
 import (
-	"io/ioutil"
-	"log"
-
-	"gopkg.in/yaml.v2"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -62,37 +58,4 @@ func BuildConfigFromFlags(context, kubeconfigPath string) (*rest.Config, error) 
 		&clientcmd.ConfigOverrides{
 			CurrentContext: context,
 		}).ClientConfig()
-}
-
-func GetKubeConfig(kubeconfigPath string) *KubeConfig {
-	c := &KubeConfig{}
-	yamlFile, err := ioutil.ReadFile(kubeconfigPath)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, c)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-	return c
-}
-func WriteKubeConfig(c *KubeConfig, filepath string) error {
-	d, err := yaml.Marshal(&c)
-	err = ioutil.WriteFile(filepath, d, 0644)
-	if err != nil {
-		log.Fatal(err)
-		return err
-	}
-
-	return nil
-}
-
-func (c *KubeConfig) GetContextList() []string {
-	res := []string{}
-
-	for _, context := range c.Contexts {
-		res = append(res, context.Name)
-	}
-	return res
-
 }

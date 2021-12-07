@@ -15,22 +15,18 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"net/http"
-	"reflect"
-	"strconv"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 
-	mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
-	resourcev1alpha1 "Hybrid_Cluster/pkg/apis/clusterregister/v1alpha1"
-	clusterRegisterv1alpha1 "Hybrid_Cluster/pkg/client/clusterregister/v1alpha1/clientset/versioned/typed/clusterregister/v1alpha1"
+	"Hybrid_Cluster/hybridctl/util"
 
-	cobrautil "Hybrid_Cluster/hybridctl/util"
+	hcpclusterapis "Hybrid_Cluster/pkg/apis/hcpcluster/v1alpha1"
+	hcpclusterv1alpha1 "Hybrid_Cluster/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	u "Hybrid_Cluster/util"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -38,7 +34,7 @@ import (
 )
 
 var checkAKS, checkEKS, checkGKE = false, false, false
-var master_config, mcerr = cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
 var master_client = kubernetes.NewForConfigOrDie(master_config)
 
 type Cli struct {
@@ -105,128 +101,35 @@ DESCRIPTION
 			case "gke":
 				fmt.Println("kubernetes engine Name : ", args[0])
 				fmt.Printf("Cluster Name : %s\n", args[1])
-				cli := mappingTable.ClusterInfo{
-					PlatformName: args[0],
-					ClusterName:  args[1]}
-				join(cli)
+				platform := args[0]
+				clustername := args[1]
+				if !CheckHCPClusterListToJoin(platform, clustername) {
+					return
+				}
 			case "register":
-				master_config, _ := cobrautil.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-				clusterRegisterClientSet, err := clusterRegisterv1alpha1.NewForConfig(master_config)
-				var region string
-				var clustername string
-				if mcerr != nil {
-					log.Println(err)
+				platform := args[1]
+				if platform == "" {
+					fmt.Println("ERROR: Input Platform")
+				}
+				clustername := args[2]
+				if clustername == "" {
+					fmt.Println("ERROR: Input Clustername")
 				}
 				createPlatformNamespace()
-				switch args[1] {
+				switch platform {
 				case "aks":
-					var resourcegroup string
-					fmt.Printf("please enter your cluster region: ")
-					fmt.Scanln(&region)
-					fmt.Printf("Enter resourcegroup : ")
-					fmt.Scanln(&resourcegroup)
-					fmt.Printf("clustername : ")
-					fmt.Scanln(&clustername)
-					newclusterRegister := &resourcev1alpha1.ClusterRegister{
-						TypeMeta: metav1.TypeMeta{
-							Kind:       "ClusterRegister",
-							APIVersion: "hcp.k8s.io/v1alpha1",
-						},
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      clustername,
-							Namespace: "aks",
-						},
-						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Name:          clustername,
-							Region:        region,
-							Platform:      "aks",
-							Resourcegroup: resourcegroup,
-						},
-					}
-
-					_, err = clusterRegisterClientSet.ClusterRegisters("aks").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
-
-					if err != nil {
-						log.Println(err)
-					}
+					fallthrough
 				case "eks":
-					fmt.Printf("Enter cluster region : ")
-					fmt.Scanln(&region)
-					fmt.Printf("Enter clustername : ")
-					fmt.Scanln(&clustername)
-					newclusterRegister := &resourcev1alpha1.ClusterRegister{
-						TypeMeta: metav1.TypeMeta{
-							Kind:       "ClusterRegister",
-							APIVersion: "hcp.k8s.io/v1alpha1",
-						},
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      clustername,
-							Namespace: "eks",
-						},
-						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Name:     clustername,
-							Region:   region,
-							Platform: "eks",
-						},
-					}
-					_, err = clusterRegisterClientSet.ClusterRegisters("eks").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
-
-					if err != nil {
-						log.Println(err)
-					}
+					fallthrough
 				case "gke":
-					var projectid string
-					fmt.Printf("Please enter cloud projectID: ")
-					fmt.Scanln(&projectid)
-				LABEL:
-					fmt.Printf("Please choice Google Compute Engine zone where your cluster exists?\n")
-					for i := 1; i <= 50; i++ {
-						fmt.Printf("[%d] %s\n", i, cobrautil.GKEregion[i])
-					}
-					fmt.Printf("Too many options [85]. Enter \"list\" at prompt to print choices fully.\nPlease enter numeric choice or text value (must exactly match list item):")
-					fmt.Scanln(&region)
-					if region == "list" {
-						for i := 0; i < 85; i++ {
-							fmt.Printf("[%d] %s\n", i, cobrautil.GKEregion[i])
-						}
-					}
-					num, err := strconv.Atoi(region)
+					CreateHCPCluster(platform, clustername)
+					err := u.ChangeConfigClusterName(platform, clustername)
 					if err != nil {
-						log.Println(err)
+						fmt.Println(err)
 					}
-					if region != "list" && reflect.TypeOf(region).Kind() == reflect.Int {
-						if 1 > num || num > 85 {
-							fmt.Printf("Please enter numeric choice \n")
-							goto LABEL
-						}
-					}
-					fmt.Printf("Please enter your the name of the cluster to register: ")
-					fmt.Scanln(&clustername)
-					// gke_cr := strings.Replace(projectid+"-"+cobrautil.GKEregion[num]+"-"+clustername+"-hcp", " ", "", -1)
-					newclusterRegister := &resourcev1alpha1.ClusterRegister{
-						TypeMeta: metav1.TypeMeta{
-							Kind:       "ClusterRegister",
-							APIVersion: "hcp.k8s.io/v1alpha1",
-						},
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      clustername,
-							Namespace: "gke",
-						},
-						Spec: resourcev1alpha1.ClusterRegisterSpec{
-							Name:      clustername,
-							Region:    cobrautil.GKEregion[num],
-							Platform:  "gke",
-							ProjectId: projectid,
-						},
-					}
-
-					_, err = clusterRegisterClientSet.ClusterRegisters("gke").Create(context.TODO(), newclusterRegister, metav1.CreateOptions{})
-
-					if err != nil {
-						log.Println(err)
-					}
+					return
 				default:
-					fmt.Println("Run 'hybridctl join --help' to view all commands")
+					return
 				}
 			default:
 				fmt.Println("Run 'hybridctl join --help' to view all commands")
@@ -235,25 +138,77 @@ DESCRIPTION
 	},
 }
 
-func join(info mappingTable.ClusterInfo) {
-	httpPostUrl := "http://localhost:8080/join"
-	jsonData, _ := json.Marshal(&info)
+func CheckHCPClusterListToJoin(platform string, clustername string) bool {
+	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
+	if err != nil {
+		log.Println(err)
+	}
+	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		log.Println(err)
+	}
 
-	buff := bytes.NewBuffer(jsonData)
-	request, _ := http.NewRequest("POST", httpPostUrl, buff)
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	for _, cluster := range cluster_list.Items {
+		joinstatus := cluster.Spec.JoinStatus
+		if cluster.Spec.ClusterPlatform == platform && cluster.Name == clustername {
+			if joinstatus == "UNJOIN" {
+				cluster.Spec.JoinStatus = "JOINING"
+				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Update(context.TODO(), &cluster, metav1.UpdateOptions{})
+				fmt.Println(cluster.Spec.JoinStatus)
+				if err != nil {
+					fmt.Println(err)
+					return false
+				}
+				return true
+			} else if joinstatus == "JOINING" {
+				fmt.Println("ERROR: Cluster is already waiting to join")
+				return false
+			} else if joinstatus == "JOIN" {
+				fmt.Println("ERROR: This is an already joined cluster.")
+				return false
+			} else {
+				fmt.Println("ERROR: JOINSTATUS is wrong")
+				return false
+			}
+		}
+	}
+	fmt.Println("ERROR: no such Cluster")
+	fmt.Println("you must register yout cluster to join")
+	fmt.Println("ex) kubectl register <platform> <clustername>")
+	return false
+}
 
-	client := &http.Client{}
-	response, err := client.Do(request)
-
+func CreateHCPCluster(platform string, clustername string) {
+	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
+	if err != nil {
+		log.Println(err)
+	}
+	data, err := ioutil.ReadFile("/root/.kube/kubeconfig")
+	if err != nil {
+		fmt.Println("File reading error", err)
+		return
+	}
+	cluster := hcpclusterapis.HCPCluster{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "HCPCluster",
+			APIVersion: "hcp.k8s.io/v1alpha1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      clustername,
+			Namespace: platform,
+		},
+		Spec: hcpclusterapis.HCPClusterSpec{
+			ClusterPlatform: platform,
+			KubeconfigInfo:  data,
+			JoinStatus:      "UNJOIN",
+		},
+	}
+	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Create(context.TODO(), &cluster, metav1.CreateOptions{})
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Printf("success to register %s in %s\n", newhcpcluster.Name, newhcpcluster.Namespace)
 	}
-	defer response.Body.Close()
-
-	fmt.Println("response Status:", response.Status)
-	fmt.Println("response Headers:", response.Header)
-	// handler.Join(info)
 }
 
 func createPlatformNamespace() {

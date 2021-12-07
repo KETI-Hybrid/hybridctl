@@ -15,15 +15,24 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"log"
 
-	mappingTable "Hybrid_Cluster/hcp-apiserver/pkg/converter"
+	hcpclusterv1alpha1 "Hybrid_Cluster/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/net/context"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+// var checkAKS, checkEKS, checkGKE = false, false, false
+// var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
+// var master_client = kubernetes.NewForConfigOrDie(master_config)
+
+// type Cli struct {
+// 	PlatformName string
+// 	ClusterName  string
+// }
 
 // unjoinCmd represents the unjoin command
 var unjoinCmd = &cobra.Command{
@@ -52,8 +61,7 @@ DESCRIPTION
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 
-		if len(args) < 2 {
-			fmt.Println("Run 'hybridctl unjoin --help' to view all commands")
+		if len(args) == 0 {
 		} else {
 			switch args[0] {
 			case "aks":
@@ -63,44 +71,39 @@ DESCRIPTION
 			case "gke":
 				fmt.Println("kubernetes engine Name : ", args[0])
 				fmt.Printf("Cluster Name : %s\n", args[1])
-				cli := mappingTable.ClusterInfo{
-					PlatformName: args[0],
-					ClusterName:  args[1]}
-				unjoin(cli)
+				platform := args[0]
+				clustername := args[1]
+				hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
+				if err != nil {
+					log.Println(err)
+				}
+				cluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Get(context.TODO(), clustername, metav1.GetOptions{})
+				if err != nil {
+					log.Println(err)
+				}
+				joinstatus := cluster.Spec.JoinStatus
+				if joinstatus == "UNJOIN" {
+					fmt.Println("ERROR: This is an already unjoined cluster.")
+					return
+				} else if joinstatus == "UNJOINING" {
+					fmt.Println("ERROR: Cluster is already waiting to unjoin")
+				} else if joinstatus == "JOINING" {
+					fmt.Println("ERROR: Cluster is waiting to join")
+				} else {
+					cluster.Spec.JoinStatus = "UNJOINING"
+					_, err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Update(context.TODO(), cluster, metav1.UpdateOptions{})
+					fmt.Println(cluster.Spec.JoinStatus)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
 			default:
-				fmt.Println("Run 'hybridctl join --help' to view all commands")
+				fmt.Println("Run 'hybridctl unjoin --help' to view all commands")
 			}
 		}
 	},
 }
 
-func unjoin(info mappingTable.ClusterInfo) {
-	httpPostUrl := "http://localhost:8080/unjoin"
-	jsonData, _ := json.Marshal(&info)
-
-	buff := bytes.NewBuffer(jsonData)
-	request, _ := http.NewRequest("POST", httpPostUrl, buff)
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer response.Body.Close()
-}
-
 func init() {
 	RootCmd.AddCommand(unjoinCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// joinCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// joinCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
