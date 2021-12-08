@@ -122,10 +122,11 @@ DESCRIPTION
 				case "eks":
 					fallthrough
 				case "gke":
-					CreateHCPCluster(platform, clustername)
-					err := u.ChangeConfigClusterName(platform, clustername)
-					if err != nil {
-						fmt.Println(err)
+					if CreateHCPCluster(platform, clustername) {
+						err := u.ChangeConfigClusterName(platform, clustername)
+						if err != nil {
+							fmt.Println(err)
+						}
 					}
 					return
 				default:
@@ -134,6 +135,7 @@ DESCRIPTION
 			default:
 				fmt.Println("Run 'hybridctl join --help' to view all commands")
 			}
+			//
 		}
 	},
 }
@@ -178,15 +180,16 @@ func CheckHCPClusterListToJoin(platform string, clustername string) bool {
 	return false
 }
 
-func CreateHCPCluster(platform string, clustername string) {
+func CreateHCPCluster(platform string, clustername string) bool {
 	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
 	data, err := ioutil.ReadFile("/root/.kube/kubeconfig")
 	if err != nil {
 		fmt.Println("File reading error", err)
-		return
+		return false
 	}
 	cluster := hcpclusterapis.HCPCluster{
 		TypeMeta: metav1.TypeMeta{
@@ -206,8 +209,10 @@ func CreateHCPCluster(platform string, clustername string) {
 	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Create(context.TODO(), &cluster, metav1.CreateOptions{})
 	if err != nil {
 		fmt.Println(err)
+		return false
 	} else {
 		fmt.Printf("success to register %s in %s\n", newhcpcluster.Name, newhcpcluster.Namespace)
+		return true
 	}
 }
 
