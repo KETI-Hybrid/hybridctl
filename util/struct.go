@@ -13,6 +13,13 @@ type Config struct {
 	} `json:"properties"`
 }
 
+type Error struct {
+	Error struct {
+		Code    string `json:"code"`
+		Message string `json:"message"`
+	} `json:"error"`
+}
+
 type EKSAPIParameter struct {
 	SubscriptionId    string
 	ResourceGroupName string

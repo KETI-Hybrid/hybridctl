@@ -363,21 +363,18 @@ var MCAddCmd = &cobra.Command{
 
 		var config util.Config
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
-		clusterName, _ := cmd.Flags().GetString("name")
-		configName, _ := cmd.Flags().GetString("config-name")
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		name, _ := cmd.Flags().GetString("name")
 		configFile, _ := cmd.Flags().GetString("config-file")
-		// fmt.Println(configFile)
-		// data, _ := ioutil.ReadFile(configFile)
-		// fmt.Println(string(data))
-
+		if name == "" {
+			name = "default"
+		}
 		byteValue := util.OpenAndReadJsonFile(configFile)
 		json.Unmarshal(byteValue, &config)
-
-		fmt.Println(config)
 		EKSAPIParameter := util.EKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ResourceName:      clusterName,
-			ConfigName:        configName,
+			ConfigName:        name,
 			ConfigFile:        config,
 		}
 		maintenanceconfigurationCreateOrUpdate(EKSAPIParameter)
@@ -391,11 +388,8 @@ var MCDeleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
-		clusterName, _ := cmd.Flags().GetString("name")
-		configName, _ := cmd.Flags().GetString("configname")
-		if configName == "" {
-			configName = "default"
-		}
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		configName, _ := cmd.Flags().GetString("name")
 
 		EKSAPIParameter := util.EKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
@@ -412,17 +406,22 @@ var MCUpdateCmd = &cobra.Command{
 	Long:  `hybridctl aks get-os-options --location`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		var config util.Config
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
-		clusterName, _ := cmd.Flags().GetString("name")
-		configName, _ := cmd.Flags().GetString("configname")
-		if configName == "" {
-			configName = "default"
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
+		name, _ := cmd.Flags().GetString("name")
+		configFile, _ := cmd.Flags().GetString("config-file")
+		if name == "" {
+			name = "default"
 		}
+		byteValue := util.OpenAndReadJsonFile(configFile)
+		json.Unmarshal(byteValue, &config)
 
 		EKSAPIParameter := util.EKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ResourceName:      clusterName,
-			ConfigName:        configName,
+			ConfigName:        name,
+			ConfigFile:        config,
 		}
 		maintenanceconfigurationCreateOrUpdate(EKSAPIParameter)
 	},
@@ -507,7 +506,6 @@ var AKSAppUpCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Repository = p
 		}
-		fmt.Println(AKSAPIParameter)
 		appUp(AKSAPIParameter)
 	},
 }
@@ -526,7 +524,6 @@ var AKSBrowseCmd = &cobra.Command{
 			ResourceGroup: resourceGroupName,
 		}
 		p, _ := cmd.Flags().GetBool("disable-browser")
-		fmt.Printf("%t", p)
 		if !p {
 			AKSAPIParameter.DisableBrowser = p
 		}
@@ -545,7 +542,6 @@ var AKSBrowseCmd = &cobra.Command{
 		if t != "" {
 			AKSAPIParameter.Subscription = t
 		}
-		fmt.Println(AKSAPIParameter)
 		browse(AKSAPIParameter)
 	},
 }
@@ -568,7 +564,6 @@ var AKSCheckAcrCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		fmt.Println(AKSAPIParameter)
 		checkAcr(AKSAPIParameter)
 	},
 }
@@ -581,7 +576,7 @@ var AKSGetUpgradesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
-		clusterName, _ := cmd.Flags().GetString("name")
+		clusterName, _ := cmd.Flags().GetString("cluster-name")
 		AKSAPIParameter := util.AKSAPIParameter{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
@@ -590,7 +585,6 @@ var AKSGetUpgradesCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		fmt.Println(AKSAPIParameter)
 		getUpgrades(AKSAPIParameter)
 	},
 }
@@ -609,7 +603,6 @@ var AKSGetVersionsCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "getVersions")
 	},
 }
@@ -626,7 +619,6 @@ var AKSKanalyzeCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "kanalyze")
 	},
 }
@@ -655,7 +647,6 @@ var AKSNodepoolGetUpgradesCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "nodepoolGetUpgrades")
 	},
 }
@@ -695,7 +686,6 @@ var AKSInstallCLICmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequestCLI(AKSAPIParameter, "installCLI")
 	},
 }
@@ -718,7 +708,6 @@ var AKSConnectedConnectCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedConnect")
 	},
 }
@@ -735,7 +724,6 @@ var AKSConnectedDeleteCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedk8sDelete")
 	},
 }
@@ -755,7 +743,6 @@ var AKSConnectedDisableFeaturesCmd = &cobra.Command{
 			ResourceGroup: resourceGroupName,
 			Features:      features,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedDisableFeatures")
 	},
 }
@@ -772,7 +759,6 @@ var AKSConnectedEnableFeaturesCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedEnableFeatures")
 	},
 }
@@ -787,7 +773,6 @@ var AKSConnectedListCmd = &cobra.Command{
 		AKSAPIParameter := util.AKSAPIParameter{
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedList")
 	},
 }
@@ -804,7 +789,6 @@ var AKSConnectedProxyCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedProxy")
 	},
 }
@@ -821,7 +805,6 @@ var AKSConnectedShowCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedShow")
 	},
 }
@@ -838,7 +821,6 @@ var AKSConnectedUpdateCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedUpdate")
 	},
 }
@@ -855,7 +837,6 @@ var AKSConnectedUpgradeCmd = &cobra.Command{
 			Name:          clusterName,
 			ResourceGroup: resourceGroupName,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequest(AKSAPIParameter, "connectedUpgrade")
 	},
 }
@@ -895,7 +876,6 @@ var AKSConfigurationCreate = &cobra.Command{
 			Scope:         scope,
 		}
 
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequestConfig(AKSAPIParameter, "configurationCreate")
 	},
 }
@@ -920,7 +900,6 @@ var AKSConfigurationDelete = &cobra.Command{
 			ClusterName:   clusterName,
 			ClusterType:   clusterType,
 		}
-		fmt.Println(AKSAPIParameter)
 		HTTPPostRequestConfig(AKSAPIParameter, "configurationDelete")
 	},
 }
