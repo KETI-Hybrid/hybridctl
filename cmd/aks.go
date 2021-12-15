@@ -67,13 +67,15 @@ func init() {
 	aksCmd.AddCommand(Nodepool)
 	Nodepool.AddCommand(AKSNodepoolGetUpgradesCmd)
 	aksCmd.AddCommand(AKSInstallCLICmd)
-	RootCmd.AddCommand(AKSConnectedK8sCmd)
+	aksCmd.AddCommand(AKSConnectedK8sCmd)
 	AKSConnectedK8sCmd.AddCommand(AKSConnectedDisableFeaturesCmd)
 	AKSConnectedK8sCmd.AddCommand(AKSConnectedListCmd)
 
-	RootCmd.AddCommand(AKSk8sConfiguration)
+	aksCmd.AddCommand(AKSk8sConfiguration)
 	AKSk8sConfiguration.AddCommand(AKSConfigurationCreate)
 	AKSk8sConfiguration.AddCommand(AKSConfigurationDelete)
+	AKSk8sConfiguration.AddCommand(AKSConfigurationList)
+	AKSk8sConfiguration.AddCommand(AKSConfigurationShow)
 	aksFlags()
 
 }
