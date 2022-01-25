@@ -77,5 +77,4 @@ func init() {
 	AKSk8sConfiguration.AddCommand(AKSConfigurationList)
 	AKSk8sConfiguration.AddCommand(AKSConfigurationShow)
 	aksFlags()
-
 }

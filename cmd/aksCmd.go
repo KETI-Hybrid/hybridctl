@@ -5,21 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 
-	cmdpb "Hybrid_Cluster/protos/v1/cmd"
-
 	"github.com/spf13/cobra"
 )
 
 //addon
+
 var AddonCmd = &cobra.Command{
 	Use:   "addon",
-	Short: "A brief description of your command",
-	Long:  `hybridctl aks get-os-options --location`,
+	Short: "Commands to manage and view single addon conditions.",
+	Long:  `hybridctl aks`,
 }
 
 var AKSDisableAddonsCmd = &cobra.Command{
 	Use:   "disable",
-	Short: "A brief description of your command",
+	Short: "Disable an enabled Kubernetes addon in a cluster.",
 	Long:  `hybridctl aks disable-addons`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -27,18 +26,20 @@ var AKSDisableAddonsCmd = &cobra.Command{
 		clusterName, _ := cmd.Flags().GetString("name")
 		addon, _ := cmd.Flags().GetString("addon")
 
-		AKSAddon := util.AKSAddon{
+		AKSAddon := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Addon:             addon,
+			Addon: util.AKSAddon{
+				Addon: addon,
+			},
 		}
-		addonDisable(AKSAddon)
+		HTTPPostRequest(AKSAddon, "addonDisable")
 	},
 }
 
 var AKSEnableAddonsCmd = &cobra.Command{
 	Use:   "enable",
-	Short: "A brief description of your command",
+	Short: "Enable a Kubernetes addon.",
 	Long:  `hybridctl aks addon enable`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -46,62 +47,66 @@ var AKSEnableAddonsCmd = &cobra.Command{
 		clusterName, _ := cmd.Flags().GetString("name")
 		addon, _ := cmd.Flags().GetString("addon")
 
-		AKSAddon := util.AKSAddon{
+		AKSAddon := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Addon:             addon,
+			Addon: util.AKSAddon{
+				Addon: addon,
+			},
 		}
-		addonEnable(AKSAddon)
+		HTTPPostRequest(AKSAddon, "addonEnable")
 	},
 }
 
 var AKSListAddonsCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "List status of all Kubernetes addons in given cluster.",
 	Long:  `hybridctl aks addon list`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		clusterName, _ := cmd.Flags().GetString("name")
-		AKSAddon := cmdpb.AKSAddon{
+		AKSAddon := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		addonList(AKSAddon)
+		HTTPPostRequest(AKSAddon, "addonList")
 	},
 }
 
 var AKSListAddonsAvailableCmd = &cobra.Command{
 	Use:   "list-available",
-	Short: "A brief description of your command",
+	Short: "List available Kubernetes addons.",
 	Long:  `hybridctl aks addon list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		addonListAvailable()
+		HTTPPostRequest(util.AKSAPIParameter{}, "addonListAvailable")
 	},
 }
 
 var AKSShowAddonsCmd = &cobra.Command{
 	Use:   "show",
-	Short: "A brief description of your command",
-	Long:  `hybridctl aks addon enable`,
+	Short: "Show status and configuration for an enabled Kubernetes addon in a given cluster.",
+	Long:  `hybridctl aks addon show`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		clusterName, _ := cmd.Flags().GetString("name")
 		addon, _ := cmd.Flags().GetString("addon")
 
-		AKSAddon := util.AKSAddon{
+		AKSAddon := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Addon:             addon,
+			Addon: util.AKSAddon{
+				Addon: addon,
+			},
 		}
-		addonShow(AKSAddon)
+		HTTPPostRequest(AKSAddon, "addonShow")
 	},
 }
 
 var AKSUpdateAddonsCmd = &cobra.Command{
 	Use:   "update",
-	Short: "A brief description of your command",
+	Short: "Update an already enabled Kubernetes addon.",
 	Long:  `hybridctl aks addon enable`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -109,25 +114,28 @@ var AKSUpdateAddonsCmd = &cobra.Command{
 		clusterName, _ := cmd.Flags().GetString("name")
 		addon, _ := cmd.Flags().GetString("addon")
 
-		AKSAddon := util.AKSAddon{
+		AKSAddon := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Addon:             addon,
+			Addon: util.AKSAddon{
+				Addon: addon,
+			},
 		}
-		addonUpdate(AKSAddon)
+		HTTPPostRequest(AKSAddon, "addonUpdate")
 	},
 }
 
 //pod-identity
+
 var AKSPodIdentityCmd = &cobra.Command{
 	Use:   "pod-identity",
-	Short: "A brief description of your command",
+	Short: "Commands to manage pod identities in managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity`,
 }
 
 var AKSPIAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
+	Short: "Add a pod identity to a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity add`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -138,25 +146,28 @@ var AKSPIAddCmd = &cobra.Command{
 		podIdentityName, _ := cmd.Flags().GetString("name")
 		bindingSelector, _ := cmd.Flags().GetString("binding-selector")
 
-		AKSPodIdentity := util.AKSPodIdentity{
-			ResourceGroupName:  resourceGroupName,
-			ClusterName:        clusterName,
-			Namespace:          namespace,
-			IdentityResourceID: identityResourceID,
+		AKSPodIdentity := util.AKSAPIParameter{
+			ResourceGroupName: resourceGroupName,
+			ClusterName:       clusterName,
+			PodIdentity: util.AKSPodIdentity{
+				Namespace:          namespace,
+				IdentityResourceID: identityResourceID,
+			},
 		}
+
 		if podIdentityName != "" {
 			AKSPodIdentity.Name = podIdentityName
 		}
 		if bindingSelector != "" {
 			AKSPodIdentity.BindingSelector = bindingSelector
 		}
-		podIdentityAdd(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityAdd")
 	},
 }
 
 var AKSPIDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
+	Short: "Remove a pod identity from a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity delete`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -165,42 +176,44 @@ var AKSPIDeleteCmd = &cobra.Command{
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		podIdentityName, _ := cmd.Flags().GetString("name")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Namespace:         namespace,
-			Name:              podIdentityName,
+			PodIdentity: util.AKSPodIdentity{
+				Namespace: namespace,
+				Name:      podIdentityName,
+			},
 		}
-		podIdentityDelete(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityDelete")
 	},
 }
 
 var AKSPIListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "List pod identities in a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity list`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, _ := cmd.Flags().GetString("cluster-name")
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		podIdentityList(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityList")
 	},
 }
 
 var AKSPIExceptionCmd = &cobra.Command{
 	Use:   "exception",
-	Short: "A brief description of your command",
+	Short: "Commands to manage pod identity exceptions in managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity exception`,
 }
 
 var AKSPIExceptionAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
+	Short: "Add a pod identity exception to a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity exception add`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -210,22 +223,24 @@ var AKSPIExceptionAddCmd = &cobra.Command{
 		podIdentityName, _ := cmd.Flags().GetString("name")
 		podLabels, _ := cmd.Flags().GetString("podLabels")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Namespace:         namespace,
-			PodLabels:         podLabels,
+			PodIdentity: util.AKSPodIdentity{
+				Namespace: namespace,
+				PodLabels: podLabels,
+			},
 		}
 		if podIdentityName != "" {
 			AKSPodIdentity.Name = podIdentityName
 		}
-		podIdentityExceptionAdd(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityExceptionAdd")
 	},
 }
 
 var AKSPIExceptionDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
+	Short: "Remove a pod identity exception from a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity exception delete`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -234,36 +249,38 @@ var AKSPIExceptionDeleteCmd = &cobra.Command{
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 		podIdentityName, _ := cmd.Flags().GetString("name")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Namespace:         namespace,
-			Name:              podIdentityName,
+			PodIdentity: util.AKSPodIdentity{
+				Namespace: namespace,
+				Name:      podIdentityName,
+			},
 		}
-		podIdentityExceptionDelete(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityExceptionDelete")
 	},
 }
 
 var AKSPIExceptionListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "List pod identity exceptions in a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity exception list`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, _ := cmd.Flags().GetString("cluster-name")
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		podIdentityExceptionList(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityExceptionList")
 	},
 }
 
 var AKSPIExceptionUpdateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "A brief description of your command",
+	Short: "Update a pod identity exception in a managed Kubernetes cluster.",
 	Long:  `hybridctl aks pod-identity exception update`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -273,14 +290,16 @@ var AKSPIExceptionUpdateCmd = &cobra.Command{
 		podIdentityName, _ := cmd.Flags().GetString("name")
 		podLabels, _ := cmd.Flags().GetString("podLabels")
 
-		AKSPodIdentity := util.AKSPodIdentity{
+		AKSPodIdentity := util.AKSAPIParameter{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
-			Namespace:         namespace,
-			PodLabels:         podLabels,
-			Name:              podIdentityName,
+			PodIdentity: util.AKSPodIdentity{
+				Namespace: namespace,
+				PodLabels: podLabels,
+				Name:      podIdentityName,
+			},
 		}
-		podIdentityExceptionUpdate(AKSPodIdentity)
+		HTTPPostRequest(AKSPodIdentity, "podIdentityExceptionUpdate")
 	},
 }
 
@@ -580,7 +599,7 @@ var AKSGetUpgradesCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		getUpgrades(AKSAPIParameter)
+		HTTPPostRequest(AKSAPIParameter, "getUpgrades")
 	},
 }
 
@@ -765,8 +784,9 @@ var AKSConnectedListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		resourceGroupName, _ := cmd.Flags().GetString("resource-group")
-		AKSAPIParameter := util.AKSAPIParameter{
-			ResourceGroup: resourceGroupName,
+		AKSAPIParameter := util.AKSAPIParameter{}
+		if resourceGroupName == "" {
+			AKSAPIParameter.ResourceGroup = resourceGroupName
 		}
 		HTTPPostRequest(AKSAPIParameter, "connectedList")
 	},
@@ -912,7 +932,6 @@ var AKSConfigurationList = &cobra.Command{
 			fmt.Println("Allowed values: connectedClusters, managedClusters")
 			return
 		}
-		fmt.Println(clusterType)
 		AKSAPIParameter := util.AKSk8sConfiguration{
 			ResourceGroup: resourceGroupName,
 			ClusterName:   clusterName,

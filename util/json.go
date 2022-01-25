@@ -1,6 +1,8 @@
 package util
 
 import (
+	"Hybrid_Cluster/hcp-apiserver/pkg/util"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -16,9 +18,21 @@ func OpenAndReadJsonFile(jsonFileName string) []byte {
 	// }
 	defer jsonFile.Close()
 
-	//unmarshalling Json
+	//unmarshal Json
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	return byteValue
+}
+
+func PrintOutput(bytes []byte) error {
+	var output util.Output
+	err := json.Unmarshal(bytes, &output)
+	if output.Stderr != nil {
+		fmt.Print(string(output.Stderr))
+	}
+	if output.Stdout != nil {
+		fmt.Print(string(output.Stdout))
+	}
+	return err
 }
 
 func PrintErrMsg(bytes []byte) error {

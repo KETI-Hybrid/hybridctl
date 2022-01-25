@@ -2,7 +2,6 @@ package cmd
 
 import (
 	util "Hybrid_Cluster/hybridctl/util"
-	cmdpb "Hybrid_Cluster/protos/v1/cmd"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,49 +12,6 @@ func checkErr(err error) {
 		log.Println(err)
 		return
 	}
-}
-
-//addon
-func addonDisable(p util.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonDisable"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
-
-func addonEnable(p util.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonEnable"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
-
-func addonList(p cmdpb.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonList"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
-
-func addonListAvailable() {
-	httpPostUrl := "http://localhost:8080/addonListAvailable"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, nil)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
-
-func addonShow(p util.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonShow"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
-
-func addonUpdate(p util.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonUpdate"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
 }
 
 // Pod-Identity
@@ -281,19 +237,19 @@ func HTTPPostRequest(p util.AKSAPIParameter, cmd string) {
 	httpPostUrl := "http://localhost:8080/" + cmd
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
 	checkErr(err)
-	fmt.Println(string(bytes))
+	util.PrintOutput(bytes)
 }
 
 func HTTPPostRequestCLI(p util.AKSInstallCLI, cmd string) {
 	httpPostUrl := "http://localhost:8080/" + cmd
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
 	checkErr(err)
-	fmt.Println(string(bytes))
+	util.PrintOutput(bytes)
 }
 
 func HTTPPostRequestConfig(p util.AKSk8sConfiguration, cmd string) {
 	httpPostUrl := "http://localhost:8080/" + cmd
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
 	checkErr(err)
-	fmt.Println(string(bytes))
+	util.PrintOutput(bytes)
 }
