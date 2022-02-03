@@ -191,6 +191,10 @@ func CreateHCPCluster(platform string, clustername string) bool {
 		fmt.Println("File reading error", err)
 		return false
 	}
+	if data == nil {
+		fmt.Printf("fail to get config about %s\n", clustername)
+		return false
+	}
 	cluster := hcpclusterapis.HCPCluster{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "HCPCluster",

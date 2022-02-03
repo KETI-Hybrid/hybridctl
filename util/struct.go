@@ -33,6 +33,8 @@ type EKSAPIParameter struct {
 type AKSAPIParameter struct {
 	ResourceGroupName string
 	ClusterName       string
+	ConfigName        string
+	ConfigFile        Config
 	Acr               string
 	AksCluster        string
 	BranchName        string
@@ -40,14 +42,13 @@ type AKSAPIParameter struct {
 	Port              string
 	BindingSelector   string
 	Repository        string
-	Name              string
-	ResourceGroup     string
 	DisableBrowser    bool
 	ListenAddress     string
 	ListenPort        string
 	Subscription      string
 	Location          string
 	NodepoolName      string
+	StorageAccount    string
 	Features          []string
 	Addon             AKSAddon            `json:"addon"`
 	PodIdentity       AKSPodIdentity      `json:"podIdentity"`
@@ -56,8 +57,6 @@ type AKSAPIParameter struct {
 }
 
 type AKSAddon struct {
-	ResourceGroupName          string
-	ClusterName                string
 	Addon                      string
 	AppgwID                    string
 	AppgwName                  string
@@ -73,8 +72,6 @@ type AKSAddon struct {
 }
 
 type AKSPodIdentity struct {
-	ResourceGroupName  string
-	ClusterName        string
 	Namespace          string
 	IdentityResourceID string
 	Name               string
@@ -93,10 +90,8 @@ type AKSInstallCLI struct {
 }
 
 type AKSk8sConfiguration struct {
-	ClusterName   string
 	ClusterType   string
 	Name          string
 	RepositoryURL string
-	ResourceGroup string
 	Scope         string
 }
