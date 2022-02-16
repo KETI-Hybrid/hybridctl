@@ -133,7 +133,7 @@ DESCRIPTION
 			policy := hcppolicyapis.HCPPolicy{
 				TypeMeta: metav1.TypeMeta{
 					Kind:       "HCPPolicy",
-					APIVersion: "hcp.k8s.io/v1alpha1",
+					APIVersion: "hcp.crd.com/v1alpha1",
 				},
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "initial-setting",
@@ -183,7 +183,7 @@ DESCRIPTION
 				policy := hcppolicyapis.HCPPolicy{
 					TypeMeta: metav1.TypeMeta{
 						Kind:       "HCPPolicy",
-						APIVersion: "hcp.k8s.io/v1alpha1",
+						APIVersion: "hcp.crd.com/v1alpha1",
 					},
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "initial-setting",

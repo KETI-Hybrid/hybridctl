@@ -135,7 +135,6 @@ DESCRIPTION
 			default:
 				fmt.Println("Run 'hybridctl join --help' to view all commands")
 			}
-			//
 		}
 	},
 }
@@ -152,6 +151,8 @@ func CheckHCPClusterListToJoin(platform string, clustername string) bool {
 
 	for _, cluster := range cluster_list.Items {
 		joinstatus := cluster.Spec.JoinStatus
+		fmt.Println(cluster.Spec.ClusterPlatform)
+		fmt.Println(cluster.Name)
 		if cluster.Spec.ClusterPlatform == platform && cluster.Name == clustername {
 			if joinstatus == "UNJOIN" {
 				cluster.Spec.JoinStatus = "JOINING"
@@ -173,6 +174,7 @@ func CheckHCPClusterListToJoin(platform string, clustername string) bool {
 				return false
 			}
 		}
+		fmt.Println("?")
 	}
 	fmt.Println("ERROR: no such Cluster")
 	fmt.Println("you must register yout cluster to join")
@@ -198,7 +200,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 	cluster := hcpclusterapis.HCPCluster{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "HCPCluster",
-			APIVersion: "hcp.k8s.io/v1alpha1",
+			APIVersion: "hcp.crd.com",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      clustername,
@@ -211,6 +213,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 		},
 	}
 	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Create(context.TODO(), &cluster, metav1.CreateOptions{})
+	// err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Delete(context.TODO(), clustername, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println(err)
 		return false
