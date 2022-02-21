@@ -19,28 +19,15 @@ import (
 	"io/ioutil"
 	"log"
 
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
-
-	"Hybrid_Cluster/hybridctl/util"
-
 	hcpclusterapis "Hybrid_Cluster/pkg/apis/hcpcluster/v1alpha1"
 	hcpclusterv1alpha1 "Hybrid_Cluster/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	resource "Hybrid_Cluster/resource"
 	u "Hybrid_Cluster/util"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-var checkAKS, checkEKS, checkGKE = false, false, false
-var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-var master_client = kubernetes.NewForConfigOrDie(master_config)
-
-type Cli struct {
-	PlatformName string
-	ClusterName  string
-}
 
 // joinCmd represents the join command
 var joinCmd = &cobra.Command{
@@ -101,9 +88,9 @@ DESCRIPTION
 			case "gke":
 				fmt.Println("kubernetes engine Name : ", args[0])
 				fmt.Printf("Cluster Name : %s\n", args[1])
-				platform := args[0]
+				// platform := args[0]
 				clustername := args[1]
-				if !CheckHCPClusterListToJoin(platform, clustername) {
+				if !CheckHCPClusterListToJoin(clustername) {
 					return
 				}
 			case "register":
@@ -115,7 +102,9 @@ DESCRIPTION
 				if clustername == "" {
 					fmt.Println("ERROR: Input Clustername")
 				}
-				createPlatformNamespace()
+				resource.CheckAndCreateNamespace("kube-master", "aks")
+				resource.CheckAndCreateNamespace("kube-master", "eks")
+				resource.CheckAndCreateNamespace("kube-master", "gke")
 				switch platform {
 				case "aks":
 					fallthrough
@@ -139,12 +128,12 @@ DESCRIPTION
 	},
 }
 
-func CheckHCPClusterListToJoin(platform string, clustername string) bool {
+func CheckHCPClusterListToJoin(clustername string) bool {
 	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
 	if err != nil {
 		log.Println(err)
 	}
-	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).List(context.TODO(), metav1.ListOptions{})
+	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters("hcp").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Println(err)
 	}
@@ -153,10 +142,11 @@ func CheckHCPClusterListToJoin(platform string, clustername string) bool {
 		joinstatus := cluster.Spec.JoinStatus
 		fmt.Println(cluster.Spec.ClusterPlatform)
 		fmt.Println(cluster.Name)
-		if cluster.Spec.ClusterPlatform == platform && cluster.Name == clustername {
+		// if cluster.Spec.ClusterPlatform == platform && cluster.Name == clustername {
+		if cluster.Name == clustername {
 			if joinstatus == "UNJOIN" {
 				cluster.Spec.JoinStatus = "JOINING"
-				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Update(context.TODO(), &cluster, metav1.UpdateOptions{})
+				_, err = hcp_cluster.HcpV1alpha1().HCPClusters("hcp").Update(context.TODO(), &cluster, metav1.UpdateOptions{})
 				fmt.Println(cluster.Spec.JoinStatus)
 				if err != nil {
 					fmt.Println(err)
@@ -204,7 +194,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      clustername,
-			Namespace: platform,
+			Namespace: "hcp",
 		},
 		Spec: hcpclusterapis.HCPClusterSpec{
 			ClusterPlatform: platform,
@@ -212,7 +202,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 			JoinStatus:      "UNJOIN",
 		},
 	}
-	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Create(context.TODO(), &cluster, metav1.CreateOptions{})
+	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters("hcp").Create(context.TODO(), &cluster, metav1.CreateOptions{})
 	// err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Delete(context.TODO(), clustername, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println(err)
@@ -220,47 +210,6 @@ func CreateHCPCluster(platform string, clustername string) bool {
 	} else {
 		fmt.Printf("success to register %s in %s\n", newhcpcluster.Name, newhcpcluster.Namespace)
 		return true
-	}
-}
-
-func createPlatformNamespace() {
-
-	namespaceList, _ := master_client.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
-	for i := range namespaceList.Items {
-		if checkAKS && checkEKS && checkGKE {
-			break
-		}
-		switch namespaceList.Items[i].Name {
-		case "aks":
-			checkAKS = true
-			continue
-		case "eks":
-			checkEKS = true
-			continue
-		case "gke":
-			checkGKE = true
-			continue
-		default:
-			continue
-		}
-	}
-	checkAndCreateNamespace(checkAKS, "aks")
-	checkAndCreateNamespace(checkEKS, "eks")
-	checkAndCreateNamespace(checkGKE, "gke")
-}
-
-func checkAndCreateNamespace(PlatformCheck bool, platformName string) {
-	if !PlatformCheck {
-		Namespace := corev1.Namespace{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       "Namespace",
-				APIVersion: "v1",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: platformName,
-			},
-		}
-		master_client.CoreV1().Namespaces().Create(context.TODO(), &Namespace, metav1.CreateOptions{})
 	}
 }
 

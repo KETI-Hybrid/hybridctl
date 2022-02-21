@@ -97,7 +97,7 @@ DESCRIPTION
 			log.Println(err)
 		}
 		for _, policy := range list.Items {
-			if "initial-setting" == policy.Name {
+			if policy.Name == "initial-setting" {
 				exist = true
 			}
 		}
