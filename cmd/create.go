@@ -3,15 +3,11 @@ package cmd
 import (
 	"Hybrid_Cluster/hybridctl/util"
 	cobrautil "Hybrid_Cluster/hybridctl/util"
-	resourcev1alpha1 "Hybrid_Cluster/pkg/apis/resource/v1alpha1"
-	resourcev1alpha1clientset "Hybrid_Cluster/pkg/client/resource/v1alpha1/clientset/versioned"
 	"fmt"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -101,12 +97,10 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 	case "Deployment":
 		LINK += "/deployment"
 		real_resource := obj.(*appsv1.Deployment)
-		fmt.Println(real_resource)
 		resource.TargetCluster = target_cluster
 		resource.RealResource = real_resource
 	}
 
-	fmt.Println(resource)
 	fmt.Println(LINK)
 	bytes, err := util.GetResponseBody("POST", LINK, &resource)
 	if err != nil {
@@ -114,47 +108,6 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 	}
 
 	return bytes, err
-}
-
-func CreateHCPDeployment(resource *appsv1.Deployment) {
-	hcp_resource := new(resourcev1alpha1.HCPDeployment)
-	clientset, err := resourcev1alpha1clientset.NewForConfig(master_config)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// check context flag
-	flag_context := cobrautil.Option_context
-	var target_cluster string
-	if flag_context == "" {
-		target_cluster = "Undefined"
-	} else {
-		target_cluster = flag_context
-	}
-
-	// typemeta
-	hcp_resource.TypeMeta.APIVersion = "hcp.crd.com/v1alpha1"
-	hcp_resource.TypeMeta.Kind = "HCPDeployment"
-
-	// objectmeta
-	hcp_resource.ObjectMeta.Name = resource.Name
-
-	// spec
-	hcp_resource.Spec.TargetCluster = target_cluster
-	hcp_resource.Spec.Replicas = resource.Spec.Replicas
-	hcp_resource.Spec.Selector = resource.Spec.Selector
-	hcp_resource.Spec.Template = resource.Spec.Template
-	hcp_resource.Spec.RealDeploymentSpec = resource.Spec
-
-	r, err := clientset.HcpV1alpha1().HCPDeployments("hcp").Create(context.TODO(), hcp_resource, metav1.CreateOptions{})
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	} else {
-		fmt.Printf("success to create hcp_resource %s \n", r.Name)
-	}
 }
 
 func init() {

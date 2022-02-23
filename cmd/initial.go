@@ -21,7 +21,7 @@ import (
 
 	hcppolicyapis "Hybrid_Cluster/pkg/apis/hcppolicy/v1alpha1"
 
-	hcppolicyv1alpha1 "Hybrid_Cluster/pkg/client/policy/v1alpha1/clientset/versioned"
+	hcppolicyv1alpha1 "Hybrid_Cluster/pkg/client/hcppolicy/v1alpha1/clientset/versioned"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
