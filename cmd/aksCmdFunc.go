@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	util "Hybrid_Cluster/hybridctl/util"
+	util "Hybrid_Cloud/hybridctl/util"
 	"encoding/json"
 	"fmt"
 	"log"

@@ -19,10 +19,10 @@ import (
 	"io/ioutil"
 	"log"
 
-	hcpclusterapis "Hybrid_Cluster/pkg/apis/hcpcluster/v1alpha1"
-	hcpclusterv1alpha1 "Hybrid_Cluster/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
-	resource "Hybrid_Cluster/resource"
-	u "Hybrid_Cluster/util"
+	resource "Hybrid_Cloud/kube-resource/namespace"
+	hcpclusterapis "Hybrid_Cloud/pkg/apis/hcpcluster/v1alpha1"
+	hcpclusterv1alpha1 "Hybrid_Cloud/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	u "Hybrid_Cloud/util"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"

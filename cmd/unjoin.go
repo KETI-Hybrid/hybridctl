@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	hcpclusterv1alpha1 "Hybrid_Cluster/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	hcpclusterv1alpha1 "Hybrid_Cloud/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"

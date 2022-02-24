@@ -1,7 +1,7 @@
 package util
 
 import (
-	"Hybrid_Cluster/hcp-apiserver/pkg/util"
+	"Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

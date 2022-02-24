@@ -16,7 +16,7 @@ package cmd
 
 /*
 import (
-	"Hybrid_Cluster/hybridctl/util"
+	"Hybrid_Cloud/hybridctl/util"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/eks"

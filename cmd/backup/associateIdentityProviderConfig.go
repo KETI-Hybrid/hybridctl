@@ -3,7 +3,7 @@ package cmd
 // import (
 // 	"fmt"
 
-// 	cobrautil "Hybrid_Cluster/hybridctl/util"
+// 	cobrautil "Hybrid_Cloud/hybridctl/util"
 
 // 	"github.com/aws/aws-sdk-go/service/eks"
 // 	"github.com/spf13/cobra"

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	util "Hybrid_Cluster/hybridctl/util"
-	cmdpb "Hybrid_Cluster/protos/v1/cmd"
+	util "Hybrid_Cloud/hybridctl/util"
+	cmdpb "Hybrid_Cloud/protos/v1/cmd"
 	"encoding/json"
 	"fmt"
 	"log"

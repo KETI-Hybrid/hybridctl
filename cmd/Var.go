@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"Hybrid_Cluster/hybridctl/util"
+	"Hybrid_Cloud/hybridctl/util"
 
 	"github.com/aws/aws-sdk-go/service/eks"
 	"k8s.io/client-go/kubernetes"
