@@ -2,9 +2,8 @@ package cmd
 
 import (
 	util "Hybrid_Cloud/hybridctl/util"
-	cmdpb "Hybrid_Cloud/protos/v1/cmd"
-	"encoding/json"
-	"fmt"
+	// cmdpb "Hybrid_Cloud/protos/v1/cmd"
+
 	"log"
 )
 
@@ -15,6 +14,7 @@ func checkErr(err error) {
 	}
 }
 
+/*
 //addon
 func addonDisable(p util.AKSAddon) {
 	httpPostUrl := "http://localhost:8080/addonDisable"
@@ -30,12 +30,12 @@ func addonEnable(p util.AKSAddon) {
 	fmt.Println(string(bytes))
 }
 
-func addonList(p cmdpb.AKSAddon) {
-	httpPostUrl := "http://localhost:8080/addonList"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	fmt.Println(string(bytes))
-}
+// func addonList(p cmdpb.AKSAddon) {
+// 	httpPostUrl := "http://localhost:8080/addonList"
+// 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+// 	checkErr(err)
+// 	fmt.Println(string(bytes))
+// }
 
 func addonListAvailable() {
 	httpPostUrl := "http://localhost:8080/addonListAvailable"
@@ -276,7 +276,7 @@ func getUpgrades(p util.AKSAPIParameter) {
 // 	checkErr(err)
 // 	fmt.Println(string(bytes))
 // }
-
+*/
 func HTTPPostRequest(p util.AKSAPIParameter, cmd string) {
 	httpPostUrl := "http://localhost:8080/" + cmd
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
