@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -97,6 +98,11 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 	case "Deployment":
 		LINK += "/deployment"
 		real_resource := obj.(*appsv1.Deployment)
+		resource.TargetCluster = target_cluster
+		resource.RealResource = real_resource
+	case "Pod":
+		LINK += "/pod"
+		real_resource := obj.(*v1.Pod)
 		resource.TargetCluster = target_cluster
 		resource.RealResource = real_resource
 	}
