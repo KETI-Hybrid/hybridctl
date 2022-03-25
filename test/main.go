@@ -1,98 +1,85 @@
 package main
 
 import (
-	"Hybrid_Cloud/hcp-apiserver/pkg/util"
-	"fmt"
+	"Hybrid_Cloud/hybridctl/util"
 	"log"
-	"net/http"
-	"os/exec"
 )
 
-// gke container images
+var GKE_CONTAINER_PATH = "/gke/container"
+
+func checkErr(err error) {
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
 type Images struct {
 	SRC_IMAGE  string
 	DEST_IMAGE string
 	IMAGE_NAME string
 }
 
-func (i *Images) AddTag(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "add-tag", i.SRC_IMAGE, i.DEST_IMAGE)
-	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
-	if err != nil {
-		log.Println(err)
-	} else {
-		w.Write(data)
+func (i *Images) AddTag() {
+	i = &Images{
+		SRC_IMAGE:  "gcr.io/keti-container/busybox",
+		DEST_IMAGE: "gcr.io/keti-container/busybox:mytag2",
 	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/addTag"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
-func (i *Images) Delete(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "delete", i.IMAGE_NAME)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Println(string(data))
-		w.Write(data)
+func (i *Images) Delete() {
+	i = &Images{
+		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/delete"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
-func (i *Images) Describe(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "describe", i.IMAGE_NAME)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Println(string(data))
-		w.Write(data)
+func (i *Images) Describe() {
+	i = &Images{
+		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/describe"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
-func (i *Images) List(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "list")
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Println(string(data))
-		w.Write(data)
-	}
+func (i *Images) List() {
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/list"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
-func (i *Images) ListTags(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "list-tags", i.IMAGE_NAME)
-	data, err := util.GetOutput(cmd)
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Println(string(data))
-		w.Write(data)
+func (i *Images) ListTags() {
+	i = &Images{
+		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/listTags"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
-func (i *Images) UnTags(w http.ResponseWriter, req *http.Request) {
-	util.Parser(w, req, i)
-	cmd := exec.Command("gcloud", "container", "images", "untag", i.IMAGE_NAME)
-	data, err := util.GetOutputReplaceStr(cmd, "Do you want to continue (Y/n)?", "")
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Println(string(data))
-		w.Write(data)
+func (i *Images) UnTags() {
+	i = &Images{
+		IMAGE_NAME: "gcr.io/keti-container/busybox:mytag2",
 	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/unTags"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
 }
 
 func main() {
-	var i Images
-	http.HandleFunc("/gke/container/images/addTag", i.AddTag)
-	http.HandleFunc("/gke/container/images/delete", i.Delete)
-	http.HandleFunc("/gke/container/images/describe", i.Describe)
-	http.HandleFunc("/gke/container/images/list", i.List)
-	http.HandleFunc("/gke/container/images/listTags", i.ListTags)
-	http.HandleFunc("/gke/container/images/unTags", i.UnTags)
-	http.ListenAndServe(":3001", nil)
+	var images Images
+	images.AddTag()
+	images.UnTags()
 }
