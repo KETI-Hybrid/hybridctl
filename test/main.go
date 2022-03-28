@@ -14,6 +14,7 @@ func checkErr(err error) {
 	}
 }
 
+// images
 type Images struct {
 	SRC_IMAGE  string
 	DEST_IMAGE string
@@ -78,8 +79,57 @@ func (i *Images) UnTags() {
 	util.PrintOutput(bytes)
 }
 
+// operations
+type Operations struct {
+	OPERATION_ID string
+}
+
+func (o *Operations) Describe() {
+	o = &Operations{
+		OPERATION_ID: "1189332694316803667",
+	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/describe"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+func (o *Operations) List() {
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/list"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+func (o *Operations) Wait() {
+	o = &Operations{
+		OPERATION_ID: "",
+	}
+	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/wait"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+type Docker struct {
+	AUTHORIZE_ONLY bool
+	DOCKER_HOST    string
+	SERVER         string
+}
+
+func (d *Docker) Docker() {
+	d = &Docker{
+		AUTHORIZE_ONLY: false,
+	}
+	httpPostUrl := "http://localhost:3001/gke/docker"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, d)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
 func main() {
-	var images Images
-	images.AddTag()
-	images.UnTags()
+	//var images Images
+	//var operations Operations
+	var docker Docker
+	docker.Docker()
 }
