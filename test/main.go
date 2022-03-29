@@ -2,7 +2,15 @@ package main
 
 import (
 	"Hybrid_Cloud/hybridctl/util"
+	"encoding/json"
+	"fmt"
 	"log"
+	"os"
+	"reflect"
+	"strings"
+
+	"github.com/olekukonko/tablewriter"
+	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
 var GKE_CONTAINER_PATH = "/gke/container"
@@ -79,37 +87,80 @@ func (i *Images) UnTags() {
 	util.PrintOutput(bytes)
 }
 
-// operations
-type Operations struct {
-	OPERATION_ID string
-}
-
-func (o *Operations) Describe() {
-	o = &Operations{
-		OPERATION_ID: "1189332694316803667",
+func GetServerConfig() {
+	op := &containerpb.GetServerConfigRequest{
+		ProjectId: "keti-container",
+		Zone:      "us-central1-a",
+		Name:      "operation-1648309236003-34160983",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/describe"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/describe"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
-	util.PrintOutput(bytes)
+	var resp *containerpb.Operation
+	json.Unmarshal(bytes, &resp)
+	header := []string{"EndTime", "Name", "OperationType", "SelfLink", "StartTime", "Status", "TargetLink", "Zone"}
+	for _, i := range header {
+		fmt.Printf("%s: %s\n", i, reflect.ValueOf(resp).Elem().FieldByName(i))
+	}
 }
 
-func (o *Operations) List() {
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/list"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+func OperationsDescribe() {
+	op := &containerpb.GetOperationRequest{
+		ProjectId:   "keti-container",
+		Zone:        "us-central1-a",
+		OperationId: "operation-1648309236003-341609",
+		Name:        "operation-1648309236003-34160983",
+	}
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/describe"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
-	util.PrintOutput(bytes)
+	var resp *containerpb.Operation
+	json.Unmarshal(bytes, &resp)
+	header := []string{"EndTime", "Name", "OperationType", "SelfLink", "StartTime", "Status", "TargetLink", "Zone"}
+	for _, i := range header {
+		fmt.Printf("%s: %s\n", i, reflect.ValueOf(resp).Elem().FieldByName(i))
+	}
 }
 
-func (o *Operations) Wait() {
-	o = &Operations{
-		OPERATION_ID: "",
+func GetServerConfig()
+
+func OperationsList() {
+	op := &containerpb.ListOperationsRequest{
+		ProjectId: "keti-container",
+		Zone:      "-",
+	}
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/list"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
+	checkErr(err)
+	var resp *containerpb.ListOperationsResponse
+	json.Unmarshal(bytes, &resp)
+	table := tablewriter.NewWriter(os.Stdout)
+	header := []string{"NAME", "TYPE", "LOCATION", "TARGET", "STATUS_MESSAGE", "STATUS", "START_TIME", "END_TIME"}
+	table.SetHeader(header)
+	for _, v := range resp.Operations {
+		targetLink := v.GetTargetLink()
+		target := targetLink[strings.LastIndex(targetLink, "/")+1:]
+		fmt.Println(target)
+		temp := []string{v.Name, v.OperationType.String(), v.Location, target, v.StatusMessage, v.Status.String(), v.StartTime, v.EndTime}
+		table.Append(temp)
+	}
+	table.Render()
+}
+
+/*
+func (op *Operations) Wait() {
+	op = &Operations{
+		ProjectId:   "keti-container",
+		Zone:        "us-central1-a",
+		OperationId: "operation-1648309236003-34160983",
+		Name:        "operation-1648309236003-34160983",
 	}
 	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/wait"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, o)
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
 	util.PrintOutput(bytes)
 }
+*/
 
 type Docker struct {
 	AUTHORIZE_ONLY bool
@@ -130,6 +181,4 @@ func (d *Docker) Docker() {
 func main() {
 	//var images Images
 	//var operations Operations
-	var docker Docker
-	docker.Docker()
 }
