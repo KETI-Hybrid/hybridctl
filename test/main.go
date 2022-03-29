@@ -88,6 +88,61 @@ func (i *Images) UnTags() {
 	util.PrintOutput(bytes)
 }
 
+func PrintServerConfig(resp containerpb.ServerConfig) {
+	//	var field string
+	fmt.Println("channels:")
+	for _, c := range resp.Channels {
+		fmt.Println("- channel:", c.GetChannel())
+		fmt.Printf("  defaultVersion: %s\n", c.GetDefaultVersion())
+		fmt.Println("  validVersions:")
+		for _, j := range c.GetValidVersions() {
+			fmt.Println("  - ", j)
+		}
+	}
+
+	fmt.Println("defaultClusterVersion: ", resp.DefaultClusterVersion)
+	fmt.Println("defaultImageType: ", resp.DefaultImageType)
+
+	fmt.Println("validImageTypes:")
+	for _, c := range resp.ValidImageTypes {
+		fmt.Println("- ", c)
+	}
+
+	fmt.Println("validMasterVersions:")
+	for _, c := range resp.ValidMasterVersions {
+		fmt.Println("- ", c)
+	}
+
+	fmt.Println("validNodeVersions:")
+	for _, c := range resp.ValidNodeVersions {
+		fmt.Println("- ", c)
+	}
+}
+
+func GetServerConfig() {
+	input := &containerpb.GetServerConfigRequest{
+		ProjectId: "keti-container",
+		Zone:      "us-central1-a",
+	}
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/getServerConfig"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
+	checkErr(err)
+
+	var output apiserverutil.Output
+	json.Unmarshal(bytes, &output)
+	if output.Stderr != nil {
+		fmt.Println(string(output.Stderr))
+	}
+
+	if output.Stdout != nil {
+		stdout := output.Stdout
+		var resp containerpb.ServerConfig
+		json.Unmarshal(stdout, &resp)
+		fmt.Printf("Fetching server config for %s\n", input.Zone)
+		PrintServerConfig(resp)
+	}
+}
+
 func OperationsDescribe() {
 	op := &containerpb.GetOperationRequest{
 		ProjectId:   "keti-container",
@@ -115,8 +170,6 @@ func OperationsDescribe() {
 		}
 	}
 }
-
-func GetServerConfig() {}
 
 func OperationsList() {
 	op := &containerpb.ListOperationsRequest{
@@ -185,5 +238,5 @@ func (d *Docker) Docker() {
 func main() {
 	//var images Images
 	//var operations Operations
-	OperationsList()
+	GetServerConfig()
 }
