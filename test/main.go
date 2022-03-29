@@ -1,6 +1,7 @@
 package main
 
 import (
+	apiserverutil "Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"Hybrid_Cloud/hybridctl/util"
 	"encoding/json"
 	"fmt"
@@ -87,23 +88,6 @@ func (i *Images) UnTags() {
 	util.PrintOutput(bytes)
 }
 
-func GetServerConfig() {
-	op := &containerpb.GetServerConfigRequest{
-		ProjectId: "keti-container",
-		Zone:      "us-central1-a",
-		Name:      "operation-1648309236003-34160983",
-	}
-	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/describe"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
-	checkErr(err)
-	var resp *containerpb.Operation
-	json.Unmarshal(bytes, &resp)
-	header := []string{"EndTime", "Name", "OperationType", "SelfLink", "StartTime", "Status", "TargetLink", "Zone"}
-	for _, i := range header {
-		fmt.Printf("%s: %s\n", i, reflect.ValueOf(resp).Elem().FieldByName(i))
-	}
-}
-
 func OperationsDescribe() {
 	op := &containerpb.GetOperationRequest{
 		ProjectId:   "keti-container",
@@ -114,15 +98,25 @@ func OperationsDescribe() {
 	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/describe"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
-	var resp *containerpb.Operation
-	json.Unmarshal(bytes, &resp)
-	header := []string{"EndTime", "Name", "OperationType", "SelfLink", "StartTime", "Status", "TargetLink", "Zone"}
-	for _, i := range header {
-		fmt.Printf("%s: %s\n", i, reflect.ValueOf(resp).Elem().FieldByName(i))
+
+	var output apiserverutil.Output
+	json.Unmarshal(bytes, &output)
+	if output.Stderr != nil {
+		fmt.Println(string(output.Stderr))
+	}
+
+	if output.Stdout != nil {
+		stdout := output.Stdout
+		var resp *containerpb.Operation
+		json.Unmarshal(stdout, &resp)
+		header := []string{"EndTime", "Name", "OperationType", "SelfLink", "StartTime", "Status", "TargetLink", "Zone"}
+		for _, i := range header {
+			fmt.Printf("%s: %s\n", i, reflect.ValueOf(resp).Elem().FieldByName(i))
+		}
 	}
 }
 
-func GetServerConfig()
+func GetServerConfig() {}
 
 func OperationsList() {
 	op := &containerpb.ListOperationsRequest{
@@ -132,19 +126,29 @@ func OperationsList() {
 	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/list"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
-	var resp *containerpb.ListOperationsResponse
-	json.Unmarshal(bytes, &resp)
-	table := tablewriter.NewWriter(os.Stdout)
-	header := []string{"NAME", "TYPE", "LOCATION", "TARGET", "STATUS_MESSAGE", "STATUS", "START_TIME", "END_TIME"}
-	table.SetHeader(header)
-	for _, v := range resp.Operations {
-		targetLink := v.GetTargetLink()
-		target := targetLink[strings.LastIndex(targetLink, "/")+1:]
-		fmt.Println(target)
-		temp := []string{v.Name, v.OperationType.String(), v.Location, target, v.StatusMessage, v.Status.String(), v.StartTime, v.EndTime}
-		table.Append(temp)
+
+	var output apiserverutil.Output
+	json.Unmarshal(bytes, &output)
+	if output.Stderr != nil {
+		fmt.Println(string(output.Stderr))
 	}
-	table.Render()
+
+	if output.Stdout != nil {
+		stdout := output.Stdout
+		var resp *containerpb.ListOperationsResponse
+		json.Unmarshal(stdout, &resp)
+		table := tablewriter.NewWriter(os.Stdout)
+		header := []string{"NAME", "TYPE", "LOCATION", "TARGET", "STATUS_MESSAGE", "STATUS", "START_TIME", "END_TIME"}
+		table.SetHeader(header)
+		for _, v := range resp.Operations {
+			targetLink := v.GetTargetLink()
+			target := targetLink[strings.LastIndex(targetLink, "/")+1:]
+			fmt.Println(target)
+			temp := []string{v.Name, v.OperationType.String(), v.Location, target, v.StatusMessage, v.Status.String(), v.StartTime, v.EndTime}
+			table.Append(temp)
+		}
+		table.Render()
+	}
 }
 
 /*
@@ -181,4 +185,5 @@ func (d *Docker) Docker() {
 func main() {
 	//var images Images
 	//var operations Operations
+	OperationsList()
 }
