@@ -15,6 +15,7 @@ import (
 )
 
 var GKE_CONTAINER_PATH = "/gke/container"
+var GKE_AUTH_PATH = "/gke/auth"
 
 func checkErr(err error) {
 	if err != nil {
@@ -33,9 +34,9 @@ type Images struct {
 func (i *Images) AddTag() {
 	i = &Images{
 		SRC_IMAGE:  "gcr.io/keti-container/busybox",
-		DEST_IMAGE: "gcr.io/keti-container/busybox:mytag2",
+		DEST_IMAGE: "gcr.io/keti-container/busybox:mytag3",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/addTag"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/addTag"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
 	checkErr(err)
 	util.PrintOutput(bytes)
@@ -45,7 +46,7 @@ func (i *Images) Delete() {
 	i = &Images{
 		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/delete"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/delete"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
 	checkErr(err)
 	util.PrintOutput(bytes)
@@ -55,14 +56,14 @@ func (i *Images) Describe() {
 	i = &Images{
 		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/describe"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/describe"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
 	checkErr(err)
 	util.PrintOutput(bytes)
 }
 
 func (i *Images) List() {
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/list"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/list"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
 	checkErr(err)
 	util.PrintOutput(bytes)
@@ -72,7 +73,7 @@ func (i *Images) ListTags() {
 	i = &Images{
 		IMAGE_NAME: "gcr.io/keti-container/busybox",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/listTags"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/listTags"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
 	checkErr(err)
 	util.PrintOutput(bytes)
@@ -80,10 +81,34 @@ func (i *Images) ListTags() {
 
 func (i *Images) UnTags() {
 	i = &Images{
-		IMAGE_NAME: "gcr.io/keti-container/busybox:mytag2",
+		IMAGE_NAME: "gcr.io/keti-container/busybox:mytag3",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/images/unTags"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/images/unTags"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, i)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+// gcloud auth configure-docker
+func ConfigureDocker() {
+	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/configureDocker"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, nil)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+type Auth struct{}
+
+func (a *Auth) List() {
+	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/list"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, nil)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+func (a *Auth) Revoke() {
+	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/revoke"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, nil)
 	checkErr(err)
 	util.PrintOutput(bytes)
 }
@@ -143,11 +168,37 @@ func GetServerConfig() {
 	}
 }
 
+func RollbackNodePoolUpgrade() {
+	input := &containerpb.RollbackNodePoolUpgradeRequest{
+		ProjectId: "keti-container",
+		Zone:      "us-central1-a",
+		ClusterId: "hcp-cluster",
+		Name:      "pool-1",
+	}
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/rollbackNodePoolUpgrade"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
+	checkErr(err)
+
+	var output apiserverutil.Output
+	json.Unmarshal(bytes, &output)
+	if output.Stderr != nil {
+		fmt.Println(string(output.Stderr))
+	}
+
+	if output.Stdout != nil {
+		stdout := output.Stdout
+		var resp containerpb.Operation
+		json.Unmarshal(stdout, &resp)
+		fmt.Printf("Updated [%s]\n", resp.TargetLink)
+		fmt.Printf("operationId: %s\nprojectId: %s\nzone: %s\n", resp.GetName(), resp.GetZone(), input.GetProjectId())
+	}
+}
+
 func OperationsDescribe() {
 	op := &containerpb.GetOperationRequest{
 		ProjectId:   "keti-container",
 		Zone:        "us-central1-a",
-		OperationId: "operation-1648309236003-341609",
+		OperationId: "operation-1648309236003-34160983",
 		Name:        "operation-1648309236003-34160983",
 	}
 	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/describe"
@@ -204,20 +255,22 @@ func OperationsList() {
 	}
 }
 
-/*
-func (op *Operations) Wait() {
-	op = &Operations{
-		ProjectId:   "keti-container",
-		Zone:        "us-central1-a",
+type Operations struct {
+	ProjectId   string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	Zone        string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	OperationId string `protobuf:"bytes,3,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	Name        string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func OperationWait() {
+	op := &Operations{
 		OperationId: "operation-1648309236003-34160983",
-		Name:        "operation-1648309236003-34160983",
 	}
-	httpPostUrl := "http://localhost:3001" + GKE_CONTAINER_PATH + "/operations/wait"
+	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/operations/wait"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, op)
 	checkErr(err)
 	util.PrintOutput(bytes)
 }
-*/
 
 type Docker struct {
 	AUTHORIZE_ONLY bool
@@ -229,7 +282,7 @@ func (d *Docker) Docker() {
 	d = &Docker{
 		AUTHORIZE_ONLY: false,
 	}
-	httpPostUrl := "http://localhost:3001/gke/docker"
+	httpPostUrl := "http://localhost:3080/gke/docker"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, d)
 	checkErr(err)
 	util.PrintOutput(bytes)
@@ -238,5 +291,9 @@ func (d *Docker) Docker() {
 func main() {
 	//var images Images
 	//var operations Operations
-	GetServerConfig()
+	RollbackNodePoolUpgrade()
+	// var auth Auth
+	// auth.Revoke()
+
+	//GetServerConfig()
 }

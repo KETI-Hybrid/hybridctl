@@ -26,11 +26,11 @@ func OpenAndReadJsonFile(jsonFileName string) []byte {
 func PrintOutput(bytes []byte) error {
 	var output util.Output
 	err := json.Unmarshal(bytes, &output)
-	if output.Stderr != nil {
-		fmt.Print(string(output.Stderr))
-	}
 	if output.Stdout != nil {
 		fmt.Print(string(output.Stdout))
+	}
+	if output.Stderr != nil {
+		fmt.Print(string(output.Stderr))
 	}
 	return err
 }
