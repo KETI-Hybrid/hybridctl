@@ -97,7 +97,9 @@ func ConfigureDocker() {
 	util.PrintOutput(bytes)
 }
 
-type Auth struct{}
+type Auth struct {
+	CRED_FILE string
+}
 
 func (a *Auth) List() {
 	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/list"
@@ -109,6 +111,16 @@ func (a *Auth) List() {
 func (a *Auth) Revoke() {
 	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/revoke"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, nil)
+	checkErr(err)
+	util.PrintOutput(bytes)
+}
+
+func (a *Auth) Login() {
+	a = &Auth{
+		CRED_FILE: "/root/hcp-key.json",
+	}
+	httpPostUrl := "http://localhost:3080" + GKE_AUTH_PATH + "/login"
+	bytes, err := util.GetResponseBody("POST", httpPostUrl, a)
 	checkErr(err)
 	util.PrintOutput(bytes)
 }
@@ -291,9 +303,9 @@ func (d *Docker) Docker() {
 func main() {
 	//var images Images
 	//var operations Operations
-	RollbackNodePoolUpgrade()
+
 	// var auth Auth
-	// auth.Revoke()
+	// auth.Login()
 
 	//GetServerConfig()
 }
