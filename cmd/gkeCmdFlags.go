@@ -11,4 +11,6 @@ func gkeFlags() {
 	GKEInitCmd.MarkFlagRequired("project-id")
 	GKEInitCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "ZONE")
 	GKEInitCmd.Flags().StringVarP(&cobrautil.REGION, "region", "", "", "REGION")
+
+	GKEOperationDescribeCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "ZONE")
 }

@@ -28,3 +28,6 @@ var listUpdateInput eks.ListUpdatesInput
 var updateAddonInput eks.UpdateAddonInput
 var updateClusterConfigInput eks.UpdateClusterConfigInput
 var updateNodegroupConfigInput eks.UpdateNodegroupConfigInput
+
+var compute_zone string
+var core_project_id string

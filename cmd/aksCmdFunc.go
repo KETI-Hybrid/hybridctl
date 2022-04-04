@@ -94,12 +94,12 @@ func aksStop(p util.AKSAPIParameter) {
 	}
 }
 
-func HTTPPostRequest(p util.AKSAPIParameter, cmd string) {
-	httpPostUrl := "http://localhost:8080/" + cmd
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
-	checkErr(err)
-	util.PrintOutput(bytes)
-}
+// func HTTPPostRequest(p util.AKSAPIParameter, cmd string) {
+// 	httpPostUrl := "http://localhost:8080/" + cmd
+// 	bytes, err := util.GetResponseBody("POST", httpPostUrl, p)
+// 	checkErr(err)
+// 	util.PrintOutput(bytes)
+// }
 
 func HTTPPostRequestAPI(p util.AKSAPIParameter, cmd string) {
 	httpPostUrl := "http://localhost:8080/" + cmd

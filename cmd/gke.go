@@ -16,14 +16,26 @@ var gkeCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(gkeCmd)
 	gkeCmd.AddCommand(GKEInitCmd)
-	gkeCmd.AddCommand(GKEContainer)
-	GKEContainer.AddCommand(GKEContainerImages)
-	GKEContainerImages.AddCommand(GKEImagesAddTag)
-	GKEContainerImages.AddCommand(GKEImagesDelete)
-	GKEContainerImages.AddCommand(GKEImagesDescribe)
-	GKEContainerImages.AddCommand(GKEImagesList)
-	GKEContainerImages.AddCommand(GKEImagesListTags)
-	GKEContainerImages.AddCommand(GKEImagesUnTag)
+
+	gkeCmd.AddCommand(GKEContainerCmd)
+	GKEContainerCmd.AddCommand(GKEContainerImagesCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesAddTagCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesDeleteCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesDescribeCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesListCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesListTagsCmd)
+	GKEContainerImagesCmd.AddCommand(GKEImagesUnTagCmd)
+
+	GKEContainerCmd.AddCommand(GKEContainerOperationsCmd)
+	GKEContainerOperationsCmd.AddCommand(GKEOperationDescribeCmd)
+	GKEContainerOperationsCmd.AddCommand(GKEOperationsListCmd)
+	GKEContainerOperationsCmd.AddCommand(GKEOperationsWaitCmd)
+
+	gkeCmd.AddCommand(GKEAuthCmd)
+	GKEAuthCmd.AddCommand(GKEAuthConfigureDockerCmd)
+	GKEAuthCmd.AddCommand(GKEAuthListCmd)
+	GKEAuthCmd.AddCommand(GKEAuthLoginCmd)
+	GKEAuthCmd.AddCommand(GKEAuthRevokeCmd)
 
 	gkeFlags()
 }
