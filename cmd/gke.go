@@ -16,5 +16,14 @@ var gkeCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(gkeCmd)
 	gkeCmd.AddCommand(GKEInitCmd)
+	gkeCmd.AddCommand(GKEContainer)
+	GKEContainer.AddCommand(GKEContainerImages)
+	GKEContainerImages.AddCommand(GKEImagesAddTag)
+	GKEContainerImages.AddCommand(GKEImagesDelete)
+	GKEContainerImages.AddCommand(GKEImagesDescribe)
+	GKEContainerImages.AddCommand(GKEImagesList)
+	GKEContainerImages.AddCommand(GKEImagesListTags)
+	GKEContainerImages.AddCommand(GKEImagesUnTag)
+
 	gkeFlags()
 }
