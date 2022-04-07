@@ -10,6 +10,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func EKSCommonPrintOption(output interface{}, bytes []byte) {
+	niloutput := output
+	json.Unmarshal(bytes, &output)
+	if output == niloutput {
+		util.PrintErrMsg(bytes)
+	} else {
+		fmt.Println(output)
+	}
+}
+
 var createAddonCmd = &cobra.Command{
 	Use:   "create-addon",
 	Short: "A brief description of your command",
@@ -30,17 +40,17 @@ var createAddonCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonVersion, err := cmd.Flags().GetString("addon-version")
-		checkErr(err)
+		util.CheckERR(err)
 		serviceAccountRoleArn, err := cmd.Flags().GetString("service-account-role-arn")
-		checkErr(err)
+		util.CheckERR(err)
 		resolveConflicts, err := cmd.Flags().GetString("resolve-conflicts")
-		checkErr(err)
+		util.CheckERR(err)
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		createAddonInput.ClusterName = &clusterName
 		createAddonInput.AddonName = &addonName
 		if addonVersion != "" {
@@ -56,7 +66,7 @@ var createAddonCmd = &cobra.Command{
 			createAddonInput.ClientRequestToken = &clientRequestToken
 		}
 		tags, err := cmd.Flags().GetString("tags")
-		checkErr(err)
+		util.CheckERR(err)
 		var tagsMap map[string]*string
 		if tags != "" {
 			byteValue := util.OpenAndReadJsonFile(tags)
@@ -64,7 +74,10 @@ var createAddonCmd = &cobra.Command{
 			createAddonInput.Tags = tagsMap
 		}
 
-		createAddon(createAddonInput)
+		httpPostUrl := "/eks/addon/create"
+		bytes := util.HTTPPostRequest(createAddonInput, httpPostUrl)
+		var output eks.CreateAddonOutput
+		EKSCommonPrintOption(output, bytes)
 	},
 }
 
@@ -81,12 +94,16 @@ var deleteAddonCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		deleteAddonInput.ClusterName = &clusterName
 		deleteAddonInput.AddonName = &addonName
-		deleteAddon(deleteAddonInput)
+
+		httpPostUrl := "/eks/addon/delete"
+		bytes := util.HTTPPostRequest(deleteAddonInput, httpPostUrl)
+		var output eks.DeleteAddonOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -104,12 +121,16 @@ var describeAddonCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		describeAddonInput.ClusterName = &clusterName
 		describeAddonInput.AddonName = &addonName
-		describeAddon(describeAddonInput)
+
+		httpPostUrl := "/eks/addon/describe"
+		bytes := util.HTTPPostRequest(describeAddonInput, httpPostUrl)
+		var output eks.DescribeAddonOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -127,13 +148,13 @@ var describeAddonVersionsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		kubernetesVersion, err := cmd.Flags().GetString("kubernetes-version")
-		checkErr(err)
+		util.CheckERR(err)
 		maxResults, err := cmd.Flags().GetInt64("max-result")
-		checkErr(err)
+		util.CheckERR(err)
 		nextToken, err := cmd.Flags().GetString("next-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if addonName != "" {
 			describeAddonVersionsInput.AddonName = &addonName
 			fmt.Println(addonName)
@@ -147,7 +168,16 @@ var describeAddonVersionsCmd = &cobra.Command{
 		if nextToken != "" {
 			describeAddonVersionsInput.NextToken = &nextToken
 		}
-		describeAddonVersions(describeAddonVersionsInput)
+
+		httpPostUrl := "/eks/addon/describe-versions"
+		bytes := util.HTTPPostRequest(describeAddonVersionsInput, httpPostUrl)
+		var output eks.DescribeAddonVersionsOutput
+		json.Unmarshal(bytes, &output)
+		if output.Addons == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 	},
 }
 
@@ -164,11 +194,11 @@ var listAddonCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		maxResults, err := cmd.Flags().GetInt64("max-result")
-		checkErr(err)
+		util.CheckERR(err)
 		nextToken, err := cmd.Flags().GetString("next-token")
-		checkErr(err)
+		util.CheckERR(err)
 		listAddonInput.ClusterName = &clusterName
 		if maxResults != 0 {
 			if maxResults < 1 || maxResults > 100 {
@@ -181,8 +211,16 @@ var listAddonCmd = &cobra.Command{
 		if nextToken != "" {
 			listAddonInput.NextToken = &nextToken
 		}
-		listAddon(listAddonInput)
 
+		httpPostUrl := "/eks/addon/list"
+		bytes := util.HTTPPostRequest(listAddonInput, httpPostUrl)
+		var output eks.ListAddonsOutput
+		json.Unmarshal(bytes, &output)
+		if output.Addons == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 	},
 }
 
@@ -199,30 +237,39 @@ var associateIdentityProviderConfigCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		associateIdentityProviderConfigInput.ClusterName = &clusterName
 		// json parsing
 		oidc, err := cmd.Flags().GetString("oidc")
-		checkErr(err)
+		util.CheckERR(err)
 		byteValue := util.OpenAndReadJsonFile(oidc)
 		json.Unmarshal(byteValue, &oidcRequest)
 		associateIdentityProviderConfigInput.Oidc = &oidcRequest
 
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if clientRequestToken != "" {
 			associateIdentityProviderConfigInput.ClientRequestToken = &clientRequestToken
 		}
 
 		tags, err := cmd.Flags().GetString("tags")
-		checkErr(err)
+		util.CheckERR(err)
 		var tagsMap map[string]*string
 		if tags != "" {
 			byteValue := util.OpenAndReadJsonFile(tags)
 			json.Unmarshal(byteValue, &tagsMap)
 			associateIdentityProviderConfigInput.Tags = tagsMap
 		}
-		AssociateIdentityProviderConfig(associateIdentityProviderConfigInput)
+
+		httpPostUrl := "/eks/identity-provider-config/associate"
+		bytes := util.HTTPPostRequest(associateIdentityProviderConfigInput, httpPostUrl)
+		var output eks.AssociateIdentityProviderConfigOutput
+		json.Unmarshal(bytes, &output)
+		if output.Tags == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 
 	},
 }
@@ -241,13 +288,13 @@ var disassociateIdentityProviderConfigCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		disassociateIdentityProviderConfigInput.ClusterName = &clusterName
 
 		// json parsing
 		var IdentityProviderConfig eks.IdentityProviderConfig
 		jsonFileName, err := cmd.Flags().GetString("identity-provider-config")
-		checkErr(err)
+		util.CheckERR(err)
 		byteValue := util.OpenAndReadJsonFile(jsonFileName)
 		json.Unmarshal(byteValue, &IdentityProviderConfig)
 		if (IdentityProviderConfig == eks.IdentityProviderConfig{}) {
@@ -257,12 +304,15 @@ var disassociateIdentityProviderConfigCmd = &cobra.Command{
 		disassociateIdentityProviderConfigInput.IdentityProviderConfig = &IdentityProviderConfig
 
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if clientRequestToken != "" {
 			disassociateIdentityProviderConfigInput.ClientRequestToken = &clientRequestToken
 		}
 
-		disassociateIdentityProviderConfig(disassociateIdentityProviderConfigInput)
+		httpPostUrl := "/eks/identity-provider-config/disassociate"
+		bytes := util.HTTPPostRequest(disassociateIdentityProviderConfigInput, httpPostUrl)
+		var output eks.DisassociateIdentityProviderConfigOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -279,19 +329,28 @@ var listIdentityProviderConfigsCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		listIdentityProviderConfigsInput.ClusterName = &clusterName
 		maxResults, err := cmd.Flags().GetInt64("max-result")
-		checkErr(err)
+		util.CheckERR(err)
 		nextToken, err := cmd.Flags().GetString("next-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if maxResults != 0 {
 			listIdentityProviderConfigsInput.MaxResults = &maxResults
 		}
 		if nextToken != "" {
 			listIdentityProviderConfigsInput.NextToken = &nextToken
 		}
-		listIdentityProviderConfigs(listIdentityProviderConfigsInput)
+
+		httpPostUrl := "/eks/identity-provider-config/list"
+		bytes := util.HTTPPostRequest(listIdentityProviderConfigsInput, httpPostUrl)
+		var output eks.ListIdentityProviderConfigsOutput
+		json.Unmarshal(bytes, &output)
+		if output.IdentityProviderConfigs == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 
 	},
 }
@@ -310,13 +369,13 @@ var describeIdentityProviderConfigCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		describeIdentityProviderConfigInput.ClusterName = &clusterName
 
 		// json parsing
 		var IdentityProviderConfig eks.IdentityProviderConfig
 		jsonFileName, err := cmd.Flags().GetString("identity-provider-config")
-		checkErr(err)
+		util.CheckERR(err)
 		byteValue := util.OpenAndReadJsonFile(jsonFileName)
 		json.Unmarshal(byteValue, &IdentityProviderConfig)
 		if (IdentityProviderConfig == eks.IdentityProviderConfig{}) {
@@ -325,7 +384,10 @@ var describeIdentityProviderConfigCmd = &cobra.Command{
 		}
 		describeIdentityProviderConfigInput.IdentityProviderConfig = &IdentityProviderConfig
 
-		describeIdentityProviderConfig(describeIdentityProviderConfigInput)
+		httpPostUrl := "/eks/identity-provider-config/describe"
+		bytes := util.HTTPPostRequest(describeIdentityProviderConfigInput, httpPostUrl)
+		var output eks.DescribeIdentityProviderConfigOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -344,24 +406,27 @@ var associateEncryptionConfigCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		associateEncryptionConfigInput.ClusterName = &clusterName
 
 		// json parsing
 		jsonFileName, err := cmd.Flags().GetString("encryption-config")
-		checkErr(err)
+		util.CheckERR(err)
 		var encryptionConfig []*eks.EncryptionConfig
 		byteValue := util.OpenAndReadJsonFile(jsonFileName)
 		json.Unmarshal(byteValue, &encryptionConfig)
 		associateEncryptionConfigInput.EncryptionConfig = encryptionConfig
 
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if clientRequestToken != "" {
 			associateEncryptionConfigInput.ClientRequestToken = &clientRequestToken
 		}
-		AssociateEncryptionConfig(associateEncryptionConfigInput)
 
+		httpPostUrl := "/eks/encryption-config/associate"
+		bytes := util.HTTPPostRequest(associateEncryptionConfigInput, httpPostUrl)
+		var output eks.AssociateEncryptionConfigOutput
+		EKSCommonPrintOption(output, bytes)
 	},
 }
 
@@ -377,9 +442,18 @@ var listTagsForResourceCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		resourceArn, err := cmd.Flags().GetString("resource-arn")
-		checkErr(err)
+		util.CheckERR(err)
 		listTagsForResourceInput.ResourceArn = &resourceArn
-		listTagsForResource(listTagsForResourceInput)
+
+		httpPostUrl := "/eks/resource/list"
+		bytes := util.HTTPPostRequest(listTagsForResourceInput, httpPostUrl)
+		var output eks.ListTagsForResourceOutput
+		json.Unmarshal(bytes, &output)
+		if output.Tags == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 	},
 }
 
@@ -396,21 +470,24 @@ var tagResourceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tagResourceInput eks.TagResourceInput
 		resourceArn, err := cmd.Flags().GetString("resource-arn")
-		checkErr(err)
+		util.CheckERR(err)
 		if resourceArn == "" || resourceArn == "--tags" {
 			fmt.Println("resourceArn must not be nil")
 		}
 		tagResourceInput.ResourceArn = &resourceArn
 
 		tags, err := cmd.Flags().GetString("tags")
-		checkErr(err)
+		util.CheckERR(err)
 		var tagsMap map[string]*string
 		if tags != "" {
 			byteValue := util.OpenAndReadJsonFile(tags)
 			json.Unmarshal(byteValue, &tagsMap)
 			tagResourceInput.Tags = tagsMap
 		}
-		TagResource(tagResourceInput)
+
+		httpPostUrl := "/eks/resource/tag"
+		bytes := util.HTTPPostRequest(tagResourceInput, httpPostUrl)
+		util.PrintErrMsg(bytes)
 	},
 }
 
@@ -428,14 +505,14 @@ var untagResourceCmd = &cobra.Command{
 
 		var untagResourceInput eks.UntagResourceInput
 		resourceArn, err := cmd.Flags().GetString("resource-arn")
-		checkErr(err)
+		util.CheckERR(err)
 		if resourceArn == "" || resourceArn == "--tag-keys" {
 			fmt.Println("resourceArn must not be nil")
 		}
 		untagResourceInput.ResourceArn = &resourceArn
 
 		keys, err := cmd.Flags().GetString("tag-keys")
-		checkErr(err)
+		util.CheckERR(err)
 		slice := strings.Split(keys, ",")
 		keyList := []*string{}
 		for i := 0; i < len(slice); i++ {
@@ -445,7 +522,9 @@ var untagResourceCmd = &cobra.Command{
 
 		untagResourceInput.TagKeys = keyList
 
-		unTagResource(untagResourceInput)
+		httpPostUrl := "/eks/resource/untag"
+		bytes := util.HTTPPostRequest(untagResourceInput, httpPostUrl)
+		util.PrintErrMsg(bytes)
 	},
 }
 var describeUpdateCmd = &cobra.Command{
@@ -462,23 +541,26 @@ var describeUpdateCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		name, err := cmd.Flags().GetString("name")
-		checkErr(err)
+		util.CheckERR(err)
 		describeUpdateInput.Name = &name
 		updateId, err := cmd.Flags().GetString("update-id")
-		checkErr(err)
+		util.CheckERR(err)
 		describeUpdateInput.UpdateId = &updateId
 		nodegroupName, err := cmd.Flags().GetString("nodegroup-name")
-		checkErr(err)
+		util.CheckERR(err)
 		if nodegroupName != "" {
 			describeUpdateInput.NodegroupName = &nodegroupName
 		}
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		if addonName != "" {
 			describeUpdateInput.AddonName = &addonName
 		}
-		describeUpdate(describeUpdateInput)
 
+		httpPostUrl := "/eks/describe/update"
+		bytes := util.HTTPPostRequest(describeUpdateInput, httpPostUrl)
+		var output eks.DescribeUpdateOutput
+		EKSCommonPrintOption(output, bytes)
 	},
 }
 
@@ -496,16 +578,16 @@ var listUpdateCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		name, err := cmd.Flags().GetString("name")
-		checkErr(err)
+		util.CheckERR(err)
 		listUpdateInput.Name = &name
 		nodegroupName, err := cmd.Flags().GetString("nodegroup-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		maxResults, err := cmd.Flags().GetInt64("max-result")
-		checkErr(err)
+		util.CheckERR(err)
 		nextToken, err := cmd.Flags().GetString("next-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if nodegroupName != "" {
 			listUpdateInput.NodegroupName = &nodegroupName
 		}
@@ -518,7 +600,16 @@ var listUpdateCmd = &cobra.Command{
 		if nextToken != "" {
 			listAddonInput.NextToken = &nextToken
 		}
-		listUpdate(listUpdateInput)
+
+		httpPostUrl := "/eks/list/update"
+		bytes := util.HTTPPostRequest(listUpdateInput, httpPostUrl)
+		var output eks.ListUpdatesOutput
+		json.Unmarshal(bytes, &output)
+		if output.UpdateIds == nil {
+			util.PrintErrMsg(bytes)
+		} else {
+			fmt.Println(output)
+		}
 
 	},
 }
@@ -536,17 +627,17 @@ var updateAddonCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		name, err := cmd.Flags().GetString("name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonName, err := cmd.Flags().GetString("addon-name")
-		checkErr(err)
+		util.CheckERR(err)
 		addonVersion, err := cmd.Flags().GetString("addon-version")
-		checkErr(err)
+		util.CheckERR(err)
 		serviceAccountRoleArn, err := cmd.Flags().GetString("service-account-role-arn")
-		checkErr(err)
+		util.CheckERR(err)
 		resolveConflicts, err := cmd.Flags().GetString("resolve-conflicts")
-		checkErr(err)
+		util.CheckERR(err)
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		updateAddonInput.ClusterName = &name
 		updateAddonInput.AddonName = &addonName
 		if addonVersion != "" {
@@ -561,7 +652,11 @@ var updateAddonCmd = &cobra.Command{
 		if clientRequestToken != "" {
 			updateAddonInput.ClientRequestToken = &clientRequestToken
 		}
-		updateAddon(updateAddonInput)
+
+		httpPostUrl := "/eks/addon/update"
+		bytes := util.HTTPPostRequest(updateAddonInput, httpPostUrl)
+		var output eks.UpdateAddonOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -580,11 +675,11 @@ var updateClusterConfigCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		name, err := cmd.Flags().GetString("name")
-		checkErr(err)
+		util.CheckERR(err)
 		updateClusterConfigInput.Name = &name
 
 		jsonFileName, err := cmd.Flags().GetString("resource-vpc-config")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var resourcesVpcConfig eks.VpcConfigRequest
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -593,7 +688,7 @@ var updateClusterConfigCmd = &cobra.Command{
 		}
 
 		jsonFileName, err = cmd.Flags().GetString("logging")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var logging eks.Logging
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -602,13 +697,16 @@ var updateClusterConfigCmd = &cobra.Command{
 		}
 
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 
 		if clientRequestToken != "" {
 			updateClusterConfigInput.ClientRequestToken = &clientRequestToken
 		}
 
-		updateClusterConfig(updateClusterConfigInput)
+		httpPostUrl := "/eks/cluster-config/update"
+		bytes := util.HTTPPostRequest(updateClusterConfigInput, httpPostUrl)
+		var output eks.UpdateClusterConfigOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }
@@ -627,14 +725,14 @@ var updateNodegroupConfigCmd = &cobra.Command{
 		// TODO: Work your own magic here
 
 		clusterName, err := cmd.Flags().GetString("cluster-name")
-		checkErr(err)
+		util.CheckERR(err)
 		updateNodegroupConfigInput.ClusterName = &clusterName
 
 		nodegroupName, err := cmd.Flags().GetString("nodegroup-name")
-		checkErr(err)
+		util.CheckERR(err)
 		updateNodegroupConfigInput.NodegroupName = &nodegroupName
 		jsonFileName, err := cmd.Flags().GetString("labels")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var labels eks.UpdateLabelsPayload
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -643,7 +741,7 @@ var updateNodegroupConfigCmd = &cobra.Command{
 		}
 
 		jsonFileName, err = cmd.Flags().GetString("taints")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var taints eks.UpdateLabelsPayload
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -651,7 +749,7 @@ var updateNodegroupConfigCmd = &cobra.Command{
 			// updateNodegroupConfigInput.Taints = taints
 		}
 		jsonFileName, err = cmd.Flags().GetString("scaling-config")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var scalingConfig eks.NodegroupScalingConfig
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -659,7 +757,7 @@ var updateNodegroupConfigCmd = &cobra.Command{
 		}
 
 		jsonFileName, err = cmd.Flags().GetString("update-config")
-		checkErr(err)
+		util.CheckERR(err)
 		if jsonFileName != "" {
 			var updateConfig eks.NodegroupUpdateConfig
 			byteValue := util.OpenAndReadJsonFile(jsonFileName)
@@ -667,12 +765,15 @@ var updateNodegroupConfigCmd = &cobra.Command{
 		}
 
 		clientRequestToken, err := cmd.Flags().GetString("client-request-token")
-		checkErr(err)
+		util.CheckERR(err)
 		if clientRequestToken != "" {
 			updateNodegroupConfigInput.ClientRequestToken = &clientRequestToken
 		}
 
-		updateNodegroupConfig(updateNodegroupConfigInput)
+		httpPostUrl := "/eks/nodegroup-config/update"
+		bytes := util.HTTPPostRequest(updateNodegroupConfigInput, httpPostUrl)
+		var output eks.UpdateNodegroupConfigOutput
+		EKSCommonPrintOption(output, bytes)
 
 	},
 }

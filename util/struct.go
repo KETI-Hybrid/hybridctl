@@ -95,3 +95,38 @@ type AKSk8sConfiguration struct {
 	RepositoryURL string
 	Scope         string
 }
+
+// images
+type GKEImages struct {
+	SRC_IMAGE  string
+	DEST_IMAGE []string
+	IMAGE_NAME []string
+
+	// Images List
+	REPOSITORY string
+	FILTER     string
+	LIMIT      string
+	PAGE_SIZE  string
+	SORT_BY    string
+	URI        bool
+
+	// Images Delete
+	FORCE_DELETE_TAGS bool
+}
+
+type GKEAuth struct {
+	CRED_FILE string
+}
+
+type GKEOperations struct {
+	PROJECT_ID   string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	ZONE         string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	OPERATION_ID string `protobuf:"bytes,3,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	NAME         string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+type GKESetProperty struct {
+	SECTION  string
+	PROPERTY string
+	VALUE    string
+}

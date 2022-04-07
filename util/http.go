@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -45,4 +46,17 @@ func GetResponseBody(method string, httpPostUrl string, input interface{}) ([]by
 	defer response.Body.Close()
 	bytes, err := ioutil.ReadAll(response.Body)
 	return bytes, err
+}
+
+func HTTPPostRequest(input interface{}, httpPostUrl string) []byte {
+	bytes, err := GetResponseBody("POST", httpPostUrl, input)
+	CheckERR(err)
+	return bytes
+}
+
+func CheckERR(err error) {
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }

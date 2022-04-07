@@ -6,104 +6,93 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/sourcerepo/v1"
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
-func HTTPPostRequest(input interface{}, httpPostUrl string) []byte {
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	return bytes
-}
+// func PrintServerConfig(resp containerpb.ServerConfig) {
+// 	//	var field string
+// 	fmt.Println("channels:")
+// 	for _, c := range resp.Channels {
+// 		fmt.Println("- channel:", c.GetChannel())
+// 		fmt.Printf("  defaultVersion: %s\n", c.GetDefaultVersion())
+// 		fmt.Println("  validVersions:")
+// 		for _, j := range c.GetValidVersions() {
+// 			fmt.Println("  - ", j)
+// 		}
+// 	}
 
-func PrintServerConfig(resp containerpb.ServerConfig) {
-	//	var field string
-	fmt.Println("channels:")
-	for _, c := range resp.Channels {
-		fmt.Println("- channel:", c.GetChannel())
-		fmt.Printf("  defaultVersion: %s\n", c.GetDefaultVersion())
-		fmt.Println("  validVersions:")
-		for _, j := range c.GetValidVersions() {
-			fmt.Println("  - ", j)
-		}
-	}
+// 	fmt.Println("defaultClusterVersion: ", resp.DefaultClusterVersion)
+// 	fmt.Println("defaultImageType: ", resp.DefaultImageType)
 
-	fmt.Println("defaultClusterVersion: ", resp.DefaultClusterVersion)
-	fmt.Println("defaultImageType: ", resp.DefaultImageType)
+// 	fmt.Println("validImageTypes:")
+// 	for _, c := range resp.ValidImageTypes {
+// 		fmt.Println("- ", c)
+// 	}
 
-	fmt.Println("validImageTypes:")
-	for _, c := range resp.ValidImageTypes {
-		fmt.Println("- ", c)
-	}
+// 	fmt.Println("validMasterVersions:")
+// 	for _, c := range resp.ValidMasterVersions {
+// 		fmt.Println("- ", c)
+// 	}
 
-	fmt.Println("validMasterVersions:")
-	for _, c := range resp.ValidMasterVersions {
-		fmt.Println("- ", c)
-	}
+// 	fmt.Println("validNodeVersions:")
+// 	for _, c := range resp.ValidNodeVersions {
+// 		fmt.Println("- ", c)
+// 	}
+// }
 
-	fmt.Println("validNodeVersions:")
-	for _, c := range resp.ValidNodeVersions {
-		fmt.Println("- ", c)
-	}
-}
+// func GetServerConfig(input *containerpb.GetServerConfigRequest) {
+// 	// input := &containerpb.GetServerConfigRequest{
+// 	// 	ProjectId: "keti-container",
+// 	// 	Zone:      "us-central1-a",
+// 	// }
+// 	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/getServerConfig"
+// 	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
+// 	util.CheckERR(err)
 
-func GetServerConfig(input *containerpb.GetServerConfigRequest) {
-	// input := &containerpb.GetServerConfigRequest{
-	// 	ProjectId: "keti-container",
-	// 	Zone:      "us-central1-a",
-	// }
-	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/getServerConfig"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
-	checkErr(err)
+// 	var output apiserverutil.Output
+// 	json.Unmarshal(bytes, &output)
+// 	if output.Stderr != nil {
+// 		fmt.Println(string(output.Stderr))
+// 	}
 
-	var output apiserverutil.Output
-	json.Unmarshal(bytes, &output)
-	if output.Stderr != nil {
-		fmt.Println(string(output.Stderr))
-	}
+// 	if output.Stdout != nil {
+// 		stdout := output.Stdout
+// 		var resp containerpb.ServerConfig
+// 		json.Unmarshal(stdout, &resp)
+// 		fmt.Printf("Fetching server config for %s\n", input.Zone)
+// 		PrintServerConfig(resp)
+// 	}
+// }
 
-	if output.Stdout != nil {
-		stdout := output.Stdout
-		var resp containerpb.ServerConfig
-		json.Unmarshal(stdout, &resp)
-		fmt.Printf("Fetching server config for %s\n", input.Zone)
-		PrintServerConfig(resp)
-	}
-}
+// func RollbackNodePoolUpgrade(input *containerpb.RollbackNodePoolUpgradeRequest) {
+// 	// input := &containerpb.RollbackNodePoolUpgradeRequest{
+// 	// 	ProjectId: "keti-container",
+// 	// 	Zone:      "us-central1-a",
+// 	// 	ClusterId: "hcp-cluster",
+// 	// 	Name:      "pool-1",
+// 	// }
+// 	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/rollbackNodePoolUpgrade"
+// 	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
+// 	util.CheckERR(err)
 
-func RollbackNodePoolUpgrade(input *containerpb.RollbackNodePoolUpgradeRequest) {
-	// input := &containerpb.RollbackNodePoolUpgradeRequest{
-	// 	ProjectId: "keti-container",
-	// 	Zone:      "us-central1-a",
-	// 	ClusterId: "hcp-cluster",
-	// 	Name:      "pool-1",
-	// }
-	httpPostUrl := "http://localhost:3080" + GKE_CONTAINER_PATH + "/rollbackNodePoolUpgrade"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
-	checkErr(err)
+// 	var output apiserverutil.Output
+// 	json.Unmarshal(bytes, &output)
+// 	if output.Stderr != nil {
+// 		fmt.Println(string(output.Stderr))
+// 	}
 
-	var output apiserverutil.Output
-	json.Unmarshal(bytes, &output)
-	if output.Stderr != nil {
-		fmt.Println(string(output.Stderr))
-	}
-
-	if output.Stdout != nil {
-		stdout := output.Stdout
-		var resp containerpb.Operation
-		json.Unmarshal(stdout, &resp)
-		fmt.Printf("Updated [%s]\n", resp.TargetLink)
-		fmt.Printf("operationId: %s\nprojectId: %s\nzone: %s\n", resp.GetName(), resp.GetZone(), input.GetProjectId())
-	}
-}
+// 	if output.Stdout != nil {
+// 		stdout := output.Stdout
+// 		var resp containerpb.Operation
+// 		json.Unmarshal(stdout, &resp)
+// 		fmt.Printf("Updated [%s]\n", resp.TargetLink)
+// 		fmt.Printf("operationId: %s\nprojectId: %s\nzone: %s\n", resp.GetName(), resp.GetZone(), input.GetProjectId())
+// 	}
+// }
 
 type Docker struct {
 	AUTHORIZE_ONLY bool
@@ -117,7 +106,7 @@ func (d *Docker) Docker() {
 	}
 	httpPostUrl := "http://localhost:3080/gke/docker"
 	bytes, err := util.GetResponseBody("POST", httpPostUrl, d)
-	checkErr(err)
+	util.CheckERR(err)
 	util.PrintOutput(bytes)
 }
 
@@ -193,20 +182,20 @@ func UpdateProjectConfig() {
 }
 */
 
-type SetProperty struct {
-	SECTION  string
-	PROPERTY string
-	VALUE    string
-}
+// type SetProperty struct {
+// 	SECTION  string
+// 	PROPERTY string
+// 	VALUE    string
+// }
 
-func ConfigSet() {
-	input := SetProperty{
-		SECTION:  "compute",
-		PROPERTY: "zone",
-		VALUE:    "us-central1-a",
-	}
-	httpPostUrl := "http://localhost:3080" + GKE_CONFIG_PATH + "/set"
-	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
-	checkErr(err)
-	util.PrintOutput(bytes)
-}
+// func ConfigSet() {
+// 	input := SetProperty{
+// 		SECTION:  "compute",
+// 		PROPERTY: "zone",
+// 		VALUE:    "us-central1-a",
+// 	}
+// 	httpPostUrl := "http://localhost:3080" + GKE_CONFIG_PATH + "/set"
+// 	bytes, err := util.GetResponseBody("POST", httpPostUrl, input)
+// 	util.CheckERR(err)
+// 	util.PrintOutput(bytes)
+// }

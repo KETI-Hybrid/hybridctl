@@ -1,21 +1,43 @@
 #!/bin/bash
 
-if [[ -z "${GKE_PROJECT_ID}" ]]; then 
-  GKE_PROJECT_ID=$(gcloud config get-value project)
-  echo "export GKE_PROJECT_ID=\"$GKE_PROJECT_ID\"">>~/.bashrc
-fi
-
-if [[ -z "${GKE_DEFAULT_ZONE}" ]]; then 
-  GKE_DEFAULT_ZONE=$(gcloud config get-value compute/zone)
-  echo "export GKE_DEFAULT_ZONE=\"$GKE_DEFAULT_ZONE\"" >> ~/.bashrc
-fi 
-
-GKE_DEFAULT_CLUSTER=$(gcloud config get-value container/cluster)
-if [[ $GKE_DEFAULT_CLUSTER -eq "(unset)" ]]
-then
-    if [[ -z "${GKE_DEFAULT_ZONE}" ]]; then 
-       echo "export GKE_DEFAULT_CLUSTER=\"$GKE_DEFAULT_CLUSTER\"" >> ~/.bashrc
+if [ -f !/.bashrc ]; then
+  CURRENT=$(echo $GKE_PROJECT_ID)
+  echo $CURRENT
+  NEW_GKE_PROJECT_ID=$(gcloud config get-value project)
+  if [ "${CURRENT}" != "${NEW_GKE_PROJECT_ID}" ]; then
+    sed -i -e '/^export GKE_PROJECT_ID/d' ~/.bashrc
+    unset GKE_PROJECT_ID
+    if [ "${NEW_GKE_PROJECT_ID}" != "" ]; then 
+      echo "export GKE_PROJECT_ID=\"$NEW_GKE_PROJECT_ID\"">>~/.bashrc
     fi
+  fi
+
+
+  CURRENT=$(echo $GKE_DEFAULT_ZONE)
+  echo $CURRENT
+  NEW_GKE_DEFAULT_ZONE=$(gcloud config get-value compute/zone)
+  if [ "${CURRENT}" != "${NEW_GKE_DEFAULT_ZONE}" ]; then
+    echo "true"
+    sed -i -e '/^export GKE_DEFAULT_ZONE/d' ~/.bashrc
+    unset GKE_DEFAULT_ZONE
+    if [ "${NEW_GKE_DEFAULT_ZONE}" != "" ]; then 
+      echo "true"
+      echo "export GKE_DEFAULT_ZONE=\"$NEW_GKE_DEFAULT_ZONE\"">>~/.bashrc
+    fi
+  fi
+
+  CURRENT=$(echo $GKE_DEFAULT_CLUSTER)
+  NEW_GKE_DEFAULT_CLUSTER=$(gcloud config get-value container/cluster)
+  if [ "${CURRENT}" != "${NEW_GKE_DEFAULT_CLUSTER}" ]; then
+    sed -i -e '/^export GKE_DEFAULT_CLUSTER/d' ~/.bashrc
+    unset GKE_DEFAULT_CLUSTER
+    if [ "${NEW_GKE_DEFAULT_CLUSTER}" != "(unset)" ]; then
+        echo $NEW_GKE_DEFAULT_CLUSTER
+        if [[ "${NEW_GKE_DEFAULT_CLUSTER}" != "" ]]; then 
+          echo "export GKE_DEFAULT_CLUSTER=\"$NEW_GKE_DEFAULT_CLUSTER\"" >> ~/.bashrc
+        fi     
+    fi
+  fi
 fi
 
 source ~/.bashrc
