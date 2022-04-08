@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"Hybrid_Cloud/hybridctl/util"
 	cobrautil "Hybrid_Cloud/hybridctl/util"
 	"fmt"
 	"io/ioutil"
@@ -108,7 +107,7 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 	}
 
 	fmt.Println(LINK)
-	bytes, err := util.GetResponseBody("POST", LINK, &resource)
+	bytes, err := cobrautil.GetResponseBody("POST", LINK, &resource)
 	if err != nil {
 		fmt.Println(err)
 	}

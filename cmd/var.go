@@ -4,11 +4,11 @@ import (
 	"Hybrid_Cloud/hybridctl/util"
 
 	"github.com/aws/aws-sdk-go/service/eks"
-	"k8s.io/client-go/kubernetes"
 )
 
 var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-var master_client = kubernetes.NewForConfigOrDie(master_config)
+
+//var master_client = kubernetes.NewForConfigOrDie(master_config)
 
 // eks
 var associateEncryptionConfigInput eks.AssociateEncryptionConfigInput
@@ -28,6 +28,3 @@ var listUpdateInput eks.ListUpdatesInput
 var updateAddonInput eks.UpdateAddonInput
 var updateClusterConfigInput eks.UpdateClusterConfigInput
 var updateNodegroupConfigInput eks.UpdateNodegroupConfigInput
-
-var compute_zone string
-var core_project_id string

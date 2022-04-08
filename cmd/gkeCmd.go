@@ -4,6 +4,8 @@ import (
 	apiserverutil "Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"Hybrid_Cloud/hybridctl/util"
 	cobrautil "Hybrid_Cloud/hybridctl/util"
+
+	// cobrautil "Hybrid_Cloud/hybridctl/util"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -61,7 +63,7 @@ var GKEContainerGetServerConfigCmd = &cobra.Command{
 		}
 
 		httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/server-config/get"
-		bytes := util.HTTPPostRequest(input, httpPostUrl)
+		bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
 		var output apiserverutil.Output
 		json.Unmarshal(bytes, &output)
@@ -113,6 +115,7 @@ func PrintServerConfig(resp containerpb.ServerConfig) {
 var GKEImagesAddTagCmd = &cobra.Command{
 	Use:   "add-tag",
 	Short: "adds tags to existing image",
+	Long:  "hybridctl container images add-tag SRC_IMAGE DEST_IMAGE",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container images add-tag SRC_IMAGE DEST_IMAGE
@@ -131,14 +134,14 @@ var GKEImagesAddTagCmd = &cobra.Command{
 				temp = append(temp, args[i])
 			}
 
-			input := &util.GKEImages{
+			input := &cobrautil.GKEImages{
 				SRC_IMAGE:  args[0],
 				DEST_IMAGE: temp,
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/tag/add"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -146,9 +149,10 @@ var GKEImagesAddTagCmd = &cobra.Command{
 var GKEImagesDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "delete existing images",
+	Long:  "hybridctl container images delete IMAGE_NAME [IMAGE_NAME …] [--force-delete-tags]",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud container images delete IMAGE_NAME
+		// gcloud container images delete IMAGE_NAME [IMAGE_NAME …] [--force-delete-tags]
 		if len(args) < 1 {
 			cmd.Help()
 		} else {
@@ -158,17 +162,16 @@ var GKEImagesDeleteCmd = &cobra.Command{
 				}
 			*/
 
-			temp := []string{args[0]}
-			input := &util.GKEImages{
-				IMAGE_NAME: temp,
+			input := &cobrautil.GKEImages{
+				IMAGE_NAME: args,
 			}
 
 			bol, _ := cmd.Flags().GetBool("force-delete-tags")
 			input.FORCE_DELETE_TAGS = bol
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/delete"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -176,10 +179,11 @@ var GKEImagesDeleteCmd = &cobra.Command{
 var GKEImagesDescribeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "lists information about the specified image",
+	Long:  "hybridctl container images describe IMAGE_NAME",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container images describe IMAGE_NAME
-		if len(args) < 1 {
+		if len(args) != 1 {
 			cmd.Help()
 		} else {
 			/*
@@ -188,12 +192,12 @@ var GKEImagesDescribeCmd = &cobra.Command{
 				}
 			*/
 			temp := []string{args[0]}
-			input := &util.GKEImages{
+			input := &cobrautil.GKEImages{
 				IMAGE_NAME: temp,
 			}
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/describe"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -201,6 +205,7 @@ var GKEImagesDescribeCmd = &cobra.Command{
 var GKEImagesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list existing images",
+	Long:  "hybridctl container images list [--repository=REPOSITORY] [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]] [--uri] ",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container images list [--repository=REPOSITORY] [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]] [--uri]
@@ -210,45 +215,50 @@ var GKEImagesListCmd = &cobra.Command{
 				IMAGE_NAME: "gcr.io/keti-container/busybox",
 			}
 		*/
-		var input util.GKEImages
+		if len(args) > 0 {
+			cmd.Help()
+		} else {
+			var input cobrautil.GKEImages
 
-		str, _ := cmd.Flags().GetString("repository")
-		if str != "" {
-			input.REPOSITORY = str
+			str, _ := cmd.Flags().GetString("repository")
+			if str != "" {
+				input.REPOSITORY = str
+			}
+
+			str, _ = cmd.Flags().GetString("filter")
+			if str != "" {
+				input.FILTER = str
+			}
+
+			str, _ = cmd.Flags().GetString("limit")
+			if str != "" {
+				input.LIMIT = str
+			}
+
+			str, _ = cmd.Flags().GetString("page-size")
+			if str != "" {
+				input.PAGE_SIZE = str
+			}
+
+			str, _ = cmd.Flags().GetString("sort-by")
+			if str != "" {
+				input.SORT_BY = str
+			}
+
+			bol, _ := cmd.Flags().GetBool("uri")
+			input.URI = bol
+
+			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/list"
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
-
-		str, _ = cmd.Flags().GetString("filter")
-		if str != "" {
-			input.FILTER = str
-		}
-
-		str, _ = cmd.Flags().GetString("limit")
-		if str != "" {
-			input.LIMIT = str
-		}
-
-		str, _ = cmd.Flags().GetString("page-size")
-		if str != "" {
-			input.PAGE_SIZE = str
-		}
-
-		str, _ = cmd.Flags().GetString("sort-by")
-		if str != "" {
-			input.SORT_BY = str
-		}
-
-		bol, _ := cmd.Flags().GetBool("uri")
-		input.URI = bol
-
-		httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/list"
-		bytes := util.HTTPPostRequest(input, httpPostUrl)
-		util.PrintOutput(bytes)
 	},
 }
 
 var GKEImagesListTagsCmd = &cobra.Command{
 	Use:   "list-tags",
 	Short: "list tags and digests for the specified image",
+	Long:  "hybridctl container images list-tags IMAGE_NAME [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]; default=\"~timestamp\"]",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container images list-tags IMAGE_NAME [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]; default="~timestamp"]
@@ -261,7 +271,7 @@ var GKEImagesListTagsCmd = &cobra.Command{
 				}
 			*/
 			temp := []string{args[0]}
-			input := &util.GKEImages{
+			input := &cobrautil.GKEImages{
 				IMAGE_NAME: temp,
 			}
 
@@ -286,8 +296,8 @@ var GKEImagesListTagsCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/tag/list"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -295,6 +305,7 @@ var GKEImagesListTagsCmd = &cobra.Command{
 var GKEImagesUnTagCmd = &cobra.Command{
 	Use:   "untag",
 	Short: "remove existing image tags",
+	Long:  `hybridctl container images untag IMAGE_NAME [IMAGE_NAME …]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container images untag IMAGE_NAME
@@ -306,18 +317,12 @@ var GKEImagesUnTagCmd = &cobra.Command{
 					IMAGE_NAME: "gcr.io/keti-container/busybox:mytag3",
 				}
 			*/
-			var input util.GKEImages
-
-			temp := []string{}
-			for i := 0; i < len(args); i++ {
-				temp = append(temp, args[i])
-			}
-
-			input.IMAGE_NAME = temp
+			var input cobrautil.GKEImages
+			input.IMAGE_NAME = args
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/untags"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -353,7 +358,7 @@ var GKEOperationDescribeCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/describe"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
 			var output apiserverutil.Output
 			json.Unmarshal(bytes, &output)
@@ -467,10 +472,11 @@ var GKEContainerNodePoolsCmd = &cobra.Command{
 var GKENodePoolsRollbackCmd = &cobra.Command{
 	Use:   "rollback",
 	Short: "rollback a node-pool upgrade",
+	Long:  `hybridctl container node-pools rollback NAME [--cluster=CLUSTER] [--zone=ZONE, -z ZONE]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud container node-pools rollback NAME [--async] [--cluster=CLUSTER] [--region=REGION     | --zone=ZONE, -z ZONE]
-		if len(args) < 1 {
+		// gcloud container node-pools rollback NAME [--async] [--cluster=CLUSTER] [--zone=ZONE, -z ZONE]
+		if len(args) != 1 {
 			cmd.Help()
 		} else {
 			/*
@@ -596,8 +602,8 @@ var GKEAuthListCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/list"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -614,7 +620,7 @@ var GKEAuthRevokeCmd = &cobra.Command{
 			cmd.Help()
 		} else {
 
-			var input util.GKEAuth
+			var input cobrautil.GKEAuth
 			if len(args) == 1 {
 				input.ACCOUNTS = args[0]
 			}
@@ -624,8 +630,8 @@ var GKEAuthRevokeCmd = &cobra.Command{
 			input.ALL = bol
 
 			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/revoke"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -647,7 +653,7 @@ var GKEAuthLoginCmd = &cobra.Command{
 				}
 			*/
 
-			var input util.GKEAuth
+			var input cobrautil.GKEAuth
 			if len(args) == 1 {
 				input.ACCOUNTS = args[0]
 			}
@@ -656,8 +662,8 @@ var GKEAuthLoginCmd = &cobra.Command{
 			input.CRED_FILE = str
 
 			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/login"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -736,7 +742,7 @@ var GKEConfigSetCmd = &cobra.Command{
 				}
 			*/
 
-			var input util.GKESetProperty
+			var input cobrautil.GKESetProperty
 
 			// set SECTION/PROPERTY
 			if strings.Contains(args[0], "/") {
@@ -760,8 +766,8 @@ var GKEConfigSetCmd = &cobra.Command{
 			input.INSTALLATION = bol
 
 			httpPostUrl := "http://localhost:8080/gke/config/set"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 
 	},
