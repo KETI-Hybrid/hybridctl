@@ -9,7 +9,7 @@ func gkeFlags() {
 	GKEInitCmd.MarkFlagRequired("configuration")
 	GKEInitCmd.Flags().StringVarP(&cobrautil.PROJECT_ID, "project-id", "", "", "PROJECT_ID")
 	GKEInitCmd.MarkFlagRequired("project-id")
-	GKEInitCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "ZONE")
+	GKEInitCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 	GKEInitCmd.Flags().StringVarP(&cobrautil.REGION, "region", "", "", "REGION")
 
 	GKEImagesListCmd.Flags().StringP("repository", "", "", "The name of the repository. Format: *.gcr.io/repository. Defaults to gcr.io/<project>, for the active project.")
@@ -40,7 +40,9 @@ func gkeFlags() {
 	GKENodePoolsRollbackCmd.Flags().StringP("cluster", "", "", "The cluster from which to rollback the node pool. Overrides the default container/cluster property value for this command invocation.")
 	GKENodePoolsRollbackCmd.Flags().StringP("zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 
-	GKEOperationDescribeCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "ZONE")
+	GKEOperationDescribeCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
+	GKEOperationsListCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
+	GKEOperationsWaitCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 
 	GKEConfigSetCmd.Flags().BoolP("installation", "", false, "If set, the property is updated for the entire Google Cloud CLI installation. Otherwise, by default, the property is updated only in the currently active configuration.")
 }

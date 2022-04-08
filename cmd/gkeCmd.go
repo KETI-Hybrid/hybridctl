@@ -325,10 +325,11 @@ var GKEImagesUnTagCmd = &cobra.Command{
 var GKEOperationDescribeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "describe an operation",
+	Long:  `gcloud container operations describe OPERATION_ID [--zone=ZONE, -z ZONE]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud container operations describe OPERATION_ID
-		if len(args) < 1 {
+		if len(args) != 1 {
 			cmd.Help()
 		} else {
 			/*
@@ -377,68 +378,79 @@ var GKEOperationDescribeCmd = &cobra.Command{
 var GKEOperationsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list operations for container clusters",
+	Long:  `gcloud container operations list [--zone=ZONE, -z ZONE]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud container operations list [--region=REGION | --zone=ZONE, -z ZONE] [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE]
+		// gcloud container operations list [--zone=ZONE, -z ZONE]
 		/*
 			op := &containerpb.ListOperationsRequest{
 				ProjectId: "keti-container",
 				Zone:      "-",
 			}
 		*/
-		ReloadGKEConfigValue()
-		input := &containerpb.ListOperationsRequest{
-			ProjectId: os.Getenv("GKE_PROJECT_ID"),
-		}
-
-		zone, _ := cmd.Flags().GetString("zone")
-		if zone == "" {
-			input.Zone = "-"
+		if len(args) > 0 {
+			cmd.Help()
 		} else {
-			input.Zone = zone
-		}
-
-		httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/list"
-		bytes := util.HTTPPostRequest(input, httpPostUrl)
-
-		var output apiserverutil.Output
-		json.Unmarshal(bytes, &output)
-		if output.Stderr != nil {
-			fmt.Println(string(output.Stderr))
-		}
-
-		if output.Stdout != nil {
-			stdout := output.Stdout
-			var resp *containerpb.ListOperationsResponse
-			json.Unmarshal(stdout, &resp)
-			table := tablewriter.NewWriter(os.Stdout)
-			header := []string{"NAME", "TYPE", "LOCATION", "TARGET", "STATUS_MESSAGE", "STATUS", "START_TIME", "END_TIME"}
-			table.SetHeader(header)
-			for _, v := range resp.Operations {
-				targetLink := v.GetTargetLink()
-				target := targetLink[strings.LastIndex(targetLink, "/")+1:]
-				temp := []string{v.Name, v.OperationType.String(), v.Location, target, v.StatusMessage, v.Status.String(), v.StartTime, v.EndTime}
-				table.Append(temp)
+			ReloadGKEConfigValue()
+			input := &containerpb.ListOperationsRequest{
+				ProjectId: os.Getenv("GKE_PROJECT_ID"),
 			}
-			table.Render()
-		}
 
+			zone, _ := cmd.Flags().GetString("zone")
+			if zone == "" {
+				input.Zone = "-"
+			} else {
+				input.Zone = zone
+			}
+
+			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/list"
+			bytes := util.HTTPPostRequest(input, httpPostUrl)
+
+			var output apiserverutil.Output
+			json.Unmarshal(bytes, &output)
+			if output.Stderr != nil {
+				fmt.Println(string(output.Stderr))
+			}
+
+			if output.Stdout != nil {
+				stdout := output.Stdout
+				var resp *containerpb.ListOperationsResponse
+				json.Unmarshal(stdout, &resp)
+				table := tablewriter.NewWriter(os.Stdout)
+				header := []string{"NAME", "TYPE", "LOCATION", "TARGET", "STATUS_MESSAGE", "STATUS", "START_TIME", "END_TIME"}
+				table.SetHeader(header)
+				for _, v := range resp.Operations {
+					targetLink := v.GetTargetLink()
+					target := targetLink[strings.LastIndex(targetLink, "/")+1:]
+					temp := []string{v.Name, v.OperationType.String(), v.Location, target, v.StatusMessage, v.Status.String(), v.StartTime, v.EndTime}
+					table.Append(temp)
+				}
+				table.Render()
+			}
+		}
 	},
 }
 
 var GKEOperationsWaitCmd = &cobra.Command{
 	Use:   "wait",
 	Short: "poll an operation for completion",
+	Long:  `gcloud container operations wait OPERATION_ID [--zone=ZONE, -z ZONE]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud container operations wait OPERATION_ID [--region=REGION | --zone=ZONE, -z ZONE]
-		if len(args) < 1 {
+		// gcloud container operations wait OPERATION_ID [--zone=ZONE, -z ZONE]
+		if len(args) != 1 {
 			cmd.Help()
 		} else {
 
 			var input = &util.GKEOperations{
 				OPERATION_ID: args[0],
 			}
+
+			zone, _ := cmd.Flags().GetString("zone")
+			if zone != "" {
+				input.ZONE = zone
+			}
+
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/wait"
 			bytes := util.HTTPPostRequest(input, httpPostUrl)
 			util.PrintOutput(bytes)
