@@ -115,7 +115,17 @@ type GKEImages struct {
 }
 
 type GKEAuth struct {
-	CRED_FILE string
+	CRED_FILE  string
+	REGISTRIES string
+	ACCOUNTS   string
+	ALL        bool
+
+	// List
+	FILTER_ACCOUNT string
+	FILTER         string
+	LIMIT          string
+	PAGE_SIZE      string
+	SORT_BY        string
 }
 
 type GKEOperations struct {

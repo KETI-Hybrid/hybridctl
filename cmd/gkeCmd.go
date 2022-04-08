@@ -20,7 +20,7 @@ const (
 	GKE_CONTAINER_PATH = "/gke/container"
 	GKE_AUTH_PATH      = "/gke/auth"
 	GKE_CONFIG_PATH    = "/gke/config"
-	GKE_HELP           = "Use \"hybridctl gke container images [command] --help\" for more information about a command."
+	GKE_HELP           = "Use \"hybridctl gke [command] --help\" for more information about a command."
 )
 
 var GKEContainerCmd = &cobra.Command{
@@ -117,7 +117,7 @@ var GKEImagesAddTagCmd = &cobra.Command{
 
 		// gcloud container images add-tag SRC_IMAGE DEST_IMAGE
 		if len(args) < 2 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				i = &Images{
@@ -126,14 +126,14 @@ var GKEImagesAddTagCmd = &cobra.Command{
 				}
 			*/
 
-			arr := []string{}
+			temp := []string{}
 			for i := 1; i < len(args); i++ {
-				arr = append(arr, args[i])
+				temp = append(temp, args[i])
 			}
 
 			input := &util.GKEImages{
 				SRC_IMAGE:  args[0],
-				DEST_IMAGE: arr,
+				DEST_IMAGE: temp,
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/tag/add"
@@ -150,7 +150,7 @@ var GKEImagesDeleteCmd = &cobra.Command{
 
 		// gcloud container images delete IMAGE_NAME
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				i = &Images{
@@ -158,9 +158,9 @@ var GKEImagesDeleteCmd = &cobra.Command{
 				}
 			*/
 
-			arr := []string{args[0]}
+			temp := []string{args[0]}
 			input := &util.GKEImages{
-				IMAGE_NAME: arr,
+				IMAGE_NAME: temp,
 			}
 
 			bol, _ := cmd.Flags().GetBool("force-delete-tags")
@@ -180,16 +180,16 @@ var GKEImagesDescribeCmd = &cobra.Command{
 
 		// gcloud container images describe IMAGE_NAME
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				i = &Images{
 					IMAGE_NAME: "gcr.io/keti-container/busybox",
 				}
 			*/
-			arr := []string{args[0]}
+			temp := []string{args[0]}
 			input := &util.GKEImages{
-				IMAGE_NAME: arr,
+				IMAGE_NAME: temp,
 			}
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/describe"
 			bytes := util.HTTPPostRequest(input, httpPostUrl)
@@ -253,16 +253,16 @@ var GKEImagesListTagsCmd = &cobra.Command{
 
 		// gcloud container images list-tags IMAGE_NAME [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]; default="~timestamp"]
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				i = &Images{
 					IMAGE_NAME: "gcr.io/keti-container/busybox",
 				}
 			*/
-			arr := []string{args[0]}
+			temp := []string{args[0]}
 			input := &util.GKEImages{
-				IMAGE_NAME: arr,
+				IMAGE_NAME: temp,
 			}
 
 			str, _ := cmd.Flags().GetString("filter")
@@ -299,7 +299,7 @@ var GKEImagesUnTagCmd = &cobra.Command{
 
 		// gcloud container images untag IMAGE_NAME
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				i = &Images{
@@ -308,12 +308,12 @@ var GKEImagesUnTagCmd = &cobra.Command{
 			*/
 			var input util.GKEImages
 
-			arr := []string{}
+			temp := []string{}
 			for i := 0; i < len(args); i++ {
-				arr = append(arr, args[i])
+				temp = append(temp, args[i])
 			}
 
-			input.IMAGE_NAME = arr
+			input.IMAGE_NAME = temp
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/images/untags"
 			bytes := util.HTTPPostRequest(input, httpPostUrl)
@@ -329,7 +329,7 @@ var GKEOperationDescribeCmd = &cobra.Command{
 
 		// gcloud container operations describe OPERATION_ID
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				input := &containerpb.GetOperationRequest{
@@ -433,7 +433,7 @@ var GKEOperationsWaitCmd = &cobra.Command{
 
 		// gcloud container operations wait OPERATION_ID [--region=REGION | --zone=ZONE, -z ZONE]
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 
 			var input = &util.GKEOperations{
@@ -459,7 +459,7 @@ var GKENodePoolsRollbackCmd = &cobra.Command{
 
 		// gcloud container node-pools rollback NAME [--async] [--cluster=CLUSTER] [--region=REGION     | --zone=ZONE, -z ZONE]
 		if len(args) < 1 {
-			fmt.Println(GKE_HELP)
+			cmd.Help()
 		} else {
 			/*
 				input := &containerpb.RollbackNodePoolUpgradeRequest{
@@ -518,117 +518,135 @@ var GKEAuthCmd = &cobra.Command{
 var GKEAuthConfigureDockerCmd = &cobra.Command{
 	Use:   "configure-docker",
 	Short: "register gcloud as a Docker credential helper",
+	Long:  `hybridctl auth configure-docker [REGISTRIES]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud auth configure-docker [REGISTRIES]
 
-		httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/configure-docker"
-		bytes := util.HTTPPostRequest(nil, httpPostUrl)
-		util.PrintOutput(bytes)
+		if len(args) > 1 {
+			cmd.Help()
+		} else {
+			var input util.GKEAuth
+			if len(args) == 1 {
+				input.REGISTRIES = args[0]
+			}
 
+			/*
+				var temp []string
+				if len(args) == 1 {
+					temp = strings.Split(args[0], ",")
+				}
+				input.REGISTRIES = append(input.REGISTRIES, temp...)
+			*/
+
+			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/configure-docker"
+			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			util.PrintOutput(bytes)
+		}
 	},
 }
 
 var GKEAuthListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "lists credentialed accounts",
+	Long:  `hybridctl auth list [--filter-account=FILTER_ACCOUNT] [--filter=EXPRESSION] [--limit=LIMIT] [--page-size=PAGE_SIZE] [--sort-by=[FIELD,…]]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud auth list
+		if len(args) > 0 {
+			cmd.Help()
+		} else {
+			// gcloud auth list
+			var input util.GKEAuth
 
-		httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/list"
-		bytes := util.HTTPPostRequest(nil, httpPostUrl)
-		util.PrintOutput(bytes)
+			str, _ := cmd.Flags().GetString("filter-account")
+			if str != "" {
+				input.FILTER_ACCOUNT = str
+			}
+
+			str, _ = cmd.Flags().GetString("filter")
+			if str != "" {
+				input.FILTER = str
+			}
+
+			str, _ = cmd.Flags().GetString("limit")
+			if str != "" {
+				input.LIMIT = str
+			}
+
+			str, _ = cmd.Flags().GetString("page-size")
+			if str != "" {
+				input.PAGE_SIZE = str
+			}
+
+			str, _ = cmd.Flags().GetString("sort-by")
+			if str != "" {
+				input.SORT_BY = str
+			}
+
+			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/list"
+			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			util.PrintOutput(bytes)
+		}
 	},
 }
 
 var GKEAuthRevokeCmd = &cobra.Command{
 	Use:   "revoke",
 	Short: "revoke access credentials for an account",
+	Long:  "hybridctl auth revoke [ACCOUNTS …] [--all]",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// gcloud auth revoke [ACCOUNTS …] [--all]
 
-		httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/revoke"
-		bytes := util.HTTPPostRequest(nil, httpPostUrl)
-		util.PrintOutput(bytes)
+		if len(args) > 1 {
+			cmd.Help()
+		} else {
+
+			var input util.GKEAuth
+			if len(args) == 1 {
+				input.ACCOUNTS = args[0]
+			}
+
+			// set flags
+			bol, _ := cmd.Flags().GetBool("all")
+			input.ALL = bol
+
+			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/revoke"
+			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			util.PrintOutput(bytes)
+		}
 	},
 }
 
 var GKEAuthLoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "authorize gcloud to access the Cloud Platform with Google user credentials",
+	Long:  `hybridcl auth login [ACCOUNT] [--cred-file=CRED_FILE]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// gcloud auth login [--cred-file=CRED_FILE]
+		// gcloud auth login [ACCOUNT] [--cred-file=CRED_FILE]
 
-		/*
-			a = &Auth{
-				CRED_FILE: "/root/hcp-key.json",
-			}
-		*/
-		input := &util.GKEAuth{
-			CRED_FILE: "/root/hcp-key.json",
-		}
-		httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/login"
-		bytes := util.HTTPPostRequest(input, httpPostUrl)
-		util.PrintOutput(bytes)
-
-	},
-}
-
-var GKEConfigCmd = &cobra.Command{
-	Use:   "config",
-	Short: "authorize gcloud to access the Cloud Platform with Google user credentials",
-}
-
-var GKEConfigSetCmd = &cobra.Command{
-	Use:   "set",
-	Short: "set a Google Cloud CLI property",
-	Long:  `hybridctl gke config set SECTION/PROPERTY VALUE [--installation]`,
-	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) < 2 {
-			fmt.Println(GKE_HELP)
+		if len(args) > 1 {
+			cmd.Help()
 		} else {
-			// gcloud config set SECTION/PROPERTY VALUE [--installation] [GCLOUD_WIDE_FLAG …]
-
 			/*
-				input := SetProperty{
-					SECTION:  "compute",
-					PROPERTY: "zone",
-					VALUE:    "us-central1-a",
+				a = &Auth{
+					CRED_FILE: "/root/hcp-key.json",
 				}
 			*/
 
-			var input util.GKESetProperty
-
-			// set SECTION/PROPERTY
-			if strings.Contains(args[0], "/") {
-				cnt := strings.Count(args[0], "/")
-				if cnt != 1 {
-					fmt.Println("ERROR: Invalid Input. Enter in the correct command format.\n Usage: hybridctl gke config set SECTION/PROPERTY VALUE")
-					return
-				}
-				arr := strings.Split(args[0], "/")
-				input.SECTION = arr[0]
-				input.PROPERTY = arr[1]
-			} else {
-				input.PROPERTY = args[0]
+			var input util.GKEAuth
+			if len(args) == 1 {
+				input.ACCOUNTS = args[0]
 			}
 
-			// set VALUE
-			input.VALUE = args[1]
+			str, _ := cmd.Flags().GetString("cred-file")
+			input.CRED_FILE = str
 
-			// set flags
-			bol, _ := cmd.Flags().GetBool("installation")
-			input.INSTALLATION = bol
-
-			httpPostUrl := "http://localhost:8080/gke/config/set"
+			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/login"
 			bytes := util.HTTPPostRequest(input, httpPostUrl)
 			util.PrintOutput(bytes)
 		}
-
 	},
 }
 
@@ -649,32 +667,91 @@ var GKEInitCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var arguments []string
-		arguments = append(arguments, "gcloud", cobrautil.CONFIGURATION, cobrautil.PROJECT_ID)
+		if len(args) > 0 {
+			cmd.Help()
+		} else {
+			var arguments []string
+			arguments = append(arguments, "gcloud", cobrautil.CONFIGURATION, cobrautil.PROJECT_ID)
 
-		if cobrautil.ZONE != "" {
-			arguments = append(arguments, cobrautil.ZONE)
+			if cobrautil.ZONE != "" {
+				arguments = append(arguments, cobrautil.ZONE)
+			}
+
+			if cobrautil.REGION != "" {
+				arguments = append(arguments, cobrautil.REGION)
+			}
+
+			command := &exec.Cmd{
+				Path:   "./gcloud-init.sh",
+				Args:   arguments,
+				Stdout: os.Stdout,
+				Stderr: os.Stderr,
+			}
+
+			err := command.Start()
+			if err != nil {
+				fmt.Println(err)
+			}
+			err = command.Wait()
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	},
+}
+
+var GKEConfigCmd = &cobra.Command{
+	Use:   "config",
+	Short: "authorize gcloud to access the Cloud Platform with Google user credentials",
+}
+
+var GKEConfigSetCmd = &cobra.Command{
+	Use:   "set",
+	Short: "set a Google Cloud CLI property",
+	Long:  `hybridctl gke config set SECTION/PROPERTY VALUE [--installation]`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 2 {
+			cmd.Help()
+		} else {
+			// gcloud config set SECTION/PROPERTY VALUE [--installation] [GCLOUD_WIDE_FLAG …]
+
+			/*
+				input := SetProperty{
+					SECTION:  "compute",
+					PROPERTY: "zone",
+					VALUE:    "us-central1-a",
+				}
+			*/
+
+			var input util.GKESetProperty
+
+			// set SECTION/PROPERTY
+			if strings.Contains(args[0], "/") {
+				cnt := strings.Count(args[0], "/")
+				if cnt != 1 {
+					fmt.Println("ERROR: Invalid Input. Enter in the correct command format.\n Usage: hybridctl gke config set SECTION/PROPERTY VALUE")
+					return
+				}
+				temp := strings.Split(args[0], "/")
+				input.SECTION = temp[0]
+				input.PROPERTY = temp[1]
+			} else {
+				input.PROPERTY = args[0]
+			}
+
+			// set VALUE
+			input.VALUE = args[1]
+
+			// set flags
+			bol, _ := cmd.Flags().GetBool("installation")
+			input.INSTALLATION = bol
+
+			httpPostUrl := "http://localhost:8080/gke/config/set"
+			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			util.PrintOutput(bytes)
 		}
 
-		if cobrautil.REGION != "" {
-			arguments = append(arguments, cobrautil.REGION)
-		}
-
-		command := &exec.Cmd{
-			Path:   "./gcloud-init.sh",
-			Args:   arguments,
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-		}
-
-		err := command.Start()
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = command.Wait()
-		if err != nil {
-			fmt.Println(err)
-		}
 	},
 }
 
