@@ -49,6 +49,7 @@ var GKEContainerGetServerConfigCmd = &cobra.Command{
 				Zone:      "us-central1-a",
 			}
 		*/
+		ReloadGKEConfigValue()
 		input := &containerpb.GetServerConfigRequest{
 			ProjectId: os.Getenv("GKE_PROJECT_ID"),
 		}
@@ -338,7 +339,7 @@ var GKEOperationDescribeCmd = &cobra.Command{
 					Name:        "operation-1648309236003-34160983",
 				}
 			*/
-
+			ReloadGKEConfigValue()
 			input := &containerpb.GetOperationRequest{
 				ProjectId:   os.Getenv("GKE_PROJECT_ID"),
 				OperationId: args[0],
@@ -385,7 +386,7 @@ var GKEOperationsListCmd = &cobra.Command{
 				Zone:      "-",
 			}
 		*/
-
+		ReloadGKEConfigValue()
 		input := &containerpb.ListOperationsRequest{
 			ProjectId: os.Getenv("GKE_PROJECT_ID"),
 		}
@@ -468,7 +469,7 @@ var GKENodePoolsRollbackCmd = &cobra.Command{
 					Name:      "pool-1",
 				}
 			*/
-
+			ReloadGKEConfigValue()
 			input := &containerpb.RollbackNodePoolUpgradeRequest{
 				ProjectId: os.Getenv("GKE_PROJECT_ID"),
 				Name:      args[0],
@@ -658,6 +659,7 @@ var GKEInitCmd = &cobra.Command{
 			Stdout: os.Stdout,
 			Stderr: os.Stderr,
 		}
+
 		err := command.Start()
 		if err != nil {
 			fmt.Println(err)
@@ -669,18 +671,21 @@ var GKEInitCmd = &cobra.Command{
 	},
 }
 
-func init() {
+func ReloadGKEConfigValue() {
 	command := &exec.Cmd{
-		Path:   "./gke-init.sh",
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
+		Path: "./gke-init.sh",
 	}
-	err := command.Start()
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = command.Wait()
-	if err != nil {
-		fmt.Println(err)
+	_, stdout := apiserverutil.CombinedOutput2(command)
+	env := strings.Split(string(stdout), "\n")
+	if len(env) < 3 {
+		fmt.Println("SET YOUR GCLOUD DEFAULT PROJECT_ID, ZONE, CLUSTER")
+	} else {
+		os.Setenv("GKE_PROJECT_ID", env[0])
+		os.Setenv("GKE_DEFAULT_ZONE", env[1])
+		if env[2] == "(unset)" {
+			os.Setenv("GKE_DEFAULT_CLUSTER", "")
+		} else {
+			os.Setenv("GKE_DEFAULT_CLUSTER", env[2])
+		}
 	}
 }
