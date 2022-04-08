@@ -585,6 +585,7 @@ var GKEConfigCmd = &cobra.Command{
 var GKEConfigSetCmd = &cobra.Command{
 	Use:   "set",
 	Short: "set a Google Cloud CLI property",
+	Long:  `hybridctl gke config set SECTION/PROPERTY VALUE [--installation]`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 2 {
@@ -600,10 +601,9 @@ var GKEConfigSetCmd = &cobra.Command{
 				}
 			*/
 
-			input := util.GKESetProperty{
-				VALUE: args[1],
-			}
+			var input util.GKESetProperty
 
+			// set SECTION/PROPERTY
 			if strings.Contains(args[0], "/") {
 				cnt := strings.Count(args[0], "/")
 				if cnt != 1 {
@@ -616,6 +616,13 @@ var GKEConfigSetCmd = &cobra.Command{
 			} else {
 				input.PROPERTY = args[0]
 			}
+
+			// set VALUE
+			input.VALUE = args[1]
+
+			// set flags
+			bol, _ := cmd.Flags().GetBool("installation")
+			input.INSTALLATION = bol
 
 			httpPostUrl := "http://localhost:8080/gke/config/set"
 			bytes := util.HTTPPostRequest(input, httpPostUrl)
@@ -672,20 +679,30 @@ var GKEInitCmd = &cobra.Command{
 }
 
 func ReloadGKEConfigValue() {
-	command := &exec.Cmd{
-		Path: "./gke-init.sh",
-	}
-	_, stdout := apiserverutil.CombinedOutput2(command)
-	env := strings.Split(string(stdout), "\n")
-	if len(env) < 3 {
-		fmt.Println("SET YOUR GCLOUD DEFAULT PROJECT_ID, ZONE, CLUSTER")
+	cmd := exec.Command("bash", "-c", "gcloud config get-value project")
+	_, stdout := apiserverutil.CombinedOutput2(cmd)
+	GKE_project_id := strings.ReplaceAll(string(stdout), "\n", "")
+	if GKE_project_id == "" {
+		os.Setenv("GKE_PROJECT_ID", "")
 	} else {
-		os.Setenv("GKE_PROJECT_ID", env[0])
-		os.Setenv("GKE_DEFAULT_ZONE", env[1])
-		if env[2] == "(unset)" {
-			os.Setenv("GKE_DEFAULT_CLUSTER", "")
-		} else {
-			os.Setenv("GKE_DEFAULT_CLUSTER", env[2])
-		}
+		os.Setenv("GKE_PROJECT_ID", GKE_project_id)
+	}
+
+	cmd = exec.Command("bash", "-c", "gcloud config get-value compute/zone")
+	_, stdout = apiserverutil.CombinedOutput2(cmd)
+	GKE_default_zone := strings.ReplaceAll(string(stdout), "\n", "")
+	if GKE_default_zone == "" {
+		os.Setenv("GKE_DEFAULT_ZONE", "")
+	} else {
+		os.Setenv("GKE_DEFAULT_ZONE", GKE_default_zone)
+	}
+
+	cmd = exec.Command("bash", "-c", "gcloud config get-value container/cluster")
+	_, stdout = apiserverutil.CombinedOutput2(cmd)
+	GKE_default_cluster := strings.ReplaceAll(string(stdout), "\n", "")
+	if GKE_default_cluster == "" {
+		os.Setenv("GKE_DEFAULT_CLUSTER", "")
+	} else {
+		os.Setenv("GKE_DEFAULT_CLUSTER", GKE_default_cluster)
 	}
 }

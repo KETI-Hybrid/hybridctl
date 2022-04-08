@@ -30,4 +30,6 @@ func gkeFlags() {
 	GKENodePoolsRollbackCmd.Flags().StringP("zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 
 	GKEOperationDescribeCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "", "", "ZONE")
+
+	GKEConfigSetCmd.Flags().BoolP("installation", "", false, "If set, the property is updated for the entire Google Cloud CLI installation. Otherwise, by default, the property is updated only in the currently active configuration.")
 }

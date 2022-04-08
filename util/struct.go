@@ -126,7 +126,8 @@ type GKEOperations struct {
 }
 
 type GKESetProperty struct {
-	SECTION  string
-	PROPERTY string
-	VALUE    string
+	SECTION      string
+	PROPERTY     string
+	VALUE        string
+	INSTALLATION bool
 }
