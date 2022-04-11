@@ -39,7 +39,7 @@ func gkeFlags() {
 
 	GKEDockerCmd.Flags().BoolP("authorize-only", "a", false, "Configure Docker authorization only; do not launch the Docker command-line.")
 	GKEDockerCmd.Flags().StringP("docker-host", "", "", "URL to connect to Docker Daemon. Format: tcp://host:port or unix:///path/to/socket.")
-	GKEDockerCmd.Flags().StringP("server", "", "", "Address of the Google Cloud Registry.")
+	GKEDockerCmd.Flags().StringP("server", "s", "", "Address of the Google Cloud Registry.")
 	GKEDockerCmd.Flags().StringP("args", "", "", "Arguments to pass to Docker. The '--' argument must be specified between gcloud specific args on the left and DOCKER_ARGS on the right.")
 
 	GKENodePoolsRollbackCmd.Flags().StringP("cluster", "", "", "The cluster from which to rollback the node pool. Overrides the default container/cluster property value for this command invocation.")
