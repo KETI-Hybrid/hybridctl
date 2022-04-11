@@ -133,6 +133,7 @@ func init() {
 	GKEAuthCmd.AddCommand(GKEAuthListCmd)
 	GKEAuthCmd.AddCommand(GKEAuthLoginCmd)
 	GKEAuthCmd.AddCommand(GKEAuthRevokeCmd)
+	GKECmd.AddCommand(GKEDockerCmd)
 	GKECmd.AddCommand(GKESourceCmd)
 	GKESourceCmd.AddCommand(GKESourceProjectConfigsCmd)
 	GKESourceProjectConfigsCmd.AddCommand(GKEProjectConfigsUpdateCmd)

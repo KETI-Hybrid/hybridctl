@@ -670,6 +670,41 @@ var GKEAuthLoginCmd = &cobra.Command{
 	},
 }
 
+var GKEDockerCmd = &cobra.Command{
+	Use:   "docker",
+	Short: "enable Docker CLI access to Google Container Registry",
+	Long: `hybridcl docker [--authorize-only, -a] [--docker-host=DOCKER_HOST] [--server=SERVER,[SERVER,…], -s SERVER,[SERVER,…]; default="gcr.io,us.gcr.io,eu.gcr.io,asia.gcr.io,staging-k8s.gcr.io,marketplace.gcr.io"] --args "DOCKER_ARGS,"
+	hybridctl gke docker --args "pull gcr.io/google-containers/pause:1.0"
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			cmd.Help()
+		} else {
+			var input cobrautil.GKEDocker
+
+			bol, _ := cmd.Flags().GetBool("authorize-only")
+			input.AUTHORIZE_ONLY = bol
+
+			str, _ := cmd.Flags().GetString("docker-host")
+			input.DOCKER_HOST = str
+
+			str, _ = cmd.Flags().GetString("server")
+			input.SERVER = str
+
+			str, _ = cmd.Flags().GetString("args")
+			if str != "" {
+				docker_args := strings.Split(str, " ")
+				input.DOCKER_ARGS = append(input.DOCKER_ARGS, docker_args...)
+			}
+
+			httpPostUrl := "http://localhost:8080/gke/docker"
+			bytes, err := cobrautil.GetResponseBody("POST", httpPostUrl, input)
+			cobrautil.CheckERR(err)
+			cobrautil.PrintOutput(bytes)
+		}
+	},
+}
+
 var GKEInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "initialize or reinitialize gcloud",
@@ -789,53 +824,57 @@ var GKEProjectConfigsUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update the Cloud Source Repositories configuration of the current project",
 	Run: func(cmd *cobra.Command, args []string) {
-		var input cobrautil.GKESource
-		bol, _ := cmd.Flags().GetBool("disable-pushblock")
-		bol2, _ := cmd.Flags().GetBool("enable-pushblock")
-		if bol && bol2 {
-			fmt.Println("You can only use the pushblock flag to enable or disable.")
-			return
-		} else if bol {
-			input.PUSHBLOCK = 0
-		} else if bol2 {
-			input.PUSHBLOCK = 1
+		if len(args) > 0 {
+			cmd.Help()
 		} else {
-			input.PUSHBLOCK = -1
-		}
+			var input cobrautil.GKESource
+			bol, _ := cmd.Flags().GetBool("disable-pushblock")
+			bol2, _ := cmd.Flags().GetBool("enable-pushblock")
+			if bol && bol2 {
+				fmt.Println("You can only use the pushblock flag to enable or disable.")
+				return
+			} else if bol {
+				input.PUSHBLOCK = 0
+			} else if bol2 {
+				input.PUSHBLOCK = 1
+			} else {
+				input.PUSHBLOCK = -1
+			}
 
-		str, _ := cmd.Flags().GetString("message-format")
-		if str != "" {
-			input.MESSAGE_FORMAT = str
-		}
+			str, _ := cmd.Flags().GetString("message-format")
+			if str != "" {
+				input.MESSAGE_FORMAT = str
+			}
 
-		str, _ = cmd.Flags().GetString("service-account")
-		if str != "" {
-			input.SERVICE_ACCOUNT = str
-		}
+			str, _ = cmd.Flags().GetString("service-account")
+			if str != "" {
+				input.SERVICE_ACCOUNT = str
+			}
 
-		str, _ = cmd.Flags().GetString("topic-project")
-		if str != "" {
-			input.TOPIC_PROJECT = str
-		}
+			str, _ = cmd.Flags().GetString("topic-project")
+			if str != "" {
+				input.TOPIC_PROJECT = str
+			}
 
-		str, _ = cmd.Flags().GetString("add-topic")
-		if str != "" {
-			input.ADD_TOPIC = str
-		}
+			str, _ = cmd.Flags().GetString("add-topic")
+			if str != "" {
+				input.ADD_TOPIC = str
+			}
 
-		str, _ = cmd.Flags().GetString("remove-topic")
-		if str != "" {
-			input.REMOVE_TOPIC = str
-		}
+			str, _ = cmd.Flags().GetString("remove-topic")
+			if str != "" {
+				input.REMOVE_TOPIC = str
+			}
 
-		str, _ = cmd.Flags().GetString("update-topic")
-		if str != "" {
-			input.UPDATE_TOPIC = str
-		}
+			str, _ = cmd.Flags().GetString("update-topic")
+			if str != "" {
+				input.UPDATE_TOPIC = str
+			}
 
-		httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/update"
-		bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
-		cobrautil.PrintOutput(bytes)
+			httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/update"
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
+		}
 	},
 }
 
@@ -843,9 +882,13 @@ var GKEProjectConfigsDescribeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "show details about the configuration of a project",
 	Run: func(cmd *cobra.Command, args []string) {
-		httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/describe"
-		bytes := cobrautil.HTTPPostRequest(nil, httpPostUrl)
-		cobrautil.PrintOutput(bytes)
+		if len(args) > 0 {
+			cmd.Help()
+		} else {
+			httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/describe"
+			bytes := cobrautil.HTTPPostRequest(nil, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
+		}
 	},
 }
 

@@ -114,6 +114,13 @@ type GKEImages struct {
 	FORCE_DELETE_TAGS bool
 }
 
+type GKEDocker struct {
+	AUTHORIZE_ONLY bool
+	DOCKER_HOST    string
+	SERVER         string
+	DOCKER_ARGS    []string
+}
+
 type GKEAuth struct {
 	CRED_FILE  string
 	REGISTRIES string
