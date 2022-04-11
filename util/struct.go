@@ -135,6 +135,33 @@ type GKEOperations struct {
 	NAME         string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 }
 
+type pushblock int
+
+const (
+	Enable  pushblock = 1
+	Disable pushblock = 0
+	None    pushblock = -1
+)
+
+func (p pushblock) String() string {
+	if p == Enable {
+		return "enable"
+	} else if p == Disable {
+		return "disable"
+	}
+	return "none"
+}
+
+type GKESource struct {
+	PUSHBLOCK       pushblock
+	MESSAGE_FORMAT  string
+	SERVICE_ACCOUNT string
+	TOPIC_PROJECT   string
+	ADD_TOPIC       string
+	REMOVE_TOPIC    string
+	UPDATE_TOPIC    string
+}
+
 type GKESetProperty struct {
 	SECTION      string
 	PROPERTY     string

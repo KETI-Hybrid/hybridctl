@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	apiserverutil "Hybrid_Cloud/hcp-apiserver/pkg/util"
-	"Hybrid_Cloud/hybridctl/util"
+	"Hybrid_Cloud/hcp-apiserver/pkg/util"
 	cobrautil "Hybrid_Cloud/hybridctl/util"
 
 	// cobrautil "Hybrid_Cloud/hybridctl/util"
@@ -13,6 +12,8 @@ import (
 	"reflect"
 	"strings"
 
+	// "cloud.google.com/go/pubsub"
+
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
@@ -22,6 +23,7 @@ const (
 	GKE_CONTAINER_PATH = "/gke/container"
 	GKE_AUTH_PATH      = "/gke/auth"
 	GKE_CONFIG_PATH    = "/gke/config"
+	GKE_SOURCE_PATH    = "/gke/source/project-configs"
 	GKE_HELP           = "Use \"hybridctl gke [command] --help\" for more information about a command."
 )
 
@@ -65,7 +67,7 @@ var GKEContainerGetServerConfigCmd = &cobra.Command{
 		httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/server-config/get"
 		bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
-		var output apiserverutil.Output
+		var output util.Output
 		json.Unmarshal(bytes, &output)
 		if output.Stderr != nil {
 			fmt.Println(string(output.Stderr))
@@ -360,7 +362,7 @@ var GKEOperationDescribeCmd = &cobra.Command{
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/describe"
 			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
-			var output apiserverutil.Output
+			var output util.Output
 			json.Unmarshal(bytes, &output)
 			if output.Stderr != nil {
 				fmt.Println(string(output.Stderr))
@@ -409,9 +411,9 @@ var GKEOperationsListCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/list"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
-			var output apiserverutil.Output
+			var output util.Output
 			json.Unmarshal(bytes, &output)
 			if output.Stderr != nil {
 				fmt.Println(string(output.Stderr))
@@ -447,7 +449,7 @@ var GKEOperationsWaitCmd = &cobra.Command{
 			cmd.Help()
 		} else {
 
-			var input = &util.GKEOperations{
+			var input = &cobrautil.GKEOperations{
 				OPERATION_ID: args[0],
 			}
 
@@ -457,8 +459,8 @@ var GKEOperationsWaitCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/operations/wait"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 
 	},
@@ -509,9 +511,9 @@ var GKENodePoolsRollbackCmd = &cobra.Command{
 			}
 
 			httpPostUrl := "http://localhost:8080" + GKE_CONTAINER_PATH + "/nodepool-upgrade/rollback"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
 
-			var output apiserverutil.Output
+			var output util.Output
 			json.Unmarshal(bytes, &output)
 			if output.Stderr != nil {
 				fmt.Println(string(output.Stderr))
@@ -544,7 +546,7 @@ var GKEAuthConfigureDockerCmd = &cobra.Command{
 		if len(args) > 1 {
 			cmd.Help()
 		} else {
-			var input util.GKEAuth
+			var input cobrautil.GKEAuth
 			if len(args) == 1 {
 				input.REGISTRIES = args[0]
 			}
@@ -558,8 +560,8 @@ var GKEAuthConfigureDockerCmd = &cobra.Command{
 			*/
 
 			httpPostUrl := "http://localhost:8080" + GKE_AUTH_PATH + "/configure-docker"
-			bytes := util.HTTPPostRequest(input, httpPostUrl)
-			util.PrintOutput(bytes)
+			bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+			cobrautil.PrintOutput(bytes)
 		}
 	},
 }
@@ -574,7 +576,7 @@ var GKEAuthListCmd = &cobra.Command{
 			cmd.Help()
 		} else {
 			// gcloud auth list
-			var input util.GKEAuth
+			var input cobrautil.GKEAuth
 
 			str, _ := cmd.Flags().GetString("filter-account")
 			if str != "" {
@@ -773,9 +775,83 @@ var GKEConfigSetCmd = &cobra.Command{
 	},
 }
 
+var GKESourceCmd = &cobra.Command{
+	Use:   "source",
+	Short: "cloud git repository commands",
+}
+
+var GKESourceProjectConfigsCmd = &cobra.Command{
+	Use:   "project-configs",
+	Short: "manage Cloud Source Repositories configuration of a project",
+}
+
+var GKEProjectConfigsUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "update the Cloud Source Repositories configuration of the current project",
+	Run: func(cmd *cobra.Command, args []string) {
+		var input cobrautil.GKESource
+		bol, _ := cmd.Flags().GetBool("disable-pushblock")
+		bol2, _ := cmd.Flags().GetBool("enable-pushblock")
+		if bol && bol2 {
+			fmt.Println("You can only use the pushblock flag to enable or disable.")
+			return
+		} else if bol {
+			input.PUSHBLOCK = 0
+		} else if bol2 {
+			input.PUSHBLOCK = 1
+		} else {
+			input.PUSHBLOCK = -1
+		}
+
+		str, _ := cmd.Flags().GetString("message-format")
+		if str != "" {
+			input.MESSAGE_FORMAT = str
+		}
+
+		str, _ = cmd.Flags().GetString("service-account")
+		if str != "" {
+			input.SERVICE_ACCOUNT = str
+		}
+
+		str, _ = cmd.Flags().GetString("topic-project")
+		if str != "" {
+			input.TOPIC_PROJECT = str
+		}
+
+		str, _ = cmd.Flags().GetString("add-topic")
+		if str != "" {
+			input.ADD_TOPIC = str
+		}
+
+		str, _ = cmd.Flags().GetString("remove-topic")
+		if str != "" {
+			input.REMOVE_TOPIC = str
+		}
+
+		str, _ = cmd.Flags().GetString("update-topic")
+		if str != "" {
+			input.UPDATE_TOPIC = str
+		}
+
+		httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/update"
+		bytes := cobrautil.HTTPPostRequest(input, httpPostUrl)
+		cobrautil.PrintOutput(bytes)
+	},
+}
+
+var GKEProjectConfigsDescribeCmd = &cobra.Command{
+	Use:   "describe",
+	Short: "show details about the configuration of a project",
+	Run: func(cmd *cobra.Command, args []string) {
+		httpPostUrl := "http://localhost:8080" + GKE_SOURCE_PATH + "/describe"
+		bytes := cobrautil.HTTPPostRequest(nil, httpPostUrl)
+		cobrautil.PrintOutput(bytes)
+	},
+}
+
 func ReloadGKEConfigValue() {
 	cmd := exec.Command("bash", "-c", "gcloud config get-value project")
-	_, stdout := apiserverutil.CombinedOutput2(cmd)
+	_, stdout := util.CombinedOutput2(cmd)
 	GKE_project_id := strings.ReplaceAll(string(stdout), "\n", "")
 	if GKE_project_id == "" {
 		os.Setenv("GKE_PROJECT_ID", "")
@@ -784,7 +860,7 @@ func ReloadGKEConfigValue() {
 	}
 
 	cmd = exec.Command("bash", "-c", "gcloud config get-value compute/zone")
-	_, stdout = apiserverutil.CombinedOutput2(cmd)
+	_, stdout = util.CombinedOutput2(cmd)
 	GKE_default_zone := strings.ReplaceAll(string(stdout), "\n", "")
 	if GKE_default_zone == "" {
 		os.Setenv("GKE_DEFAULT_ZONE", "")
@@ -793,7 +869,7 @@ func ReloadGKEConfigValue() {
 	}
 
 	cmd = exec.Command("bash", "-c", "gcloud config get-value container/cluster")
-	_, stdout = apiserverutil.CombinedOutput2(cmd)
+	_, stdout = util.CombinedOutput2(cmd)
 	GKE_default_cluster := strings.ReplaceAll(string(stdout), "\n", "")
 	if GKE_default_cluster == "" {
 		os.Setenv("GKE_DEFAULT_CLUSTER", "")

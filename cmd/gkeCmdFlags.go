@@ -44,5 +44,14 @@ func gkeFlags() {
 	GKEOperationsListCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 	GKEOperationsWaitCmd.Flags().StringVarP(&cobrautil.ZONE, "zone", "z", "", "Compute zone (e.g. us-central1-a) for the cluster. Overrides the default compute/zone property value for this command invocation.")
 
+	GKEProjectConfigsUpdateCmd.Flags().BoolP("disable-pushblock", "", false, "Disable PushBlock for all repositories under current project. PushBlock allows repository owners to block git push transactions containing private key data.")
+	GKEProjectConfigsUpdateCmd.Flags().BoolP("enable-pushblock", "", false, "Enable PushBlock for all repositories under current project. PushBlock allows repository owners to block git push transactions containing private key data.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("message-format", "", "", "The format of the message to publish to the topic. MESSAGE_FORMAT must be one of: json, protobuf.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("service-account", "", "", "Email address of the service account used for publishing Cloud Pub/Sub messages. This service account needs to be in the same project as the project. \nWhen added, the caller needs to have iam.serviceAccounts.actAs permission on this service account.\n If unspecified, it defaults to the Compute Engine default service account.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("topic-project", "", "", "Cloud project for the topic. If not set, the currently set project will be used.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("add-topic", "", "", "ID of the topic or fully qualified identifier for the topic.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("remove-topic", "", "", "ID of the topic or fully qualified identifier for the topic.")
+	GKEProjectConfigsUpdateCmd.Flags().StringP("update-topic", "", "", "ID of the topic or fully qualified identifier for the topic.")
+
 	GKEConfigSetCmd.Flags().BoolP("installation", "", false, "If set, the property is updated for the entire Google Cloud CLI installation. Otherwise, by default, the property is updated only in the currently active configuration.")
 }
