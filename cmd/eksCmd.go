@@ -20,12 +20,22 @@ func EKSCommonPrintOption(output interface{}, bytes []byte) {
 	}
 }
 
-var createAddonCmd = &cobra.Command{
-	Use:   "create-addon",
-	Short: "A brief description of your command",
+var EKSAddonCmd = &cobra.Command{
+	Use:   "addon",
+	Short: "Amazon EKS add-ons help to automate the provisioning and lifecycle management of common operational software for Amazon EKS clusters.",
 	Long: `	
-	- create-addon
-		hybridctl create-addon 
+	Amazon EKS add-ons help to automate the provisioning and lifecycle management of common operational software for Amazon EKS clusters. 
+	Amazon EKS add-ons require clusters running version 1.18 or later because Amazon EKS add-ons rely on the Server-side Apply Kubernetes feature, 
+	which is only available in Kubernetes 1.18 and later.
+	For more information, see Amazon EKS add-ons in the Amazon EKS User Guide .`,
+}
+
+var EKSCreateAddonCmd = &cobra.Command{
+	Use:   "create",
+	Short: "Creates an Amazon EKS add-on.",
+	Long: `	
+	- create
+		hybridctl addon create
 
 	- flags
 		[--addon-version <value>]
@@ -81,12 +91,12 @@ var createAddonCmd = &cobra.Command{
 	},
 }
 
-var deleteAddonCmd = &cobra.Command{
-	Use:   "delete-addon",
-	Short: "A brief description of your command",
+var EKSDeleteAddonCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete an Amazon EKS add-on.",
 	Long: `	
-	- delete-addon
-		hybridctl delete-addon 
+	- delete
+		hybridctl delete addon 
 
 	- platform
 		- eks (elastic kubernetes service)`,
@@ -108,12 +118,12 @@ var deleteAddonCmd = &cobra.Command{
 	},
 }
 
-var describeAddonCmd = &cobra.Command{
-	Use:   "describe-addon",
+var EKSDescribeAddonCmd = &cobra.Command{
+	Use:   "describe",
 	Short: "A brief description of your command",
 	Long: `	
-	- describe-addon
-		hybridctl describe-addon <clusterName> <addonName> 
+	- describe
+		hybridctl addon describe <clusterName> <addonName> 
 
 	- platform
 		- eks (elastic kubernetes service)`,
@@ -135,7 +145,7 @@ var describeAddonCmd = &cobra.Command{
 	},
 }
 
-var describeAddonVersionsCmd = &cobra.Command{
+var EKSDescribeAddonVersionsCmd = &cobra.Command{
 	Use:   "describe-addon-versions",
 	Short: "A brief description of your command",
 	Long: `	
@@ -181,7 +191,7 @@ var describeAddonVersionsCmd = &cobra.Command{
 	},
 }
 
-var listAddonCmd = &cobra.Command{
+var EKSListAddonCmd = &cobra.Command{
 	Use:   "list-addon",
 	Short: "A brief description of your command",
 	Long: `	
@@ -614,7 +624,7 @@ var listUpdateCmd = &cobra.Command{
 	},
 }
 
-var updateAddonCmd = &cobra.Command{
+var EKSUpdateAddonCmd = &cobra.Command{
 	Use:   "update-addon",
 	Short: "A brief description of your command",
 	Long: `	

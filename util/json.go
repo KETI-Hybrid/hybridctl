@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/Jeffail/gabs"
 )
@@ -30,7 +31,21 @@ func PrintOutput(bytes []byte) error {
 		fmt.Print(string(output.Stdout))
 	}
 	if output.Stderr != nil {
-		fmt.Print(string(output.Stderr))
+		fmt.Print("thistiserr:", string(output.Stderr))
+	}
+	return err
+}
+
+func PrintOutputReplaceStr(bytes []byte, old string, new string) error {
+	var output util.Output
+	err := json.Unmarshal(bytes, &output)
+	if output.Stdout != nil {
+		fmt.Print(string(output.Stdout))
+	}
+	if output.Stderr != nil {
+		str := string(output.Stderr)
+		str = strings.ReplaceAll(str, old, new)
+		fmt.Print(str)
 	}
 	return err
 }

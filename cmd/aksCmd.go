@@ -2,13 +2,15 @@ package cmd
 
 import (
 	"Hybrid_Cloud/hybridctl/util"
+	cobrautil "Hybrid_Cloud/hybridctl/util"
 	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
-func AKSCommonPrintOption(bytes []byte) {
+/*
+func cobrautil.PrintOutput(bytes []byte) {
 	var errmsg util.Error
 	json.Unmarshal(bytes, &errmsg)
 	if errmsg.Error.Message == "" {
@@ -17,10 +19,13 @@ func AKSCommonPrintOption(bytes []byte) {
 		fmt.Println(errmsg.Error.Message)
 	}
 }
+*/
+
+const API string = "http://localhost:8080"
 
 //addon
 
-var AddonCmd = &cobra.Command{
+var AKSAddonCmd = &cobra.Command{
 	Use:   "addon",
 	Short: "Commands to manage and view single addon conditions.",
 	Long:  `hybridctl aks`,
@@ -43,9 +48,9 @@ var AKSDisableAddonsCmd = &cobra.Command{
 				Addon: addon,
 			},
 		}
-		httpPostUrl := "/aks/addon/disable"
+		httpPostUrl := API + "/aks/addon/disable"
 		bytes := util.HTTPPostRequest(AKSAddon, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -66,9 +71,9 @@ var AKSEnableAddonsCmd = &cobra.Command{
 				Addon: addon,
 			},
 		}
-		httpPostUrl := "/aks/addon/enable"
+		httpPostUrl := API + "/aks/addon/enable"
 		bytes := util.HTTPPostRequest(AKSAddon, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutputReplaceStr(bytes, "az aks disable-addons -a monitoring", "hybridctl aks addon disable -a monitoring")
 	},
 }
 
@@ -84,9 +89,9 @@ var AKSListAddonsCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/addon/list"
+		httpPostUrl := API + "/aks/addon/list"
 		bytes := util.HTTPPostRequest(AKSAddon, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -95,9 +100,9 @@ var AKSListAddonsAvailableCmd = &cobra.Command{
 	Short: "List available Kubernetes addons.",
 	Long:  `hybridctl aks addon list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		httpPostUrl := "/aks/addon/list-available"
+		httpPostUrl := API + "/aks/addon/list-available"
 		bytes := util.HTTPPostRequest(nil, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -118,9 +123,9 @@ var AKSShowAddonsCmd = &cobra.Command{
 				Addon: addon,
 			},
 		}
-		httpPostUrl := "/aks/addon/show"
+		httpPostUrl := API + "/aks/addon/show"
 		bytes := util.HTTPPostRequest(AKSAddon, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -141,9 +146,9 @@ var AKSUpdateAddonsCmd = &cobra.Command{
 				Addon: addon,
 			},
 		}
-		httpPostUrl := "/aks/addon/update"
+		httpPostUrl := API + "/aks/addon/update"
 		bytes := util.HTTPPostRequest(AKSAddon, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -183,9 +188,9 @@ var AKSPIAddCmd = &cobra.Command{
 		if bindingSelector != "" {
 			AKSPodIdentity.PodIdentity.BindingSelector = bindingSelector
 		}
-		httpPostUrl := "/aks/pod-identity/add"
+		httpPostUrl := API + "/aks/pod-identity/add"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -208,9 +213,9 @@ var AKSPIDeleteCmd = &cobra.Command{
 				Name:      podIdentityName,
 			},
 		}
-		httpPostUrl := "/aks/pod-identity/delete"
+		httpPostUrl := API + "/aks/pod-identity/delete"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -227,9 +232,9 @@ var AKSPIListCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/pod-identity/list"
+		httpPostUrl := API + "/aks/pod-identity/list"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -262,9 +267,9 @@ var AKSPIExceptionAddCmd = &cobra.Command{
 		if podIdentityName != "" {
 			AKSPodIdentity.PodIdentity.Name = podIdentityName
 		}
-		httpPostUrl := "/aks/pod-identity/exception/add"
+		httpPostUrl := API + "/aks/pod-identity/exception/add"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -287,9 +292,9 @@ var AKSPIExceptionDeleteCmd = &cobra.Command{
 				Name:      podIdentityName,
 			},
 		}
-		httpPostUrl := "/aks/pod-identity/exception/delete"
+		httpPostUrl := API + "/aks/pod-identity/exception/delete"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -306,9 +311,9 @@ var AKSPIExceptionListCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/pod-identity/exception/list"
+		httpPostUrl := API + "/aks/pod-identity/exception/list"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -333,9 +338,9 @@ var AKSPIExceptionUpdateCmd = &cobra.Command{
 				Name:      podIdentityName,
 			},
 		}
-		httpPostUrl := "/aks/pod-identity/exception/update"
+		httpPostUrl := API + "/aks/pod-identity/exception/update"
 		bytes := util.HTTPPostRequest(AKSPodIdentity, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -369,9 +374,9 @@ var MCAddCmd = &cobra.Command{
 			ConfigName:        name,
 			ConfigFile:        config,
 		}
-		httpPostUrl := "/aks/maintenance-configuration/create"
+		httpPostUrl := API + "/aks/maintenance-configuration/create"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -390,9 +395,9 @@ var MCDeleteCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ConfigName:        configName,
 		}
-		httpPostUrl := "/aks/maintenance-configuration/delete"
+		httpPostUrl := API + "/aks/maintenance-configuration/delete"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -419,9 +424,9 @@ var MCUpdateCmd = &cobra.Command{
 			ConfigName:        name,
 			ConfigFile:        config,
 		}
-		httpPostUrl := "/aks/maintenance-configuration/create"
+		httpPostUrl := API + "/aks/maintenance-configuration/create"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -438,9 +443,9 @@ var MCListCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/maintenance-configuration/list"
+		httpPostUrl := API + "/aks/maintenance-configuration/list"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -459,9 +464,9 @@ var MCShowCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ConfigName:        name,
 		}
-		httpPostUrl := "/aks/maintenance-configuration/show"
+		httpPostUrl := API + "/aks/maintenance-configuration/show"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -503,9 +508,9 @@ var AKSConfigurationCreate = &cobra.Command{
 				Scope:         scope,
 			},
 		}
-		httpPostUrl := "/aks/configuration/create"
+		httpPostUrl := API + "/aks/configuration/create"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -531,9 +536,9 @@ var AKSConfigurationDelete = &cobra.Command{
 				ClusterType: clusterType,
 			},
 		}
-		httpPostUrl := "/aks/configuration/delete"
+		httpPostUrl := API + "/aks/configuration/delete"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -557,9 +562,9 @@ var AKSConfigurationList = &cobra.Command{
 				ClusterType: clusterType,
 			},
 		}
-		httpPostUrl := "/aks/configuration/list"
+		httpPostUrl := API + "/aks/configuration/list"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -585,9 +590,9 @@ var AKSConfigurationShow = &cobra.Command{
 				ClusterType: clusterType,
 			},
 		}
-		httpPostUrl := "/aks/configuration/show"
+		httpPostUrl := API + "/aks/configuration/show"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -611,9 +616,9 @@ var AKSConnectedk8sConnectCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/connect"
+		httpPostUrl := API + "/aks/connectedk8s/connect"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -629,9 +634,9 @@ var AKSConnectedk8sDeleteCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/delete"
+		httpPostUrl := API + "/aks/connectedk8s/delete"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -650,9 +655,9 @@ var AKSConnectedk8sDisableFeaturesCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			Features:          features,
 		}
-		httpPostUrl := "/aks/connectedk8s/disable-features"
+		httpPostUrl := API + "/aks/connectedk8s/disable-features"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -668,9 +673,9 @@ var AKSConnectedk8sEnableFeaturesCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/enable-features"
+		httpPostUrl := API + "/aks/connectedk8s/enable-features"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -685,9 +690,9 @@ var AKSConnectedk8sListCmd = &cobra.Command{
 		if resourceGroupName == "" {
 			AKSAPIParameter.ResourceGroupName = resourceGroupName
 		}
-		httpPostUrl := "/aks/connectedk8s/list"
+		httpPostUrl := API + "/aks/connectedk8s/list"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -703,9 +708,9 @@ var AKSConnectedk8sProxyCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/proxy"
+		httpPostUrl := API + "/aks/connectedk8s/proxy"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -721,9 +726,9 @@ var AKSConnectedk8sShowCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/show"
+		httpPostUrl := API + "/aks/connectedk8s/show"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -739,9 +744,9 @@ var AKSConnectedk8sUpdateCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/update"
+		httpPostUrl := API + "/aks/connectedk8s/update"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -757,9 +762,9 @@ var AKSConnectedk8sUpgradeCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/connectedk8s/upgrade"
+		httpPostUrl := API + "/aks/connectedk8s/upgrade"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -777,7 +782,7 @@ var StartCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/start"
+		httpPostUrl := API + "/aks/start"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
 		var errmsg util.Error
 		json.Unmarshal(bytes, &errmsg)
@@ -803,7 +808,7 @@ var StopCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/stop"
+		httpPostUrl := API + "/aks/stop"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
 		var errmsg util.Error
 		json.Unmarshal(bytes, &errmsg)
@@ -829,9 +834,9 @@ var RotateCertsCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			ClusterName:       clusterName,
 		}
-		httpPostUrl := "/aks/rotate-certs"
+		httpPostUrl := API + "/aks/rotate-certs"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -845,9 +850,9 @@ var GetOSoptionsCmd = &cobra.Command{
 		AKSAPIParameter := util.AKSAPIParameter{
 			Location: location,
 		}
-		httpPostUrl := "/aks/get-os-options"
+		httpPostUrl := API + "/aks/get-os-options"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -889,9 +894,9 @@ var AKSAppUpCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Repository = p
 		}
-		httpPostUrl := "/aks/app-up"
+		httpPostUrl := API + "/aks/app-up"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -927,9 +932,9 @@ var AKSBrowseCmd = &cobra.Command{
 		if t != "" {
 			AKSAPIParameter.Subscription = t
 		}
-		httpPostUrl := "/aks/browse"
+		httpPostUrl := API + "/aks/browse"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -951,9 +956,9 @@ var AKSCheckAcrCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		httpPostUrl := "/aks/check-acr"
+		httpPostUrl := API + "/aks/check-acr"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -974,9 +979,9 @@ var AKSGetUpgradesCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		httpPostUrl := "/aks/get-upgrades"
+		httpPostUrl := API + "/aks/get-upgrades"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -994,9 +999,9 @@ var AKSGetVersionsCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		httpPostUrl := "/aks/get-versions"
+		httpPostUrl := API + "/aks/get-versions"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -1012,9 +1017,9 @@ var AKSKanalyzeCmd = &cobra.Command{
 			ClusterName:       clusterName,
 			ResourceGroupName: resourceGroupName,
 		}
-		httpPostUrl := "/aks/kanalyze"
+		httpPostUrl := API + "/aks/kanalyze"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -1032,9 +1037,9 @@ var AKSKollectCmd = &cobra.Command{
 			ResourceGroupName: resourceGroupName,
 			StorageAccount:    storageAccount,
 		}
-		httpPostUrl := "/aks/kollect"
+		httpPostUrl := API + "/aks/kollect"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -1062,9 +1067,9 @@ var AKSNodepoolGetUpgradesCmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Subscription = p
 		}
-		httpPostUrl := "/aks/nodepool-get-upgrades"
+		httpPostUrl := API + "/aks/nodepool-get-upgrades"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
 
@@ -1103,8 +1108,8 @@ var AKSInstallCLICmd = &cobra.Command{
 		if p != "" {
 			AKSAPIParameter.Install.Subscription = p
 		}
-		httpPostUrl := "/aks/install-cli"
+		httpPostUrl := API + "/aks/install-cli"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		AKSCommonPrintOption(bytes)
+		cobrautil.PrintOutput(bytes)
 	},
 }
