@@ -128,7 +128,7 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 func init() {
 	RootCmd.AddCommand(CreateCmd)
 	CreateCmd.AddCommand(ResourceCmd)
-	CreateCmd.Flags().StringVarP(&cobrautil.Option_file, "file", "f", "", "FILENAME")
-	CreateCmd.MarkFlagRequired("file")
-	CreateCmd.Flags().StringVarP(&cobrautil.Option_context, "context", "", "", "CLUSTERNAME")
+	ResourceCmd.Flags().StringVarP(&cobrautil.Option_file, "file", "f", "", "FILENAME")
+	ResourceCmd.MarkFlagRequired("file")
+	ResourceCmd.Flags().StringVarP(&cobrautil.Option_context, "context", "", "", "CLUSTERNAME")
 }
