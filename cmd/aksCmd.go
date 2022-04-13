@@ -852,7 +852,7 @@ var GetOSoptionsCmd = &cobra.Command{
 		}
 		httpPostUrl := API + "/aks/get-os-options"
 		bytes := util.HTTPPostRequest(AKSAPIParameter, httpPostUrl)
-		cobrautil.PrintOutput(bytes)
+		fmt.Println(string(bytes))
 	},
 }
 

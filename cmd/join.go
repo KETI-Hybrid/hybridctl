@@ -29,6 +29,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+var HCP_NAMESPACE string = "hcp"
+
 // joinCmd represents the join command
 var joinCmd = &cobra.Command{
 	Use:   "join",
@@ -64,15 +66,13 @@ DESCRIPTION
 	The types of platforms offered are as follows.
 
 	- aks   azure kubernetes service
+	  hybridctl join register aks CLUSTER_NAME RESOURCEGROUP
+
 	- eks   elastic kubernetes service
+	  hybridctl join register eks CLUSTER_NAME
+
 	- gke   google kuberntes engine
-
-	[INFO]
-
-		GKE 
-		- projectid    the ID of GKE cloud project to use. 
-		- clustername  the name of the cluster on the specified platform.
-		- region       choose Google Compute Zone from 1 to 85.
+	  hybridctl join register gke CLUSTER_NAME 
 
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -102,9 +102,7 @@ DESCRIPTION
 				if clustername == "" {
 					fmt.Println("ERROR: Input Clustername")
 				}
-				resource.CheckAndCreateNamespace("kube-master", "aks")
-				resource.CheckAndCreateNamespace("kube-master", "eks")
-				resource.CheckAndCreateNamespace("kube-master", "gke")
+				resource.CheckAndCreateNamespace("kube-master", HCP_NAMESPACE)
 				switch platform {
 				case "aks":
 					fallthrough
@@ -112,7 +110,7 @@ DESCRIPTION
 					fallthrough
 				case "gke":
 					if CreateHCPCluster(platform, clustername) {
-						err := u.ChangeConfigClusterName(platform, clustername)
+						err := u.ChangeConfigClusterName(HCP_NAMESPACE, clustername)
 						if err != nil {
 							fmt.Println(err)
 						}
@@ -133,7 +131,7 @@ func CheckHCPClusterListToJoin(clustername string) bool {
 	if err != nil {
 		log.Println(err)
 	}
-	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters("hcp").List(context.TODO(), metav1.ListOptions{})
+	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Println(err)
 	}
@@ -146,7 +144,7 @@ func CheckHCPClusterListToJoin(clustername string) bool {
 		if cluster.Name == clustername {
 			if joinstatus == "UNJOIN" {
 				cluster.Spec.JoinStatus = "JOINING"
-				_, err = hcp_cluster.HcpV1alpha1().HCPClusters("hcp").Update(context.TODO(), &cluster, metav1.UpdateOptions{})
+				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), &cluster, metav1.UpdateOptions{})
 				fmt.Println(cluster.Spec.JoinStatus)
 				if err != nil {
 					fmt.Println(err)
@@ -194,7 +192,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      clustername,
-			Namespace: "hcp",
+			Namespace: HCP_NAMESPACE,
 		},
 		Spec: hcpclusterapis.HCPClusterSpec{
 			ClusterPlatform: platform,
@@ -202,7 +200,7 @@ func CreateHCPCluster(platform string, clustername string) bool {
 			JoinStatus:      "UNJOIN",
 		},
 	}
-	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters("hcp").Create(context.TODO(), &cluster, metav1.CreateOptions{})
+	newhcpcluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Create(context.TODO(), &cluster, metav1.CreateOptions{})
 	// err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Delete(context.TODO(), clustername, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println(err)

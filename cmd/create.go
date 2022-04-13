@@ -29,6 +29,16 @@ var CreateCmd = &cobra.Command{
 	},
 }
 
+var ResourceCmd = &cobra.Command{
+	Use:   "resource",
+	Short: "A brief description of your command",
+	Long:  ` `,
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Work your own magic here
+		CreateResource()
+	},
+}
+
 func CreateResource() {
 
 	fmt.Println("1")
@@ -117,6 +127,7 @@ func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]
 
 func init() {
 	RootCmd.AddCommand(CreateCmd)
+	CreateCmd.AddCommand(ResourceCmd)
 	CreateCmd.Flags().StringVarP(&cobrautil.Option_file, "file", "f", "", "FILENAME")
 	CreateCmd.MarkFlagRequired("file")
 	CreateCmd.Flags().StringVarP(&cobrautil.Option_context, "context", "", "", "CLUSTERNAME")
