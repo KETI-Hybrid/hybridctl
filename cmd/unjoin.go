@@ -39,67 +39,52 @@ var unjoinCmd = &cobra.Command{
 	Use:   "unjoin",
 	Short: "A brief description of your command",
 	Long: ` 
-NAME 
-	hybridctl unjoin PLATFORM CLUSTER
+	NAME 
+		hybridctl unjoin CLUSTER_NAME
 
-DESCRIPTION
-	
-	>> cluster unjoin PLATFORM CLUSTER <<
+	DESCRIPTION
+		
+		>> cluster unjoin CLUSTER_NAME <<
 
-
-	PLATFORM means the Kubernetes platform of the cluster to unjoin.
-	The types of platforms offered are as follows.
-
-	- aks   azure kubernetes service
-	- eks   elastic kubernetes service
-	- gke   google kuberntes engine
-
-	* PLATFORM mut be written in LOWERCASE letters
-
-	CLUSTER means the name of the cluster on the specified platform.
+	CLUSTER_NAME means the name of the cluster on the specified platform.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 
 		if len(args) == 0 {
+			fmt.Println(cmd.Help())
 		} else {
-			switch args[0] {
-			case "aks":
-				fallthrough
-			case "eks":
-				fallthrough
-			case "gke":
-				fmt.Println("kubernetes engine Name : ", args[0])
-				fmt.Printf("Cluster Name : %s\n", args[1])
-				platform := args[0]
-				clustername := args[1]
-				hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
-				if err != nil {
-					log.Println(err)
-				}
-				cluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(platform).Get(context.TODO(), clustername, metav1.GetOptions{})
-				if err != nil {
-					log.Println(err)
-				}
-				joinstatus := cluster.Spec.JoinStatus
-				if joinstatus == "UNJOIN" {
-					fmt.Println("ERROR: This is an already unjoined cluster.")
-					return
-				} else if joinstatus == "UNJOINING" {
-					fmt.Println("ERROR: Cluster is already waiting to unjoin")
-				} else if joinstatus == "JOINING" {
-					fmt.Println("ERROR: Cluster is waiting to join")
-				} else {
-					cluster.Spec.JoinStatus = "UNJOINING"
-					_, err = hcp_cluster.HcpV1alpha1().HCPClusters(platform).Update(context.TODO(), cluster, metav1.UpdateOptions{})
-					fmt.Println(cluster.Spec.JoinStatus)
-					if err != nil {
-						fmt.Println(err)
-					}
-				}
-			default:
-				fmt.Println("Run 'hybridctl unjoin --help' to view all commands")
+
+			fmt.Printf("Cluster Name : %s\n", args[0])
+			clustername := args[0]
+			hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
+			if err != nil {
+				log.Println(err)
 			}
+
+			cluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Get(context.TODO(), clustername, metav1.GetOptions{})
+			if err != nil {
+				log.Println(err)
+			}
+
+			joinstatus := cluster.Spec.JoinStatus
+			if joinstatus == "UNJOIN" {
+				fmt.Println("ERROR: This is an already unjoined cluster.")
+				return
+			} else if joinstatus == "UNJOINING" {
+				fmt.Println("ERROR: Cluster is already waiting to unjoin")
+				return
+			} else if joinstatus == "JOINING" {
+				fmt.Println("ERROR: Cluster is waiting to join")
+				return
+			} else {
+				cluster.Spec.JoinStatus = "UNJOINING"
+				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), cluster, metav1.UpdateOptions{})
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+
 		}
 	},
 }
