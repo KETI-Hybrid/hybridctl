@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# # kubectl register platform clustername 
+# if [ -z "$1" ]; then 
+#     echo "ERROR: Input PlatformType"
+#     exit 0
+# fi
+
+# if [ -z "$2" ]; then 
+#     echo "ERROR: Input Cluster Name"
+#     exit 0
+# fi
+
+cd ~/.kube
+touch kubeconfig
+cat /dev/null > kubeconfig
+export KUBECONFIG=~/.kube/kubeconfig
+
+case "$1" in 
+    "aks") 
+        if [ -z "$3" ]; then
+            echo "ERROR: Input ResourceGroup"
+            exit 0
+        fi
+        az aks get-credentials --resource-group "$3" --name "$2" --file ~/.kube/kubeconfig
+        ;;
+    "eks")
+        aws eks update-kubeconfig --name "$2"
+        ;;
+    "gke")
+        gcloud container clusters get-credentials "$2"
+        ;;
+esac
+
+if [ "$?" -ne 0 ]; then
+    exit 1; 
+fi
+# export KUBECONFIG=~/.kube/config
+# cd /root/go/src/Hybrid_Cloud/hybridctl/pkg/hybridctl
+# go build
+# ./hybridctl join register $1 $2
