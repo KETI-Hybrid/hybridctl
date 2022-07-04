@@ -1,4 +1,4 @@
-// Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,22 @@ import (
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
+	Short: "Delete Kubernetes engine resource",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Work your own magic here
+		fmt.Println("delete called")
+
+	},
+}
+
+var deleteNodeCmd = &cobra.Command{
+	Use:   "node",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -36,60 +52,113 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("delete called")
-		cli := Cli{args[0], args[1]}
-		fmt.Println(cli)
-		if len(args) == 0 {
-			fmt.Println("Run 'hybridctl delete --help' to view all commands")
-		} else if args[0] == "gke" {
-			if args[1] == "" {
-
-				delete_gke(cli)
-				fmt.Println("Run 'hybridctl delete --help' to view all commands")
-			} else {
-				fmt.Println("kubernetes engine Name : ", args[0])
-				fmt.Printf("Cluster Name : %s\n", args[1])
-
-				delete_gke(cli)
-			}
-		} else if args[0] == "aks" {
-			if args[1] == "" {
-
-				fmt.Println("Run 'hybridctl delete --help' to view all commands")
-			} else {
-				fmt.Println("kubernetes engine Name : ", args[0])
-				fmt.Printf("Cluster Name : %s\n", args[1])
-
-				delete_aks(cli)
-			}
-		} else if args[0] == "eks" {
-			if args[1] == "" {
-
-				fmt.Println("Run 'hybridctl delete --help' to view all commands")
-			} else {
-				fmt.Println("kubernetes engine Name : ", args[0])
-				fmt.Printf("Cluster Name : %s\n", args[1])
-
-				delete_eks(cli)
-			}
+		platform_name, err := cmd.Flags().GetString("platform")
+		if err != nil {
+			panic(err)
+		}
+		cluster_name, err := cmd.Flags().GetString("cluster-name")
+		if err != nil {
+			panic(err)
+		}
+		NodeName, err := cmd.Flags().GetString("nodepool-name")
+		if err != nil {
+			panic(err)
+		}
+		var cli = Cli{}
+		cli.ClusterName = cluster_name
+		cli.NodeName = NodeName
+		cli.PlatformName = platform_name
+		if platform_name == "aks" {
+			deleteNodepool_aks(cli)
+			fmt.Println("call delete_aks_nodepool func")
+			fmt.Println(cli)
+		} else if platform_name == "eks" {
+			fmt.Println("call delete_eks_nodepool func")
+			fmt.Println(cli)
+			deleteNodepool_eks(cli)
+		} else if platform_name == "gke" {
+			fmt.Println("call delete_gke_nodepool func")
+			fmt.Println(cli)
+			deleteNodepool_gke(cli)
+		} else {
+			fmt.Println("Error: please enter the correct --platform arguments")
 		}
 	},
 }
+var deleteClusterCmd = &cobra.Command{
+	Use:   "cluster",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
 
-func delete_eks(info Cli) {
-	cmd_rm_cluster := exec.Command("rm", info.ClusterName+".tf.json")
-	cmd_rm_cluster.Dir = "../terraform/eks"
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Work your own magic here
+		platform_name, err := cmd.Flags().GetString("platform")
+		if err != nil {
+			panic(err)
+		}
+		cluster_name, err := cmd.Flags().GetString("cluster-name")
+		if err != nil {
+			panic(err)
+		}
 
-	output, err := cmd_rm_cluster.Output()
+		var cli = Cli{}
+		cli.ClusterName = cluster_name
+
+		cli.PlatformName = platform_name
+
+		if platform_name == "aks" {
+			fmt.Println("call delete_aks func")
+			delete_aks(cli)
+		} else if platform_name == "eks" {
+			fmt.Println("call delete_eks func")
+			delete_eks(cli)
+		} else if platform_name == "gke" {
+			fmt.Println("call delete_gke func")
+			delete_gke(cli)
+		} else {
+			fmt.Println("Error: please enter the correct --platform arguments")
+		}
+
+	},
+}
+
+func deleteNodepool_gke(info Cli) {
+
+	cluster := "cluster"
+
+	cmd_rm_nodepool := exec.Command("rm", info.ClusterName+"_"+info.NodeName+".tf.json")
+	cmd_rm_nodepool.Dir = "../terraform/gke/" + cluster
+
+	output, err := cmd_rm_nodepool.Output()
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println(string(output))
 	}
 
-	cmd_rm_nodepool := exec.Command("rm", info.ClusterName+"nodepool.tf.json")
+	//cmd := exec.Command("terraform", "destroy", "-auto-approve")
+	cmd := exec.Command("terraform", "apply", "-auto-approve")
+	cmd.Dir = "../terraform/gke/" + cluster
+
+	output, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+
+}
+
+func deleteNodepool_eks(info Cli) {
+
+	cmd_rm_nodepool := exec.Command("rm", info.ClusterName+"nodepool"+".tf.json")
 	cmd_rm_nodepool.Dir = "../terraform/eks"
 
-	output, err = cmd_rm_nodepool.Output()
+	output, err := cmd_rm_nodepool.Output()
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -106,6 +175,32 @@ func delete_eks(info Cli) {
 	} else {
 		fmt.Println(string(output))
 	}
+
+}
+
+func deleteNodepool_aks(info Cli) {
+
+	cmd_rm_nodepool := exec.Command("rm", info.ClusterName+"_"+info.NodeName+".tf.json")
+	cmd_rm_nodepool.Dir = "../terraform/aks"
+
+	output, err := cmd_rm_nodepool.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+
+	//cmd := exec.Command("terraform", "destroy", "-auto-approve")
+	cmd := exec.Command("terraform", "apply", "-auto-approve")
+	cmd.Dir = "../terraform/aks"
+
+	output, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+
 }
 
 func delete_aks(info Cli) {
@@ -218,8 +313,51 @@ func delete_gke(info Cli) {
 
 }
 
+func delete_eks(info Cli) {
+	cmd_rm_cluster := exec.Command("rm", info.ClusterName+".tf.json")
+	cmd_rm_cluster.Dir = "../terraform/eks"
+
+	output, err := cmd_rm_cluster.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+
+	cmd_rm_nodepool := exec.Command("rm", info.ClusterName+"nodepool.tf.json")
+	cmd_rm_nodepool.Dir = "../terraform/eks"
+
+	output, err = cmd_rm_nodepool.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+
+	//cmd := exec.Command("terraform", "destroy", "-auto-approve")
+	cmd := exec.Command("terraform", "apply", "-auto-approve")
+	cmd.Dir = "../terraform/eks"
+
+	output, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(output))
+	}
+}
+
 func init() {
 	RootCmd.AddCommand(deleteCmd)
+	deleteCmd.AddCommand(deleteClusterCmd)
+	deleteCmd.AddCommand(deleteNodeCmd)
+
+	deleteClusterCmd.Flags().String("platform", "", "input your platform name")
+	deleteClusterCmd.Flags().String("cluster-name", "", "input your cluster name")
+
+	// deleteNodeCmd.Flags().String("nodepool-name", "", "input your nodepool name")
+	deleteNodeCmd.Flags().String("nodepool-name", "", "input your nodepool name")
+	deleteNodeCmd.Flags().String("platform", "", "input your platform name")
+	deleteNodeCmd.Flags().String("cluster-name", "", "input your cluster name")
 
 	// Here you will define your flags and configuration settings.
 

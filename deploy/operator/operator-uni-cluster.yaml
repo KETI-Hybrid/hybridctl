@@ -1,0 +1,56 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  generation: 1
+  labels:
+    kubevirt.io/os: linux
+  name: uni
+  namespace: hcp
+spec:
+  running: true
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/domain: vm1
+    spec:
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: disk0
+          - disk: 
+              bus: virtio
+            name: serviceaccountdisk
+          - cdrom:
+              bus: sata
+              readonly: true
+            name: cloudinitdisk
+        machine:
+          type: q35
+        resources:
+          requests:
+            memory: 5Gi
+      volumes:
+      - name: disk0
+        persistentVolumeClaim:
+          claimName: fedora-pvc
+      - name: serviceaccountdisk
+        serviceAccount:
+          serviceAccountName: default
+      - cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            hostname: uni-sample
+            ssh_pwauth: True
+            disable_root: false
+            ssh_authorized_keys:
+            - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDG3ulPtXnWgp+VeAlJDbxtB3y7U0pfcx35Q6jIisROJBNK70xT3w8UzLm66bzabZR/twSZo7QgeWo2enrOw9VqTa/FNbSBdJg/TToZOxvwklmyYMVnLGkROOA5SA16SzzgPD9alW7U7TR42n/G2JU8NDfWHrzPf0j8wUj8Kg5BmCd5O7JJVsno/i31X//UnY7x5aDnAhRtESCwg3XugkIg2AIkfzLeU3Z8Xr8m9ci0/nm0VaRJe2IrIJqVFFR5HlVWB8ighDdcjKjcnwRMJjJyEAhOluRonL+OdrUkr+8rpIl+2ylnfizEvSND3/OdhdmQgsK6xuYSf1s5MONCbrom6SAJXvTK0DAGtvAvWAOjxXOICv8yt2p+lmdEA6tlTx/f8biGd/aOdCpDq0RG5Tx2zs1gXFYOoEyI89VNYu6tmDXdDHUsSxvz+CydpnkIl2ktR8zVXfX+lp1QXlhHWqkvNLst8ebJ+0xveW1kjyCjSfiU2i2dyn5/4Yj3I5Bz3uU= root@uni-vm-master
+        name: cloudinitdisk
+status: {}
+    
+

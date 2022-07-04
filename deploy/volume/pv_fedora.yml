@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fedora
+  namespace: hcp
+  labels:
+    app: containerized-data-importer 
+spec:
+  storageClassName: hostpath
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+     path: "/mnt/data"
+#nfs로 수정? 필요한가?

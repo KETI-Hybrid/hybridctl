@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedora-pvc
+  namespace: hcp
+  labels:
+    app: containerized-data-importer
+  annotations:
+    # cdi.kubevirt.io/storage.import.endpoint: "https://storage.googleapis.com/khg-bucket/hcp-metric-collector.img.xz"
+    cdi.kubevirt.io/storage.import.endpoint: "https://storage.googleapis.com/khg-bucket/client.img.xz"
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

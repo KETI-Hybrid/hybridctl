@@ -1,0 +1,6 @@
+persistentvolume/fedora created
+persistentvolumeclaim/fedora-pvc created
+clusterrolebinding.rbac.authorization.k8s.io/uni-sample created
+serviceaccount/uni-sample created
+service/uni-sample created
+virtualmachine.kubevirt.io/uni created

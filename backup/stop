@@ -1,0 +1,110 @@
+// // Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+// //
+// // Licensed under the Apache License, Version 2.0 (the "License");
+// // you may not use this file except in compliance with the License.
+// // You may obtain a copy of the License at
+// //
+// //     http://www.apache.org/licenses/LICENSE-2.0
+// //
+// // Unless required by applicable law or agreed to in writing, software
+// // distributed under the License is distributed on an "AS IS" BASIS,
+// // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// // See the License for the specific language governing permissions and
+// // limitations under the License.
+
+// package cmd
+
+// import (
+// 	"encoding/json"
+// 	"fmt"
+// 	"io/ioutil"
+// 	"net/http"
+
+// 	"github.com/spf13/cobra"
+// )
+
+// // stopCmd represents the stop command
+// var stopCmd = &cobra.Command{
+// 	Use:   "stop",
+// 	Short: "A brief description of your command",
+// 	Long: `A longer description that spans multiple lines and likely contains examples
+// and usage of using your command. For example:
+
+// Cobra is a CLI library for Go that empowers applications.
+// This application is a tool to generate the needed files
+// to quickly create a Cobra application.`,
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		// TODO: Work your own magic here
+// 		fmt.Println("stop called")
+// 		if args[0] == "aks" {
+// 			var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2M4ZWE5MWI1LTZhYWMtNGM1Yy1hZTM0LTk3MTdhODcyMTU5Zi8iLCJpYXQiOjE2NDk3MzYyMDMsIm5iZiI6MTY0OTczNjIwMywiZXhwIjoxNjQ5NzQxNjMwLCJhY3IiOiIxIiwiYWlvIjoiQVRRQXkvOFRBQUFBMXRkQ1NsRWh5bzA0Q3FrMS82K0ZxeE03UzFzQS8zTTJVZnlXUTgrTzV6b0ZFaUN4UE5pcUlJTXpKTklCcHVMZCIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiIxOGZiY2ExNi0yMjI0LTQ1ZjYtODViMC1mN2JmMmIzOWIzZjMiLCJhcHBpZGFjciI6IjAiLCJncm91cHMiOlsiZDljMDdmMTYtMDQ1My00MzIzLWJmNjMtZjAyYzVhOGI3YzQ2IiwiM2FiZDliMGQtY2M1Ni00MGYxLThjMjItODZiNTNhMWZmMzJkIiwiZTAxOWI2NGItY2ZkZS00ZDkzLTg2MTAtNThmM2MzZGJkNmE1IiwiNzFjODE0ZDMtYjBiNy00NzcyLTg0MjktMzI1NmRkYWNiZjUyIiwiMjc4NGFhNTAtODlhOS00OTY5LWFlMzMtNWM1NzI2Mzc2MGUwIiwiMzllYTI4MzUtYmYwZi00YWQyLThiOTMtMWY3ODJhZDU5ZGUxIl0sImlwYWRkciI6IjExNS45NC4xNDEuNjIiLCJuYW1lIjoiY29yZWh1biIsIm9pZCI6ImZiODdkNDJiLTljMDItNGU5MS1hYjVkLTIwMjAxNDQzNzQ2NiIsInB1aWQiOiIxMDAzMjAwMTVCMkYyMEEwIiwicmgiOiIwLkFVb0F0WkhxeUt4cVhFeXVOSmNYcUhJVm4wWklmM2tBdXRkUHVrUGF3ZmoyTUJOS0FPQS4iLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJnUXRjRkNfSDkxQWI1clYxVWF0Mnc0TFJyS0VKQlZXdktoRHJ6U1pKMTRvIiwidGlkIjoiYzhlYTkxYjUtNmFhYy00YzVjLWFlMzQtOTcxN2E4NzIxNTlmIiwidW5pcXVlX25hbWUiOiJjb3JlaHVuQHNwdGVrY2xvdWQub25taWNyb3NvZnQuY29tIiwidXBuIjoiY29yZWh1bkBzcHRla2Nsb3VkLm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6IlhobnlOQllYWjBtZVJlTjd5R3dZQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjc2OThhNzcyLTc4N2ItNGFjOC05MDFmLTYwZDZiMDhhZmZkMiIsIjliODk1ZDkyLTJjZDMtNDRjNy05ZDAyLWE2YWMyZDVlYTVjMyIsIjkzNjBmZWI1LWY0MTgtNGJhYS04MTc1LWUyYTAwYmFjNDMwMSIsIjg4ZDhlM2UzLThmNTUtNGExZS05NTNhLTliOTg5OGI4ODc2YiIsIjE1OGMwNDdhLWM5MDctNDU1Ni1iN2VmLTQ0NjU1MWE2YjVmNyIsImNmMWMzOGU1LTM2MjEtNDAwNC1hN2NiLTg3OTYyNGRjZWQ3YyIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU0MzU0MTQ2NH0.PTOTNe8N8h54wPftjtv4YHkJ56FjHAYajxi5kx__RDdHskFzZEiSksourkI6krmSScNIcvlJzDUxse-wCcmkX2XExgyct1zq0hOpvaCYUNjbAfoSo1CzGKwK2yFS709mTW3xBEBefoEkyRL4I41Lpq_4gh6dW7T1fsUhuic5qWA7aLe6bfM1U7lMHVF55D-xjiy0Ser68rq7Kq-ap6oCpv9rV3-wwUTml6XhgJhyx3tvkG9yLIiSZ8bQqkjkpNtcgu8J-Xf0OYEV4138lTkxXhbTfuhjqytMhFOWXCfR00o8cmZWiBLH6GF0lhqEHg0xl-Tz6wjZoNxIMKeQcv1LHw"
+
+// 			req, err := http.NewRequest("GET", "https://management.azure.com/subscriptions/ccfc0c6c-d3c6-4de2-9a6c-c09ca498ff73/resourceGroups/hcp/providers/Microsoft.ContainerService/managedClusters?api-version=2022-02-01", nil)
+// 			if err != nil {
+// 				panic(err)
+// 			}
+
+// 			req.Header.Add("Authorization", bearer)
+// 			client := &http.Client{}
+// 			resp, err := client.Do(req)
+// 			if err != nil {
+// 				panic(err)
+// 			}
+// 			defer resp.Body.Close()
+
+// 			// 결과 출력
+// 			bytes, _ := ioutil.ReadAll(resp.Body)
+// 			str := string(bytes) //바이트를 문자열로
+// 			// string to struck 과정 필요
+
+// 			// sec := map[string]interface{}{}
+// 			data := AKS_Cluster_API{}
+// 			if err := json.Unmarshal([]byte(str), &data); err != nil {
+// 				panic(err)
+// 			}
+
+// 			fmt.Println(len(data.Value))
+
+// 			for i := 0; i < len(data.Value); i++ {
+// 				if data.Value[i].Name == args[1] {
+// 					var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2M4ZWE5MWI1LTZhYWMtNGM1Yy1hZTM0LTk3MTdhODcyMTU5Zi8iLCJpYXQiOjE2NDk3MzczNTYsIm5iZiI6MTY0OTczNzM1NiwiZXhwIjoxNjQ5NzQyNzUzLCJhY3IiOiIxIiwiYWlvIjoiQVRRQXkvOFRBQUFBMXhzVzFVS0kzK2hqN1JCTnR3eHRaaTVhcnkxcTBtdnptbk1XYlNoOEEveE1wRzJGQkE4M0dhZk10TFBMdEErayIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiIxOGZiY2ExNi0yMjI0LTQ1ZjYtODViMC1mN2JmMmIzOWIzZjMiLCJhcHBpZGFjciI6IjAiLCJncm91cHMiOlsiZDljMDdmMTYtMDQ1My00MzIzLWJmNjMtZjAyYzVhOGI3YzQ2IiwiM2FiZDliMGQtY2M1Ni00MGYxLThjMjItODZiNTNhMWZmMzJkIiwiZTAxOWI2NGItY2ZkZS00ZDkzLTg2MTAtNThmM2MzZGJkNmE1IiwiNzFjODE0ZDMtYjBiNy00NzcyLTg0MjktMzI1NmRkYWNiZjUyIiwiMjc4NGFhNTAtODlhOS00OTY5LWFlMzMtNWM1NzI2Mzc2MGUwIiwiMzllYTI4MzUtYmYwZi00YWQyLThiOTMtMWY3ODJhZDU5ZGUxIl0sImlwYWRkciI6IjEwNi4yNTEuNjQuMjUwIiwibmFtZSI6ImNvcmVodW4iLCJvaWQiOiJmYjg3ZDQyYi05YzAyLTRlOTEtYWI1ZC0yMDIwMTQ0Mzc0NjYiLCJwdWlkIjoiMTAwMzIwMDE1QjJGMjBBMCIsInJoIjoiMC5BVW9BdFpIcXlLeHFYRXl1TkpjWHFISVZuMFpJZjNrQXV0ZFB1a1Bhd2ZqMk1CTktBT0EuIiwic2NwIjoidXNlcl9pbXBlcnNvbmF0aW9uIiwic3ViIjoiZ1F0Y0ZDX0g5MUFiNXJWMVVhdDJ3NExScktFSkJWV3ZLaERyelNaSjE0byIsInRpZCI6ImM4ZWE5MWI1LTZhYWMtNGM1Yy1hZTM0LTk3MTdhODcyMTU5ZiIsInVuaXF1ZV9uYW1lIjoiY29yZWh1bkBzcHRla2Nsb3VkLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6ImNvcmVodW5Ac3B0ZWtjbG91ZC5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJKelVSTExzTDdFcUlrSXhHdGdRVUFBIiwidmVyIjoiMS4wIiwid2lkcyI6WyI3Njk4YTc3Mi03ODdiLTRhYzgtOTAxZi02MGQ2YjA4YWZmZDIiLCI5Yjg5NWQ5Mi0yY2QzLTQ0YzctOWQwMi1hNmFjMmQ1ZWE1YzMiLCI5MzYwZmViNS1mNDE4LTRiYWEtODE3NS1lMmEwMGJhYzQzMDEiLCI4OGQ4ZTNlMy04ZjU1LTRhMWUtOTUzYS05Yjk4OThiODg3NmIiLCIxNThjMDQ3YS1jOTA3LTQ1NTYtYjdlZi00NDY1NTFhNmI1ZjciLCJjZjFjMzhlNS0zNjIxLTQwMDQtYTdjYi04Nzk2MjRkY2VkN2MiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX3RjZHQiOjE1NDM1NDE0NjR9.mVS57_TTLu9AW568LHIzpi-Lx7wAg0g7Yg7BYYI9Xx4eDZ7aQBqBuDUgVcPxWQqGN52Toui9BusyHXhmPvPNRsSNFY3A7c3pTiG1g0rnUrx3ox2nB4AzkQtQrIiJ1xgAtnLoHXWPqKg6SW577jVG2XQsxXwVQBRc2vUUZNc2Jrb3ScU6ZHgZDFQHiprQwRVFlhCMbVt-gWFBMo7mzFMFkl16odk8PF6Lf1qE53RVlPlo5B9N1TbuFElGEuF6HRT8GguvXbPLf1Q1jMmpk-yjmqOtl6jbxEtyuz4NmeQMVNC5f_sHjuUoalauawfYWyVbAtk3du4BiNo4AaXDu7C_MA"
+
+// 					req, err := http.NewRequest("POST", "https://management.azure.com/subscriptions/ccfc0c6c-d3c6-4de2-9a6c-c09ca498ff73/resourceGroups/hcp/providers/Microsoft.ContainerService/managedClusters/"+args[1]+"/stop?api-version=2022-02-01", nil)
+// 					if err != nil {
+// 						panic(err)
+// 					}
+// 					req.Header.Add("Authorization", bearer)
+// 					req.Header.Add("Content-type", "application/json")
+// 					client := &http.Client{}
+// 					resp, err := client.Do(req)
+// 					if err != nil {
+// 						panic(err)
+// 					}
+// 					defer resp.Body.Close()
+
+// 					bytes, _ := ioutil.ReadAll(resp.Body)
+// 					str := string(bytes) //바이트를 문자열로
+// 					fmt.Println(str)
+// 				}
+// 			}
+
+// 			//stopped the cluster~
+// 		}
+
+// 	},
+// }
+
+// func init() {
+// 	RootCmd.AddCommand(stopCmd)
+
+// 	// Here you will define your flags and configuration settings.
+
+// 	// Cobra supports Persistent Flags which will work for this command
+// 	// and all subcommands, e.g.:
+// 	// stopCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+// 	// Cobra supports local flags which will only run when this command
+// 	// is called directly, e.g.:
+// 	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+// }
