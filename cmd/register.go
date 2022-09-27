@@ -107,7 +107,7 @@ var registerCmd = &cobra.Command{
 				fallthrough
 			case "gke":
 				command := &exec.Cmd{
-					Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/cmd/register/register",
+					Path:   "../../cmd/register/register",
 					Args:   arguments,
 					Stdout: os.Stdout,
 					Stderr: os.Stderr,
@@ -157,7 +157,7 @@ var registerCmd = &cobra.Command{
 				arguments[2] = real_clustername
 
 				command := &exec.Cmd{
-					Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/cmd/register/register",
+					Path:   "../../cmd/register/register",
 					Args:   arguments,
 					Stdout: os.Stdout,
 					Stderr: os.Stderr,
