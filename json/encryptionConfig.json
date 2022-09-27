@@ -1,8 +1,0 @@
-[
-    {
-      "resources": ["secrets"],
-      "provider": {
-        "keyArn": "arn:aws:kms:us-east-2:741566967679:key/84b89546-1fa8-4b83-be44-378f7ad0067f"
-      }
-    }
-  ]

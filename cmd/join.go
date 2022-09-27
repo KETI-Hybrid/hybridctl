@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	hcpclusterv1alpha1 "Hybrid_Cloud/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	"github.com/KETI-Hybrid/hcp-pkg/util/clientset"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -58,11 +58,8 @@ var joinCmd = &cobra.Command{
 }
 
 func CheckHCPClusterListToJoin(clustername string) bool {
-	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
-	if err != nil {
-		log.Println(err)
-	}
-	cluster_list, err := hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).List(context.TODO(), metav1.ListOptions{})
+
+	cluster_list, err := clientset.HCPClusterClientset.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Println(err)
 		return false
@@ -73,7 +70,7 @@ func CheckHCPClusterListToJoin(clustername string) bool {
 		if cluster.Name == clustername {
 			if joinstatus == "UNJOIN" {
 				cluster.Spec.JoinStatus = "JOINING"
-				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), &cluster, metav1.UpdateOptions{})
+				_, err = clientset.HCPClusterClientset.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), &cluster, metav1.UpdateOptions{})
 				if err != nil {
 					fmt.Println(err)
 					return false

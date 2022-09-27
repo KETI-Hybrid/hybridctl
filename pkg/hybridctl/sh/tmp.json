@@ -1,0 +1,1 @@
+{ { "Section" : "default" ,"MaxClusterCpu" : 1000 , "MaxClusterMem" : 300 ,"DefaultNodeOption" : "HIGH" ,"Extra" : "30" }, { "Section" : "aws" } }

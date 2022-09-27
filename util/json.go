@@ -1,12 +1,13 @@
 package util
 
 import (
-	"Hybrid_Cloud/hcp-apiserver/pkg/util"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
 
 	"github.com/Jeffail/gabs"
 )
@@ -31,7 +32,7 @@ func PrintOutput(bytes []byte) error {
 		fmt.Print(string(output.Stdout))
 	}
 	if output.Stderr != nil {
-		fmt.Print("thistiserr:", string(output.Stderr))
+		fmt.Print(string(output.Stderr))
 	}
 	return err
 }

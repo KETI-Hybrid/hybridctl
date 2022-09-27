@@ -18,21 +18,12 @@ import (
 	"fmt"
 	"log"
 
-	hcpclusterv1alpha1 "Hybrid_Cloud/pkg/client/hcpcluster/v1alpha1/clientset/versioned"
+	"github.com/KETI-Hybrid/hcp-pkg/util/clientset"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-// var checkAKS, checkEKS, checkGKE = false, false, false
-// var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-// var master_client = kubernetes.NewForConfigOrDie(master_config)
-
-// type Cli struct {
-// 	PlatformName string
-// 	ClusterName  string
-// }
 
 // unjoinCmd represents the unjoin command
 var unjoinCmd = &cobra.Command{
@@ -57,12 +48,7 @@ var unjoinCmd = &cobra.Command{
 
 			fmt.Printf("Cluster Name : %s\n", args[0])
 			clustername := args[0]
-			hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
-			if err != nil {
-				log.Println(err)
-			}
-
-			cluster, err := hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Get(context.TODO(), clustername, metav1.GetOptions{})
+			cluster, err := clientset.HCPClusterClientset.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Get(context.TODO(), clustername, metav1.GetOptions{})
 			if err != nil {
 				log.Println(err)
 			}
@@ -79,7 +65,7 @@ var unjoinCmd = &cobra.Command{
 				return
 			} else {
 				cluster.Spec.JoinStatus = "UNJOINING"
-				_, err = hcp_cluster.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), cluster, metav1.UpdateOptions{})
+				_, err = clientset.HCPClusterClientset.HcpV1alpha1().HCPClusters(HCP_NAMESPACE).Update(context.TODO(), cluster, metav1.UpdateOptions{})
 				if err != nil {
 					fmt.Println(err)
 				}

@@ -1,21 +1,26 @@
 package cmd
 
 import (
-	"Hybrid_Cloud/hybridctl/util"
+	"github.com/KETI-Hybrid/hybridctl-v1/util"
 
 	"github.com/aws/aws-sdk-go/service/eks"
 )
-
-var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-
-//var master_client = kubernetes.NewForConfigOrDie(master_config)
 
 // eks
 var associateEncryptionConfigInput eks.AssociateEncryptionConfigInput
 var associateIdentityProviderConfigInput eks.AssociateIdentityProviderConfigInput
 var oidcRequest eks.OidcIdentityProviderConfigRequest
+var createClusterInput util.HCPCreateClusterInput
+var createNodegroupInput util.HCPCreateNodegroupInput
 var createAddonInput eks.CreateAddonInput
+var deleteClusterInput util.HCPDeleteClusterInput
+var deleteNodegroupInput util.HCPDeleteNodegroupInput
 var deleteAddonInput eks.DeleteAddonInput
+var describeClusterInput util.HCPDescribeClusterInput
+var describeNodegroupInput util.HCPDescribeNodegroupInput
+var listClusterInput util.HCPListClusterInput
+var listNodegroupInput util.HCPListNodegroupInput
+var upgradeClusterInput util.HCPUpdateClusterVersionInput
 var describeAddonInput eks.DescribeAddonInput
 var describeAddonVersionsInput eks.DescribeAddonVersionsInput
 var describeIdentityProviderConfigInput eks.DescribeIdentityProviderConfigInput

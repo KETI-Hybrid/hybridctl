@@ -1,5 +1,7 @@
 package util
 
+import "github.com/aws/aws-sdk-go/service/eks"
+
 type Config struct {
 	Properties struct {
 		TimeInWeek []struct {
@@ -11,6 +13,14 @@ type Config struct {
 			End   string `json:"end"`
 		} `json:"notAllowedTime"`
 	} `json:"properties"`
+}
+
+type HCPConfig struct {
+	Section           string `json:"section"`
+	MaxClusterCpu     int    `json:"maxClusterCpu"`
+	MaxClusterMem     int    `json;"maxClusterMem"`
+	DefaultNodeOption string `json:"defaultNodeOption"`
+	Extra             int    `json: "extra"`
 }
 
 type Error struct {
@@ -174,4 +184,50 @@ type GKESetProperty struct {
 	PROPERTY     string
 	VALUE        string
 	INSTALLATION bool
+}
+
+// modified eks Input Structure
+type HCPCreateClusterInput struct {
+	Region                string                 `json: region`
+	EKSCreateClusterInput eks.CreateClusterInput `json: CreateClusterInput`
+}
+
+type HCPDeleteClusterInput struct {
+	Region                string                 `json: region`
+	EKSDeleteClusterInput eks.DeleteClusterInput `json: DeleteClusterInput`
+}
+
+type HCPDescribeClusterInput struct {
+	Region                  string                   `json: region`
+	EKSDescribeClusterInput eks.DescribeClusterInput `json: DescribeClusterInput`
+}
+
+type HCPListClusterInput struct {
+	Region string `json: region`
+	// EKSListClusterInput eks.ListClustersInput `json: ListClusterInput`
+}
+
+type HCPUpdateClusterVersionInput struct {
+	Region                       string                        `json: region`
+	EKSUpdateClusterVersionInput eks.UpdateClusterVersionInput `json: UpdateClusterVersionInput`
+}
+
+type HCPCreateNodegroupInput struct {
+	Region                  string
+	EKSCreateNodegroupInput eks.CreateNodegroupInput
+}
+
+type HCPDeleteNodegroupInput struct {
+	Region                  string
+	EKSDeleteNodegroupInput eks.DeleteNodegroupInput
+}
+
+type HCPDescribeNodegroupInput struct {
+	Region                    string
+	EKSDescribeNodegroupInput eks.DescribeNodegroupInput
+}
+
+type HCPListNodegroupInput struct {
+	Region                string
+	EKSListNodegroupInput eks.ListNodegroupsInput
 }

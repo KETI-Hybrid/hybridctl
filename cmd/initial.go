@@ -15,199 +15,211 @@
 package cmd
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
+	"io/ioutil"
+	"os"
+	"os/exec"
 	"strconv"
 
-	hcppolicyapis "Hybrid_Cloud/pkg/apis/hcppolicy/v1alpha1"
-
-	hcppolicyv1alpha1 "Hybrid_Cloud/pkg/client/hcppolicy/v1alpha1/clientset/versioned"
+	"github.com/KETI-Hybrid/hybridctl-v1/util"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// var master_config, _ = util.BuildConfigFromFlags("kube-master", "/root/.kube/config")
-
-// var master_client = kubernetes.NewForConfigOrDie(master_config)
+const CONFIGFILE_DIR string = "/root/.hcp/config"
 
 // joinCmd represents the join command
-var initialCmd = &cobra.Command{
-	Use:   "initial-setting",
+var configureCmd = &cobra.Command{
+	Use:   "configure",
 	Short: "A brief description of your command",
 	Long: ` 
 NAME 
-	hybridctl join PLATFORM CLUSTER
-	hybridctl join register PLATFORM
+	hybridctl configure PLATFORM
 
 DESCRIPTION
 	
-	>> cluster join PLATFORM CLUSTER <<
+	>> hybridctl configure PLATFORM <<
 
 
-	PLATFORM means the Kubernetes platform of the cluster to join.
+	PLATFORM means the Kubernetes platform of the cluster to config.
 	The types of platforms offered are as follows.
 
+	- default 
 	- aks   azure kubernetes service
 	- eks   elastic kubernetes service
 	- gke   google kuberntes engine
 
-	* PLATFORM mut be written in LOWERCASE letters
-
-	CLUSTER means the name of the cluster on the specified platform.
-
-	>> hybridctl join register PLATFORM <<
-
-	* This command registers the cluster you want to manage, 
-	For each platform, you must fill in the information below.
-	Please refer to the INFO section
-
-	PLATFORM means the Kubernetes platform of the cluster to join.
-	The types of platforms offered are as follows.
-
-	- aks   azure kubernetes service
-	- eks   elastic kubernetes service
-	- gke   google kuberntes engine
-
-	[INFO]
-
-		GKE 
-		- projectid    the ID of GKE cloud project to use. 
-		- clustername  the name of the cluster on the specified platform.
-		- region       choose Google Compute Zone from 1 to 85.
-
+	* PLATFORM must be written in LOWERCASE letters
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		polices := make([]hcppolicyapis.HCPPolicies, 5)
-		var cost int
-		var max_cpu int
-		var max_memory int
+
+		var hcp_config util.HCPConfig
+		var max_cluster_cpu int
+		var max_cluster_mem int
 		var default_node_option string
 		var extra int
-		var exist bool = false
-		hcp_policy, err := hcppolicyv1alpha1.NewForConfig(master_config)
-		if err != nil {
-			log.Println(err)
-		}
 
-		list, err := hcp_policy.HcpV1alpha1().HCPPolicies("hcp").List(context.TODO(), metav1.ListOptions{})
-		if err != nil {
-			log.Println(err)
-		}
-		for _, policy := range list.Items {
-			if policy.Name == "initial-setting" {
-				exist = true
-			}
-		}
-
-		if !exist {
-			fmt.Printf("Enter the maximum service cost. : ")
-			fmt.Scanln(&cost)
-			polices[0].Type = "cost"
-			polices[0].Value = strconv.Itoa(cost)
-
-			fmt.Printf("Enter the maximum number of CPUs to allocate in the cluster.[NanoCores] : ")
-			fmt.Scanln(&max_cpu)
-			polices[1].Type = "max_cpu"
-			polices[1].Value = strconv.Itoa(max_cpu)
-
-			fmt.Printf("Enter the maximum amount of memory to allocate in the cluster.. : ")
-			fmt.Scanln(&max_memory)
-			polices[2].Type = "max_memory"
-			polices[2].Value = strconv.Itoa(max_memory)
-
-			fmt.Printf("Enter the node option to use as default : ")
-			fmt.Scanln(&default_node_option)
-			polices[3].Type = "default_node_option"
-			polices[3].Value = default_node_option
-
-			fmt.Printf("Enter the percentage of free resources to use when automatically creating a node. : ")
-			fmt.Scanln(&extra)
-			polices[4].Type = "extra"
-			polices[4].Value = strconv.Itoa(extra)
-
-			fmt.Println(polices)
-
-			policy := hcppolicyapis.HCPPolicy{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "HCPPolicy",
-					APIVersion: "hcp.crd.com/v1alpha1",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "initial-setting",
-					Namespace: "hcp",
-				},
-				Spec: hcppolicyapis.HCPPolicySpec{
-					Template: hcppolicyapis.HCPPolicyTemplate{
-						Spec: hcppolicyapis.HCPPolicyTemplateSpec{
-							Policies: polices,
-						},
-					},
-				},
-			}
-			hcp_policy.HcpV1alpha1().HCPPolicies("hcp").Create(context.TODO(), &policy, metav1.CreateOptions{})
-		} else {
-			var answer string
-			fmt.Printf("Do you want to update initial-setting? [y/n] : ")
-			fmt.Scanln(&answer)
-			if answer == "y" {
-				fmt.Printf("Enter the maximum service cost. : ")
-				fmt.Scanln(&cost)
-				polices[0].Type = "cost"
-				polices[0].Value = strconv.Itoa(cost)
-
-				fmt.Printf("Enter the maximum number of CPUs to allocate in the cluster.[NanoCores] : ")
-				fmt.Scanln(&max_cpu)
-				polices[1].Type = "max_cpu"
-				polices[1].Value = strconv.Itoa(max_cpu)
-
-				fmt.Printf("Enter the maximum amount of memory to allocate in the cluster.. : ")
-				fmt.Scanln(&max_memory)
-				polices[2].Type = "max_memory"
-				polices[2].Value = strconv.Itoa(max_memory)
-
-				fmt.Printf("Enter the node option to use as default : ")
-				fmt.Scanln(&default_node_option)
-				polices[3].Type = "default_node_option"
-				polices[3].Value = default_node_option
-
-				fmt.Printf("Enter the percentage of free resources to use when automatically creating a node. : ")
-				fmt.Scanln(&extra)
-				polices[4].Type = "extra"
-				polices[4].Value = strconv.Itoa(extra)
-
-				fmt.Println(polices)
-
-				policy := hcppolicyapis.HCPPolicy{
-					TypeMeta: metav1.TypeMeta{
-						Kind:       "HCPPolicy",
-						APIVersion: "hcp.crd.com/v1alpha1",
-					},
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "initial-setting",
-						Namespace: "hcp",
-					},
-					Spec: hcppolicyapis.HCPPolicySpec{
-						Template: hcppolicyapis.HCPPolicyTemplate{
-							Spec: hcppolicyapis.HCPPolicyTemplateSpec{
-								Policies: polices,
-							},
-						},
-					},
-				}
-				_, err := hcp_policy.HcpV1alpha1().HCPPolicies("hcp").Update(context.TODO(), &policy, metav1.UpdateOptions{})
-				if err != nil {
-					fmt.Println(err)
-				}
-			} else if answer == "n" {
+		//.hcp 디렉터리 확인 및 생성
+		if _, err := os.Stat("/root/.hcp/"); errors.Is(err, os.ErrNotExist) {
+			if err = os.MkdirAll("/root/.hcp/", 0666); err != nil {
+				fmt.Println(err)
 				return
 			}
+		}
+
+		// .hcp/config 파일 확인 및 생성
+		if _, err := os.Stat(CONFIGFILE_DIR); errors.Is(err, os.ErrNotExist) {
+			if _, err = os.Create(CONFIGFILE_DIR); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
+		hcp_config.Section = args[0]
+
+		fmt.Printf("Enter the maximum number of CPUs to allocate in the cluster. [NanoCores] : ")
+		fmt.Scanln(&max_cluster_cpu)
+		hcp_config.MaxClusterCpu = max_cluster_cpu
+
+		fmt.Printf("Enter the maximum amount of memory to allocate in the cluster.. : ")
+		fmt.Scanln(&max_cluster_mem)
+		hcp_config.MaxClusterMem = max_cluster_mem
+
+	CON3:
+		fmt.Printf("Enter the node option to use as default [ Low / Middle / High ]: ")
+		fmt.Scanln(&default_node_option)
+		if !(default_node_option == "Low" || default_node_option == "Middle" || default_node_option == "High") {
+			goto CON3
+		}
+		hcp_config.DefaultNodeOption = default_node_option
+
+		fmt.Printf("Enter the percentage of free resources to use when automatically creating a node. : ")
+		fmt.Scanln(&extra)
+		hcp_config.Extra = extra
+
+		err := UpdateHCPConfigFile(hcp_config)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
 	},
 }
 
+func UpdateHCPConfigFile(new_hcp_config util.HCPConfig) error {
+
+	var exist bool = false
+
+	command := &exec.Cmd{
+		Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/sh/parse-config.sh",
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+
+	err := command.Start()
+	if err != nil {
+		return err
+	}
+
+	err = command.Wait()
+	if err != nil {
+		return err
+	}
+
+	old_hcp_config, err := LoadHCPConfig("/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/tmp.json")
+	if err != nil {
+		return err
+	}
+
+	for _, config := range old_hcp_config {
+		if config.Section == new_hcp_config.Section {
+			exist = true
+			break
+		}
+	}
+
+	if exist {
+		err = DeleteHCPConfig(new_hcp_config.Section)
+		if err != nil {
+			return err
+		}
+
+		err = CreateHCPConfig(new_hcp_config)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		err := CreateHCPConfig(new_hcp_config)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func DeleteHCPConfig(section string) error {
+
+	var arguments []string
+	arguments = append(arguments, section)
+
+	command := &exec.Cmd{
+		Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/sh/delete-config.sh",
+		Args:   arguments,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+
+	err := command.Start()
+	if err != nil {
+		return err
+	}
+
+	err = command.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateHCPConfig(hcp_config util.HCPConfig) error {
+	f, err := os.OpenFile(CONFIGFILE_DIR, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+
+	var str string
+	str += "[" + hcp_config.Section + "]" + "\n"
+	str += "max_cluster_cpu" + "=" + strconv.Itoa(hcp_config.MaxClusterCpu) + "\n"
+	str += "max_cluster_mem" + "=" + strconv.Itoa(hcp_config.MaxClusterMem) + "\n"
+	str += "default_node_option" + "=" + hcp_config.DefaultNodeOption + "\n"
+	str += "extra" + "=" + strconv.Itoa(hcp_config.Extra) + "\n"
+	_, err = f.WriteString(str)
+
+	return err
+}
+
+func LoadHCPConfig(configFile string) ([]util.HCPConfig, error) {
+
+	var hcp_config []util.HCPConfig
+	// we have a config so parse it.
+	data, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(data, &hcp_config)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(hcp_config)
+
+	return hcp_config, nil
+}
+
 func init() {
-	RootCmd.AddCommand(initialCmd)
+	RootCmd.AddCommand(configureCmd)
 }

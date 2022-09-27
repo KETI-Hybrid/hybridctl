@@ -1,0 +1,8 @@
+{
+        "EndpointPrivateAccess": false,
+        "EndpointPublicAccess": true,
+        "PublicAccessCidrs": ["0.0.0.0/0"],
+        "SecurityGroupIds": [],
+        "SubnetIds": ["subnet-id1","subnet-id2"],
+        "VpcId": "vpc-id"
+}

@@ -25,10 +25,13 @@ case "$1" in
         az aks get-credentials --resource-group "$3" --name "$2" --file ~/.kube/kubeconfig
         ;;
     "eks")
-        aws eks update-kubeconfig --name "$2"
+        aws eks update-kubeconfig --name "$2" --region "$3"
         ;;
     "gke")
         gcloud container clusters get-credentials "$2"
+        ;;
+    "nks")
+        ncp-iam-authenticator create-kubeconfig --region "$3" --clusterUuid "$2" --output ~/.kube/kubeconfig
         ;;
 esac
 
@@ -36,6 +39,6 @@ if [ "$?" -ne 0 ]; then
     exit 1; 
 fi
 # export KUBECONFIG=~/.kube/config
-# cd /root/go/src/Hybrid_Cloud/hybridctl/pkg/hybridctl
+# cd /root/go/src/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl
 # go build
 # ./hybridctl join register $1 $2

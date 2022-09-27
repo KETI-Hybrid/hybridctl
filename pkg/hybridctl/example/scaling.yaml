@@ -1,0 +1,18 @@
+apiVersion: hcp.crd.com/v1alpha1
+kind: HCPHybridAutoScaler
+metadata:
+  namespace: hcp
+  name: nginx-deploy
+spec:
+  targetCluster: eks-cluster
+  mode: scaling
+  scalingOptions: 
+    hpaTemplate:
+      spec: 
+        scaleTargetRef:
+          kind: HCPDeployment
+          name: nginx-deploy
+        minReplicas:  1
+        maxReplicas: 5
+
+  
