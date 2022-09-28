@@ -5,9 +5,9 @@ go 1.18
 require (
 	cloud.google.com/go/pubsub v1.25.1
 	github.com/Jeffail/gabs v1.4.0
-	github.com/KETI-Hybrid/hcp-analytic-engine-v1 v0.0.0-20220921073820-117360d3335d
+	github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0
 	github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9
-	github.com/KETI-Hybrid/hcp-pkg v0.0.0-20220921091158-1f12b82c2bd5
+	github.com/KETI-Hybrid/hcp-pkg v1.0.0
 	github.com/NaverCloudPlatform/ncloud-sdk-go-v2 v1.5.2
 	github.com/aws/aws-sdk-go v1.44.102
 	github.com/olekukonko/tablewriter v0.0.5
