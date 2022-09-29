@@ -26,24 +26,24 @@ github.com/KETI-Hybrid/hcp-analytic-engine-v1/pkg/handler
 # github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9
 ## explicit; go 1.18
 github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util
-# github.com/KETI-Hybrid/hcp-pkg v1.0.0
+# hcp-pkg v1.0.0
 ## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-pkg/apis/hcpcluster/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/apis/hcppolicy/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/apis/resource/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/typed/hcpcluster/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/typed/hcppolicy/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme
-github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/typed/resource/v1alpha1
-github.com/KETI-Hybrid/hcp-pkg/hcp-resource/hcpcluster
-github.com/KETI-Hybrid/hcp-pkg/kube-resource/namespace
-github.com/KETI-Hybrid/hcp-pkg/util/clientset
-github.com/KETI-Hybrid/hcp-pkg/util/clusterManager
+hcp-pkg/apis/hcpcluster/v1alpha1
+hcp-pkg/apis/hcppolicy/v1alpha1
+hcp-pkg/apis/resource/v1alpha1
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/hcpcluster/v1alpha1/clientset/versioned/typed/hcpcluster/v1alpha1
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/hcppolicy/v1alpha1/clientset/versioned/typed/hcppolicy/v1alpha1
+hcp-pkg/client/resource/v1alpha1/clientset/versioned
+hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme
+hcp-pkg/client/resource/v1alpha1/clientset/versioned/typed/resource/v1alpha1
+hcp-pkg/hcp-resource/hcpcluster
+hcp-pkg/kube-resource/namespace
+hcp-pkg/util/clientset
+hcp-pkg/util/clusterManager
 # github.com/NaverCloudPlatform/ncloud-sdk-go-v2 v1.5.2
 ## explicit; go 1.16
 github.com/NaverCloudPlatform/ncloud-sdk-go-v2/hmac

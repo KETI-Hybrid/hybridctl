@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/util"
 
 	"github.com/aws/aws-sdk-go/service/eks"
 )

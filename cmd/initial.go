@@ -23,7 +23,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/util"
 
 	"github.com/spf13/cobra"
 )
@@ -112,7 +112,7 @@ func UpdateHCPConfigFile(new_hcp_config util.HCPConfig) error {
 	var exist bool = false
 
 	command := &exec.Cmd{
-		Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/sh/parse-config.sh",
+		Path:   "/root/go/src/Hybrid_LCW/hybridctl/pkg/hybridctl/sh/parse-config.sh",
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}
@@ -127,7 +127,7 @@ func UpdateHCPConfigFile(new_hcp_config util.HCPConfig) error {
 		return err
 	}
 
-	old_hcp_config, err := LoadHCPConfig("/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/tmp.json")
+	old_hcp_config, err := LoadHCPConfig("/root/go/src/Hybrid_LCW/hybridctl/pkg/hybridctl/tmp.json")
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func DeleteHCPConfig(section string) error {
 	arguments = append(arguments, section)
 
 	command := &exec.Cmd{
-		Path:   "/root/go/src/Hybrid_LCW/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl/sh/delete-config.sh",
+		Path:   "/root/go/src/Hybrid_LCW/hybridctl/pkg/hybridctl/sh/delete-config.sh",
 		Args:   arguments,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,

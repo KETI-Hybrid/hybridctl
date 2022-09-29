@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	cobrautil "hybridctl/util"
 )
 
 func gkeFlags() {

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/KETI-Hybrid/hcp-pkg/util/clientset"
+	"hcp-pkg/util/clientset"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"

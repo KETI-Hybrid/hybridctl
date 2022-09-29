@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/pkg/nks"
+	"hybridctl/pkg/nks"
 
 	klog "k8s.io/klog/v2"
 

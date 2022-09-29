@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/KETI-Hybrid/hcp-pkg/apis/resource/v1alpha1"
-	resourcev1alpha1scheme "github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme"
+	"hcp-pkg/apis/resource/v1alpha1"
+	resourcev1alpha1scheme "hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/pkg/nks"
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/pkg/nks"
+	cobrautil "hybridctl/util"
 
 	"github.com/spf13/cobra"
 	appsv1 "k8s.io/api/apps/v1"

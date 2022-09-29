@@ -6,14 +6,14 @@ import (
 	"os/exec"
 	"strings"
 
-	resourcev1alpha1scheme "github.com/KETI-Hybrid/hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme"
+	resourcev1alpha1scheme "hcp-pkg/client/resource/v1alpha1/clientset/versioned/scheme"
 
-	"github.com/KETI-Hybrid/hcp-pkg/apis/resource/v1alpha1"
+	"hcp-pkg/apis/resource/v1alpha1"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/util"
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/util"
+	cobrautil "hybridctl/util"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/pkg/nks"
+	"hybridctl/pkg/nks"
 
 	"github.com/spf13/cobra"
 	appsv1 "k8s.io/api/apps/v1"

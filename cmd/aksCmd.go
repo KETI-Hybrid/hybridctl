@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/KETI-Hybrid/hybridctl-v1/util"
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	"hybridctl/util"
+	cobrautil "hybridctl/util"
 
 	"github.com/spf13/cobra"
 )

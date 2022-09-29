@@ -19,10 +19,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/KETI-Hybrid/hcp-pkg/hcp-resource/hcpcluster"
-	"github.com/KETI-Hybrid/hcp-pkg/util/clientset"
+	"hcp-pkg/hcp-resource/hcpcluster"
+	"hcp-pkg/util/clientset"
 
-	cobrautil "github.com/KETI-Hybrid/hybridctl-v1/util"
+	cobrautil "hybridctl/util"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"

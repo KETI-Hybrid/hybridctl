@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	// "github.com/KETI-Hybrid/hybridctl-v1/pkg/handler"
+	// "hybridctl/pkg/handler"
 	"encoding/json"
 	"fmt"
 	"os"

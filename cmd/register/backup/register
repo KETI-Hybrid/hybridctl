@@ -36,6 +36,6 @@ if [ "$?" -ne 0 ]; then
     exit 1; 
 fi
 # export KUBECONFIG=~/.kube/config
-# cd /root/go/src/github.com/KETI-Hybrid/hybridctl-v1/pkg/hybridctl
+# cd /root/go/src/hybridctl/pkg/hybridctl
 # go build
 # ./hybridctl join register $1 $2
