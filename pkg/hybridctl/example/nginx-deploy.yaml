@@ -15,7 +15,6 @@ spec:
       labels:
         app: nginx-app
     spec:
-      nodeName: ip-172-31-31-38.ap-northeast-2.compute.internal
       containers:
       - name: nginx-pod
         image: nginx:1.14 
