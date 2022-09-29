@@ -19,13 +19,13 @@ cloud.google.com/go/pubsub/internal/scheduler
 # github.com/Jeffail/gabs v1.4.0
 ## explicit
 github.com/Jeffail/gabs
-# github.com/KETI-Hybrid/hcp-analytic-engine-v1 v1.0.0
+# hcp-analytic-engine v1.0.0
 ## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-analytic-engine-v1/influx
-github.com/KETI-Hybrid/hcp-analytic-engine-v1/pkg/handler
-# github.com/KETI-Hybrid/hcp-apiserver-v1 v0.0.0-20220921080754-59bf5a1498e9
+hcp-analytic-engine/influx
+hcp-analytic-engine/pkg/handler
+# hcp-apiserver v0.0.0-20220921080754-59bf5a1498e9
 ## explicit; go 1.18
-github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util
+hcp-apiserver/pkg/util
 # hcp-pkg v1.0.0
 ## explicit; go 1.18
 hcp-pkg/apis/hcpcluster/v1alpha1

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/KETI-Hybrid/hcp-analytic-engine-v1/influx"
+	"hcp-analytic-engine/influx"
 
 	"github.com/influxdata/influxdb/client/v2"
 	"k8s.io/klog"

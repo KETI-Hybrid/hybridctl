@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"strings"
 
-	apiserverutil "github.com/KETI-Hybrid/hcp-apiserver-v1/pkg/util"
+	apiserverutil "hcp-apiserver/pkg/util"
 
 	"hybridctl/util"
 

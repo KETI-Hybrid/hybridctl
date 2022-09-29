@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/KETI-Hybrid/hcp-analytic-engine-v1/pkg/handler"
+	"hcp-analytic-engine/pkg/handler"
 
 	"github.com/spf13/cobra"
 )

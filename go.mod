@@ -5,8 +5,6 @@ go 1.18
 require (
 	cloud.google.com/go/pubsub v1.25.1
 	github.com/Jeffail/gabs v1.4.0
-	hcp-analytic-engine v0.0.0
-	hcp-apiserver v0.0.0
 	github.com/NaverCloudPlatform/ncloud-sdk-go-v2 v1.5.2
 	github.com/aws/aws-sdk-go v1.44.102
 	github.com/olekukonko/tablewriter v0.0.5
@@ -17,6 +15,9 @@ require (
 	google.golang.org/api v0.96.0
 	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
 	gopkg.in/yaml.v2 v2.4.0
+	hcp-analytic-engine v1.0.0
+	hcp-apiserver v0.0.0
+	hcp-pkg v0.0.0
 	k8s.io/api v0.25.1
 	k8s.io/apimachinery v0.25.1
 	k8s.io/client-go v0.25.1
@@ -96,9 +97,10 @@ require (
 )
 
 replace (
+	hcp-analytic-engine => ../hcp-analytic-engine
+	hcp-apiserver => ../hcp-apiserver
+	hcp-pkg => ../hcp-pkg
 	k8s.io/apimachinery => k8s.io/apimachinery v0.22.4
 	k8s.io/client-go => k8s.io/client-go v0.22.4
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65
-	hcp-analytic-engine-v1 => ../hcp-analytic-engine
-	hcp-apiserver-v1 => ../hcp-apiserver
 )
