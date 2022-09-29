@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"strconv"
 
-	hcppolicyapis "github.com/KETI-Hybrid/hcp-pkg/apis/hcppolicy/v1alpha1"
+	hcppolicyapis "hcp-pkg/apis/hcppolicy/v1alpha1"
 
-	"github.com/KETI-Hybrid/hcp-pkg/util/clientset"
+	"hcp-pkg/util/clientset"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"

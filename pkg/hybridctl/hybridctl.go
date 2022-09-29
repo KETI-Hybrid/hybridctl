@@ -14,7 +14,7 @@
 package main
 
 import (
-	"github.com/KETI-Hybrid/hybridctl-v1/cmd"
+	"hybridctl/cmd"
 )
 
 func main() {
