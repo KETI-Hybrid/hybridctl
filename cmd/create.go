@@ -98,6 +98,7 @@ func GetObject(yaml []byte) (runtime.Object, *schema.GroupVersionKind, error) {
 
 func RequestCreateResource(obj runtime.Object, gvk *schema.GroupVersionKind) ([]byte, error) {
 	LINK := "/resources"
+	
 
 	// check context flag
 	flag_context := cobrautil.Option_context
