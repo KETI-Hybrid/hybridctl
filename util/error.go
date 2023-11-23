@@ -13,5 +13,6 @@ func (e *errorString) Error() string {
 
 // New returns an error that formats as the given text.
 func NewError(text string) error {
+	
 	return &errorString{text}
 }
