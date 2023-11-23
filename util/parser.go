@@ -172,6 +172,7 @@ var (
 		"HCPdnsendpoint":  "HCPdnsendpoints",
 		"HCPdnsendpoints": "HCPdnsendpoints",
 	}
+	
 	apiGroup = map[string]string{
 		// WORKLOAD APIS
 		"cronjobs":               "/apis/batch/v1beta1",
@@ -306,6 +307,7 @@ func CreateLinkParser(metainfo *MetaInfo) string {
 	} else {
 		LINK += metainfo.Metadata.Namespace
 	}
+	
 	LINK += "/" + KindMap[metainfo.Kind]
 
 	if Option_context == "" {
