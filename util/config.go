@@ -17,6 +17,7 @@ var master_config, _ = BuildConfigFromFlags("master", "/root/.kube/config")
 
 type KubeConfig struct {
 	APIVersion string `yaml:"apiVersion"`
+	
 	Clusters   []struct {
 		Cluster struct {
 			CertificateAuthorityData string `yaml:"certificate-authority-data"`
@@ -73,6 +74,7 @@ func BuildConfigFromFlags(context, kubeconfigPath string) (*rest.Config, error) 
 func UnMarshalKubeConfig(data []byte) (KubeConfig, error) {
 	var kubeconfig KubeConfig
 	err := yaml.Unmarshal(data, &kubeconfig)
+	
 	return kubeconfig, err
 }
 
@@ -86,6 +88,7 @@ func GetKubeConfig(kubeconfigPath string) *KubeConfig {
 	if err != nil {
 		log.Fatalf("Unmarshal: %v", err)
 	}
+	
 	return c
 }
 
@@ -106,12 +109,11 @@ func (c *KubeConfig) GetContextList() []string {
 	for _, context := range c.Contexts {
 		res = append(res, context.Name)
 	}
+	
 	return res
-
 }
 
 func ChangeConfigClusterName(platform string, clustername string) error {
-
 	clientset, err := hcpclusterv1alpha1.NewForConfig(master_config)
 	if err != nil {
 		return err
@@ -135,11 +137,14 @@ func ChangeConfigClusterName(platform string, clustername string) error {
 	} else {
 		return nil
 	}
+	
 	data, err := yaml.Marshal(hcpconfig)
 	if err != nil {
 		return err
 	}
+	
 	cluster.Spec.KubeconfigInfo = data
+	
 	_, err = clientset.HcpV1alpha1().HCPClusters(platform).Update(context.TODO(), cluster, metav1.UpdateOptions{})
 	if err != nil {
 		return err
@@ -151,10 +156,12 @@ func ChangeConfigClusterName(platform string, clustername string) error {
 	if err != nil {
 		return err
 	}
+	
 	kubeconfig, err := UnMarshalKubeConfig(bytes)
 	if err != nil {
 		return err
 	}
+	
 	exist := false
 	for _, c := range kubeconfig.Clusters {
 		if c.Name == clustername {
@@ -167,19 +174,21 @@ func ChangeConfigClusterName(platform string, clustername string) error {
 		kubeconfig.Contexts = append(kubeconfig.Contexts, hcpconfig.Contexts...)
 		kubeconfig.Users = append(kubeconfig.Users, hcpconfig.Users...)
 	}
+	
 	data, err = yaml.Marshal(&kubeconfig)
 	if err != nil {
 		return err
 	}
+	
 	err = ioutil.WriteFile("/root/.kube/config", data, 0644)
 	if err != nil {
 		return err
 	}
+	
 	return nil
 }
 
 func DeleteConfig(platform string, clustername string) error {
-
 	hcp_cluster, err := hcpclusterv1alpha1.NewForConfig(master_config)
 	if err != nil {
 		return err
